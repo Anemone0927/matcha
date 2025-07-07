@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>注文フォーム</title>
+
+<style>
+  body {
+    background-color: #f7f6f9; /* 薄いパステルグレー */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #333;
+    padding: 20px;
+  }
+
+  h1 {
+    color: #7a6fdb; /* パステルパープル */
+    text-align: center;
+    margin-bottom: 30px;
+  }
+
+  form {
+    background-color: #fff;
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(122, 111, 219, 0.2);
+  }
+
+  label {
+    display: block;
+    margin-bottom: 15px;
+    font-weight: 600;
+  }
+
+  input[type="text"],
+  input[type="number"] {
+    width: 100%;
+    box-sizing: border-box; /* ✅ 追加 */
+    padding: 8px 12px;
+    border: 2px solid #dcd6f7;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border-color 0.3s ease;
+  }
+
+  input[type="text"]:focus,
+  input[type="number"]:focus {
+    border-color: #7a6fdb;
+    outline: none;
+  }
+
+  button {
+    width: 100%;
+    background-color: #7a6fdb;
+    color: white;
+    border: none;
+    padding: 12px;
+    font-size: 18px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-weight: 700;
+  }
+
+  button:hover {
+    background-color: #5d52b4;
+  }
+
+  #result {
+    margin-top: 20px;
+    text-align: center;
+    font-weight: 600;
+    color: #5a4dbd;
+  }
+
+  /* ▼ここから追加！ */
+  @media screen and (max-width: 480px) {
+    form {
+      padding: 15px;
+    }
+
+    input[type="text"],
+    input[type="number"] {
+      font-size: 14px;
+    }
+
+    button {
+      font-size: 16px;
+      padding: 10px;
+    }
+  }
+</style>
+</head>
+
+<body>
+    <h1>商品を注文する</h1>
+
+    <form th:action="@{/order}" method="post" th:object="${order}">
+        <label for="productId">商品を選択してください：</label>
+        <select id="productId" name="productId" th:field="*{productId}" required>
+              <option value="" disabled selected>商品を選択してください</option>
+              <option th:each="product : ${products}"
+                         th:value="${product.id}"
+                         th:text="|${product.name}（${product.price}円）|">
+              </option>
+        </select>
+
+        <label for="customerName">お名前:</label>
+        <input type="text" id="customerName" th:field="*{customerName}" required /><br>
+
+        <label for="quantity">数量:</label>
+        <input type="number" id="quantity" th:field="*{quantity}" value="1" min="1" required /><br>
+
+        <button type="submit">注文する</button>
+    </form>
+
+    <a href="/product_list">商品一覧へ戻る</a>
+   </section>
+</body>
+</html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>レビュー一覧</title>
+  <style>
+    body {
+      background-color: #f9f9f9;
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    .review-card {
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      margin: 20px auto;
+      max-width: 500px;
+      padding: 20px;
+    }
+    .stars {
+      color: gold;
+      font-size: 1.5em;
+    }
+    .comment {
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>レビュー一覧</h1>
+
+  <div th:each="review : ${reviews}" class="review-card">
+    <div class="stars">
+      <span th:utext="${'★'.repeat(review.rating)} + ${'☆'.repeat(5 - review.rating)}"></span>
+    </div>
+    <div class="comment" th:text="${review.comment}">コメントがここに表示されます</div>
+    <div>商品ID: <span th:text="${review.productId}"></span></div>
+  </div>
+
+  <div style="text-align:center; margin-top: 20px;">
+    <a class="btn" th:href="@{/hello}">ホームに戻る</a>
+  </div>
+</body>
+</html>

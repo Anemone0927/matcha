@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <title>カートに商品を追加 | 推し系食べ物通販サイト</title>
+  <style>
+    body {
+      background-color: #b2d8b2;
+      color: #2f4f2f;
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 40px auto;
+      padding: 20px;
+      border-radius: 10px;
+      background: white;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    h1 {
+      text-align: center;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    label {
+      font-weight: bold;
+    }
+    input[type="number"], input[type="text"] {
+      padding: 8px;
+      border: 1px solid #2f4f2f;
+      border-radius: 6px;
+      font-size: 1em;
+    }
+    button {
+      background-color: #2f4f2f;
+      color: white;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.1em;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #1f2f1f;
+    }
+  </style>
+</head>
+<body>
+<h1>カートに商品を追加</h1>
+
+<form th:action="@{/api/cart}" method="post" id="addCartForm">
+  <label for="productId">商品ID</label>
+  <input type="number" id="productId" name="productId" required />
+
+  <label for="quantity">数量</label>
+  <input type="number" id="quantity" name="quantity" min="1" value="1" required />
+
+  <button type="submit">追加する</button>
+</form>
+
+<script>
+  // フォームの送信をAjaxで行いページ遷移しないようにする例
+  document.getElementById('addCartForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const productId = document.getElementById('productId').value;
+    const quantity = document.getElementById('quantity').value;
+
+    fetch('/api/cart', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ productId: Number(productId), quantity: Number(quantity) })
+    })
+    .then(res => {
+      if (!res.ok) throw new Error('追加失敗');
+      return res.json();
+    })
+    .then(data => {
+      alert('カートに追加しました！ID: ' + data.id);
+      // フォームリセットなど
+      this.reset();
+    })
+    .catch(err => {
+      alert('エラーが発生しました: ' + err.message);
+    });
+  });
+</script>
+
+</body>
+</html>

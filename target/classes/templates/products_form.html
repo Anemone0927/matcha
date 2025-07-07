@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>商品追加</title>
+
+<style>
+  body {
+    background-color: #f7f6f9; /* 薄いパステルグレー */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #333;
+    margin: 0;
+    padding: 20px;
+  }
+  h1 {
+    color: #7a6fdb; /* パステルパープル */
+    text-align: center;
+    margin-bottom: 30px;
+  }
+  form {
+    background-color: #fff;
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(122, 111, 219, 0.2);
+  }
+  label {
+    display: block;
+    margin-bottom: 15px;
+    font-weight: 600;
+  }
+
+  input[type="text"],
+  input[type="number"],
+  input[type="file"] {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 8px 12px;
+    border: 2px solid #dcd6f7;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border-color 0.3s ease;
+  }
+
+  input[type="text"]:focus,
+  input[type="number"]:focus,
+  input[type="file"]:focus {
+    border-color: #7a6fdb;
+    outline: none;
+  }
+
+  button {
+    width: 100%;
+    background-color: #7a6fdb;
+    color: white;
+    border: none;
+    padding: 12px;
+    font-size: 18px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-weight: 700;
+  }
+
+  button:hover {
+    background-color: #5d52b4;
+  }
+
+  #result {
+    margin-top: 20px;
+    text-align: center;
+    font-weight: 600;
+    color: #5a4dbd;
+  }
+
+  /* ▼ここから追加！ */
+  @media screen and (max-width: 480px) {
+    form {
+      padding: 15px;
+    }
+
+    input[type="text"],
+    input[type="number"] {
+      font-size: 14px;
+    }
+
+    button {
+      font-size: 16px;
+      padding: 10px;
+    }
+  
+</style> 
+<body>
+    <h1>商品登録フォーム</h1>
+    <form id="product_form"action="/products/new" method="post"  enctype="multipart/form-data">
+        <label>商品名: <input type="text" id="name" name="name" required></label><br>
+        <label>価格: <input type="number" id="price" name="price" required></label><br>
+        <label>画像: <input type="file" name="image"  accept="image/*" required></label><br>
+        <button type="submit">登録</button>
+    </form>
+
+    <p id="result"></p>
+
+    <script>
+document.getElementById("product_form").addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    const form = e.target;  // フォームそのもの
+
+    const formData = new FormData(form);  // これでname, price, imageが全部入る！
+
+    fetch("/products/new", {
+        method: "POST",
+        body: formData,  // headersは付けない！自動で正しく設定されるよ
+    })
+    .then(response => response.text())  // サーバーからの返事をテキストで受け取る場合
+    .then(msg => {
+        document.getElementById("result").innerText = "登録成功！";
+        form.reset();  // フォームの中身を空にしてリセット
+    })
+    .catch(error => {
+        console.error("エラー:", error);
+        document.getElementById("result").innerText = "登録失敗💦";
+    });
+});
+    </script>
+</body>
+</html>

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>商品一覧</title>
+
+<style>
+  body {
+    background-color: #f7f6f9; /* 薄いパステルグレー */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #333;
+    padding: 20px;
+  }
+
+  h1 {
+    color: #7a6fdb; /* パステルパープル */
+    text-align: center;
+    margin-bottom: 30px;
+  }
+
+  ul {
+    list-style: none;
+    padding: 0;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  li {
+    background-color: #ffffff;
+    border: 2px solid #e2dcfb;
+    padding: 15px 20px;
+    margin-bottom: 15px;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(122, 111, 219, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 18px;
+  }
+
+  button {
+    background-color: #ff8ac6; /* パステルピンク */
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    font-size: 16px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-weight: 600;
+  }
+
+  button:hover {
+    background-color: #e26baa;
+  }
+.edit-btn {
+  display: inline-block;
+  padding: 8px 16px;
+  background-color: #7a6fdb;
+  color: white;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: bold;
+}
+.edit-btn:hover {
+  background-color: #5c54b2;
+}
+
+</style>
+
+</head>
+<body>
+  <!-- コンテンツ部分 -->
+  <h1>商品一覧</h1>
+  <ul id="productList"></ul>
+
+  <script>
+fetch('/products')
+  .then(res => {
+    if (!res.ok) throw new Error('Failed to fetch products');
+    return res.json();
+  })
+  .then(data => {
+    if (!Array.isArray(data)) throw new Error('データが配列じゃないよ！');
+
+    const list = document.getElementById('productList');
+    list.innerHTML = '';
+
+    data.forEach((product, index) => {
+      const li = document.createElement('li');
+      li.innerHTML = `
+        <div style="margin-bottom: 20px;">
+          <strong>${index + 1}. ${product.name}</strong>（${product.price}円）<br>
+          ${product.imagePath ? `<img src="${product.imagePath}" width="100">` : ''}
+          <br>
+          <button type="button" onclick="deleteProduct(${product.id})">削除</button>
+          <a href="/products/edit/${product.id}">
+            <button type="button" class="edit-btn">編集</button>
+          </a>
+        </div>
+      `;
+      list.appendChild(li);
+    });
+  })
+  .catch(err => {
+    console.error('エラー:', err);
+    alert('商品情報の取得に失敗しました');
+  });
+  </script>
+</body>
+</html>

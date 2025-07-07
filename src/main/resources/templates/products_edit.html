@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <title >商品編集</title>
+  <style>
+    body {
+      background-color: #f7f6f9;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #333;
+      padding: 20px;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    h1 {
+      color: #7a6fdb;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    form {
+      background-color: #fff;
+      border: 2px solid #e2dcfb;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 8px rgba(122, 111, 219, 0.1);
+    }
+    label {
+      display: block;
+      margin-bottom: 12px;
+      font-size: 18px;
+    }
+    input[type="text"],
+    input[type="number"],
+    input[type="file"] {
+      width: 100%;
+      padding: 8px;
+      font-size: 16px;
+      margin-top: 6px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+    button {
+      background-color: #ff8ac6;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      font-size: 18px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      margin-right: 10px;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #e26baa;
+    }
+    #currentImage {
+      display: block;
+      max-width: 200px;
+      max-height: 200px;
+      margin-bottom: 20px;
+      border-radius: 12px;
+      border: 1px solid #ddd;
+    }
+
+  </style>
+</head>
+<body>
+  <h1>商品編集</h1>
+  <form id="productEditForm" th:action="@{'/products/' + ${product.id}}" method="post"  enctype="multipart/form-data >
+    <input type="hidden"  name="id"  id="editProductId" />
+
+    <div id="imageContainer">
+    </div>
+
+    <label>
+      商品名:
+      <input type="text" id="editName" name="name" required />
+    </label>
+    <label>
+      価格:
+      <input type="number" id="editPrice" name="price" required min="0" step="1" />
+    </label>
+    <label>
+      画像:
+      <input type="file" id="editImage" name="image" accept="image/*" />
+    </label>
+    <div>
+      <button type="submit">更新する</button>
+      <button type="button" id="cancelBtn">キャンセル</button>
+    </div>
+  </form>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const cancelBtn = document.getElementById('cancelBtn');
+  if (cancelBtn) {
+    cancelBtn.addEventListener('click', () => {
+      window.location.href = '/product_list';
+    });
+  }
+
+  const form = document.getElementById('productEditForm');
+  if (form) {
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      const id = document.getElementById('editProductId').value;
+      const name = document.getElementById('editName').value;
+      const price = document.getElementById('editPrice').value;
+      const imageFile = document.getElementById('editImage').files[0];
+
+      const formData = new FormData();
+      formData.append('name', name);
+      formData.append('price', price);
+      if (imageFile) {
+        formData.append('image', imageFile);
+      }
+
+      fetch(`/products/${id}`, {
+        method: 'PUT',
+        body: formData
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.message) {
+          alert(data.message);
+          window.location.href = "/product_list";
+        } else if (data.error) {
+          alert(data.error);
+        } else {
+          alert("更新に失敗しました！");
+        }
+      })
+      .catch(err => {
+        alert('更新エラー');
+        console.error(err);
+      });
+    });
+  }
+
+  const pathSegments = window.location.pathname.split('/');
+  const productId = pathSegments[pathSegments.length - 1];
+
+  if (!productId) {
+    alert('商品IDが指定されていません');
+    window.location.href = '/product_list';
+    return;
+  }
+
+  fetch(`/products/${productId}`)
+    .then(res => {
+      if (!res.ok) throw new Error('商品が見つかりません');
+      return res.json();
+    })
+    .then(product => {
+      document.getElementById('editProductId').value = product.id;
+      document.getElementById('editName').value = product.name;
+      document.getElementById('editPrice').value = product.price;
+      if (product.imagePath) {
+        const imageContainer = document.getElementById('imageContainer');
+        imageContainer.innerHTML = `<img id="currentImage" src="${product.imagePath}" alt="現在の画像">`;
+      }
+    })
+    .catch(err => {
+      alert(err.message);
+      window.location.href = '/product_list';
+    });
+});
+</script>
+</body>
+</html>

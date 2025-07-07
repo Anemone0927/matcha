@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <title>ログイン | OshiGiftBox</title>
+  <style>
+    body {
+      background-color: #f0fff0;
+      font-family: "Arial", sans-serif;
+      padding: 20px;
+      color: #2f4f2f;
+    }
+    h1 {
+      text-align: center;
+    }
+    form {
+      max-width: 500px;
+      margin: 0 auto;
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    label {
+      font-weight: bold;
+      display: block;
+      margin-top: 15px;
+    }
+    input {
+      width: 90%;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      margin-top: 5px;
+    }
+    button {
+      background-color: #7a6fdb;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      margin-top: 20px;
+      border-radius: 10px;
+      font-size: 1em;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #5c50c9;
+    }
+  </style>
+</head>
+<body>
+  <h1>ログイン</h1>
+  <form th:action="@{/users/login}" method="post" th:object="${user}">
+    <label>メールアドレス:<br />
+      <input type="email" th:field="*{email}" required />
+    </label><br /><br />
+    <label>パスワード:<br />
+      <input type="password" th:field="*{password}" required />
+    </label><br /><br />
+    <button type="submit">ログイン</button>
+  </form>
+</body>
+</html>
