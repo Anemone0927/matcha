@@ -7,6 +7,7 @@ WORKDIR /app
 COPY . .
 
 # Maven Wrapperを使ってビルド（テストはスキップ）
+RUN chmod +x mvnw
 RUN ./mvnw package -DskipTests
 
 # Run stage: 実行だけする軽いJREイメージ
