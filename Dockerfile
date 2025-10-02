@@ -1,25 +1,20 @@
-# Build stage: ソースコードからjarを作る
-FROM eclipse-temurin:17 AS build
+# ベースイメージ
+FROM eclipse-temurin:17-jdk-jammy
 
+# 作業ディレクトリ作成
 WORKDIR /app
 
-# ソースコードとビルドツールをコピー
-COPY . .
+# Mavenでビルド済みのJarをコピー
+COPY target/matcha-0.0.1-SNAPSHOT.jar app.jar
 
-# Maven Wrapperを使ってビルド（テストはスキップ）
-RUN chmod +x mvnw
-RUN ./mvnw package -DskipTests
+# 環境変数で設定を上書き可能
+ENV SPRING_DATASOURCE_URL=jdbc:postgresql://<POSTGRES_HOST>:5432/<DB_NAME>
+ENV SPRING_DATASOURCE_USERNAME=<DB_USER>
+ENV SPRING_DATASOURCE_PASSWORD=<DB_PASSWORD>
+ENV PORT=10000
 
-# Run stage: 実行だけする軽いJREイメージ
-FROM eclipse-temurin:17-jre
+# 画像に読み取り権限を付ける
+RUN chmod -R 644 /app/src/main/resources/static/images
 
-WORKDIR /app
-
-# ビルド成果物のjarだけをbuildステージからコピー
-COPY --from=build /app/target/matcha-0.0.1-SNAPSHOT.jar app.jar
-
-# コンテナが受け付けるポート（application.propertiesのserver.portに合わせて）
-EXPOSE 8083
-
-# アプリを起動
-ENTRYPOINT ["java", "-jar", "app.jar"]
+# アプリ起動
+ENTRYPOINT ["java","-jar","app.jar"]

@@ -6,9 +6,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class HelloController {
 
-    @GetMapping("/hello")
-    public String showHome() {
-        return "hello";  // templates/hello.html を返す
-    }
+@GetMapping("/")
+public String showIndex() {
+    return "index";  // templates/index.html を返す
+}
+
 
 }

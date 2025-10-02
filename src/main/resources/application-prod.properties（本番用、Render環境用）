@@ -1,0 +1,38 @@
+# =========================================
+# Spring Boot / Render 環境用プロパティ
+# =========================================
+
+# データベース接続（環境変数方式）
+spring.datasource.url=${SPRING_DATASOURCE_URL}
+spring.datasource.username=${SPRING_DATASOURCE_USERNAME}
+spring.datasource.password=${SPRING_DATASOURCE_PASSWORD}
+spring.datasource.driver-class-name=org.postgresql.Driver
+
+# JPA / Hibernate
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+
+# ファイルアップロード先
+upload.dir=/app/images
+
+# Render では PORT 環境変数を使用
+server.port=${PORT}
+server.address=0.0.0.0
+
+# Thymeleaf（変更不要）
+spring.thymeleaf.prefix=classpath:/templates/
+spring.thymeleaf.suffix=.html
+spring.thymeleaf.mode=HTML
+spring.thymeleaf.cache=false
+
+# HiddenMethodFilter（フォームでPUT/DELETEを使う場合）
+spring.mvc.hiddenmethod.filter.enabled=true
+
+# ログレベル（必要に応じて調整）
+logging.level.org.springframework=DEBUG
+logging.level.com.example=DEBUG
+logging.level.org.springframework.web=DEBUG
+logging.level.org.hibernate.SQL=DEBUG
+logging.level.org.springframework.boot.autoconfigure.web.servlet.error.BasicErrorController=TRACE
+logging.level.org.springframework.web.servlet.DispatcherServlet=TRACE

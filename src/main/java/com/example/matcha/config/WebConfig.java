@@ -11,7 +11,10 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/images/**")
-                .addResourceLocations(EXTERNAL_IMAGE_PATH);
-    }
+          registry.addResourceHandler("/images/**")
+                     .addResourceLocations(
+                           "file:///C:/Users/24i1004/matcha/images/",
+                           "file:/app/images/"
+                     );
+}
 }
