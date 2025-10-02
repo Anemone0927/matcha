@@ -28,7 +28,7 @@ RUN ./mvnw package -DskipTests
 # 2. RUNTIME STAGE: 実行用イメージの作成
 # ----------------------------------
 # 実行環境は、より軽量なJava Runtime Environment (JRE) イメージを使う
-FROM eclipse-temurin:17-jre-alpine
+FROM eclipse-temurin:17-jre-jammy
 
 # 作業ディレクトリを設定
 WORKDIR /app
