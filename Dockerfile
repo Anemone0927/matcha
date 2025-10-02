@@ -8,13 +8,14 @@ FROM maven:3.9.5-eclipse-temurin-17 AS build
 WORKDIR /app
 
 # Maven Wrapperとpom.xmlをコピー
-# これらが変更されない限り、このステップまではキャッシュが効く
 COPY mvnw .
 COPY .mvn .mvn
 COPY pom.xml .
 
+# 【ここを追加！】mvnwに実行権限を与える
+RUN chmod +x mvnw
+
 # 依存関係（ライブラリ）のダウンロード
-# pom.xmlのみで実行することで、ソースコード変更時のビルド高速化を図る
 RUN mvn dependency:go-offline -B
 
 # すべてのソースコードをコピー
@@ -39,12 +40,9 @@ ENV SPRING_DATASOURCE_PASSWORD=${PGPASSWORD}
 ENV PORT=8080
 
 # ビルドステージで作成したJarファイルをコピー
-# target/matcha-0.0.1-SNAPSHOT.jar のファイル名はpom.xmlの<artifactId>-<version>.jarに依存します。
 COPY --from=build /app/target/matcha-0.0.1-SNAPSHOT.jar app.jar
 
 # 画像に読み取り権限を付ける
-# 注意: Spring Bootはデフォルトで /app/src/main/resources/static/images ではなく、
-# Jar内部の /BOOT-INF/classes/static/images を見るため、このchmodは不要な場合もありますが、残しておきます。
 RUN chmod -R 755 /app/src/main/resources/static/images || true
 
 # アプリケーションの起動コマンド
