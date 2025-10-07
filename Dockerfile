@@ -12,7 +12,7 @@ COPY mvnw .
 COPY .mvn .mvn
 COPY pom.xml .
 
-# 【ここを追加！】mvnwに実行権限を与える
+# 【ここが修正点！】mvnwに実行権限を与える
 RUN chmod +x mvnw
 
 # 依存関係（ライブラリ）のダウンロード
@@ -34,6 +34,8 @@ FROM eclipse-temurin:17-jre-jammy
 WORKDIR /app
 
 # 環境変数で設定を上書き可能 (Railwayの変数が優先されます)
+# 注: この設定は環境変数に依存するため、RailwayのVariables設定が優先されます。
+#     このDockerfile内の値は、ここでは参照として機能しています。
 ENV SPRING_DATASOURCE_URL=jdbc:postgresql://${PGHOST}:${PGPORT}/${PGDATABASE}
 ENV SPRING_DATASOURCE_USERNAME=${PGUSER}
 ENV SPRING_DATASOURCE_PASSWORD=${PGPASSWORD}
