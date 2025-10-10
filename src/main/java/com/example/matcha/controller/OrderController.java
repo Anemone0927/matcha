@@ -34,19 +34,19 @@ public class OrderController {
         model.addAttribute("orders", orderRepository.findAll());
         return "order_list"; // ← order_list.html を用意
     }
-    @PostMapping("")
-    public String createOrder(@ModelAttribute Order order) {
-        order.setOrderDate(LocalDateTime.now());
-        orderRepository.save(order);
-        return "order_success";  // 注文完了ページへリダイレクト
-    }
-    @GetMapping("/form")
-    public String showOrderForm(Model model) {
-        model.addAttribute("order", new Order()); // ← 空の注文オブジェクト
-        model.addAttribute("products", productRepository.findAll()); // 商品リストを渡す
-        return "order_form";
-    }
-
+@PostMapping("")
+public String createOrder(@ModelAttribute Order order) {
+    order.setOrderDate(LocalDateTime.now());
+    orderRepository.save(order);
+    // POST処理後にGETリクエストへリダイレクトする
+    return "redirect:/order/success"; // もしくは "redirect:/order/list"
+}
+@GetMapping("/form")
+public String showOrderForm(Model model) {
+    model.addAttribute("order", new Order());
+    model.addAttribute("products", productRepository.findAll()); // 👈 ここが怪しい！
+    return "order_form";
+}
 
 
 }

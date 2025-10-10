@@ -4,6 +4,79 @@
   <meta charset="UTF-8" />
   <title>カート一覧 | 推し系食べ物通販サイト</title>
   <style>
+    body {
+      background-color: #b2d8b2;
+      color: #2f4f2f;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+        main {
+            padding: 20px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        /* --- Header Style --- */
+        header {
+            background-color: #7a6fdb;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+            margin-bottom: 20px; /* コンテンツとの区切り */
+        }
+        header img.home-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+        header h1 {
+            color: white;
+            font-size: 1.8em;
+            margin: 0 0 0 15px;
+            flex-grow: 1;
+        }
+        header .left {
+            display: flex;
+            align-items: center;
+        }
+        header .user-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        header .user-icon:hover {
+            transform: scale(1.1);
+        }
+
+        /* --- Button Style --- */
+        a.btn {
+            background-color: #fff;
+            color: #2f4f2f;
+            border: 2px solid #2f4f2f;
+            padding: 10px 20px;
+            margin: 5px;
+            font-size: 1em;
+            border-radius: 10px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        a.btn:hover {
+            background-color: #2f4f2f;
+            color: #fff;
+        }
+
+        /* ====================================
+           2. ページ固有のスタイル (review_list.html)
+           ==================================== */
     table {
       width: 80%;
       margin: 20px auto;
@@ -17,48 +90,82 @@
     th {
       background-color: #b2d8b2;
     }
-    a.btn {
-      background-color: #fff;
-      color: #2f4f2f;
-      border: 2px solid #2f4f2f;
-      padding: 5px 10px;
-      border-radius: 10px;
-      text-decoration: none;
-    }
-    a.btn:hover {
-      background-color: #2f4f2f;
-      color: #fff;
-    }
+        /* ====================================
+           3. レスポンシブ対応
+           ==================================== */
+        @media screen and (max-width: 480px) {
+            header h1 {
+                font-size: 1.5em;
+            }
+            .review-card {
+                margin: 10px 5px;
+                padding: 15px;
+            }
+            /* その他モバイル調整 */
+            input[type="text"],
+            input[type="number"] {
+                font-size: 14px;
+            }
+            button {
+                font-size: 16px;
+                padding: 10px;
+            }
+        }
+
   </style>
 </head>
 <body>
+    <!-- 共通ヘッダー -->
+    <header>
+        <div class="left">
+            <a th:href="@{/}">
+                <img src="/images/homebotan.jpg" alt="ホームページへ戻る" class="home-icon" />
+            </a>
+            <h1>OshiGiftBox</h1>
+        </div>
+        <div class="user-links">
+            <a th:href="@{/users/register}">
+                <img src="/images/yuza.jpg" alt="ユーザー登録" class="user-icon" />
+            </a>
+        </div>
+    </header>
+    <main>
+        <h1 style="text-align: center; color: #7a6fdb; margin-top: 0;">カート一覧</h1>
 
-  <h1 style="text-align:center;">カート一覧</h1>
 
-  <table>
-    <thead>
-      <tr>
-        <th>商品ID</th>
-        <th>数量</th>
-        <th>操作</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr th:each="item : ${cartItems}">
-        <td th:text="${item.productId}">商品ID</td>
-        <td th:text="${item.quantity}">数量</td>
-        <td>
-          <form th:action="@{'/api/cart/' + ${item.id}}" method="post" th:object="${item}">
-            <input type="hidden" name="_method" value="delete" />
-            <button type="submit" class="btn">削除</button>
-          </form>
-        </td>
-      </tr>
-      <tr th:if="${#lists.isEmpty(cartItems)}">
-        <td colspan="3">カートに商品がありません</td>
-      </tr>
-    </tbody>
-  </table>
+<div style="text-align: center; color: #2f4f2f; margin-top: 20px; padding: 20px; background-color: #fff; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.15); max-width: 600px; margin-left: auto; margin-right: auto;">
+    <h1 style="color: #2f4f2f; font-size: 1.5em; margin-bottom: 20px;">🛒 カート内容</h1>
 
+    <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+        <thead>
+            <tr style="background-color: #f2f2f2;">
+                <th style="padding: 10px; border: 1px solid #ddd; text-align: left;">商品ID</th>
+                <th style="padding: 10px; border: 1px solid #ddd; text-align: left;">数量</th>
+                <th style="padding: 10px; border: 1px solid #ddd; text-align: left;">操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="item : ${cartItems}" style="transition: background-color 0.3s;">
+                <td th:text="${item.productId}" style="padding: 10px; border: 1px solid #ddd;">商品ID</td>
+                <td th:text="${item.quantity}" style="padding: 10px; border: 1px solid #ddd;">数量</td>
+                <td style="padding: 10px; border: 1px solid #ddd;">
+                    <form th:action="@{'/api/cart/' + ${item.id}}" method="post" th:object="${item}" style="margin: 0;">
+                        <input type="hidden" name="_method" value="delete" />
+                        <button type="submit" 
+                                style="background-color: #dc3545; color: white; padding: 8px 12px; border: none; border-radius: 5px; cursor: pointer; font-size: 0.9em; transition: background-color 0.3s;"
+                                onmouseover="this.style.backgroundColor='#c82333'"
+                                onmouseout="this.style.backgroundColor='#dc3545'">
+                            削除
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(cartItems)}">
+                <td colspan="3" style="padding: 10px; border: 1px solid #ddd; text-align: center; color: #888;">カートに商品がありません</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+</main>
 </body>
 </html>
