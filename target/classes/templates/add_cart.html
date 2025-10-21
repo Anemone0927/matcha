@@ -5,7 +5,7 @@
   <title>カートに商品を追加 | 推し系食べ物通販サイト</title>
   <style>
     body {
-      background-color: #b2d8b2;
+      background-color: #ffd9ef;
       color: #2f4f2f;
       font-family: Arial, sans-serif;
       margin: 0;
@@ -20,7 +20,7 @@
         
         /* --- Header Style --- */
         header {
-            background-color: #7a6fdb;
+            background-color: #159450;
             padding: 10px 20px;
             display: flex;
             align-items: center;
@@ -143,14 +143,14 @@
             <h1>OshiGiftBox</h1>
         </div>
         <div class="user-links">
-            <a th:href="@{/users/register}">
+            <a th:href="@{/users/auth_select}">
                 <img src="/images/yuza.jpg" alt="ユーザー登録" class="user-icon" />
             </a>
         </div>
     </header>
     <main>
 <div style="text-align: center; color: #2f4f2f; margin-top: 20px; padding: 30px; background-color: #fff; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.15); max-width: 400px; margin-left: auto; margin-right: auto;">
-    <h1 style="color: #2f4f2f; font-size: 1.5em; margin-bottom: 20px;">🛒 カートに商品を追加</h1>
+    <h1 style="color: #a1835d; font-size: 1.5em; margin-bottom: 20px;">🛒 カートに商品を追加</h1>
     <form th:action="@{/api/cart}" method="post" id="addCartForm" style="display: flex; flex-direction: column; gap: 15px; text-align: left;">
         <div style="display: flex; flex-direction: column;">
             <label for="productId" style="font-weight: bold; margin-bottom: 5px;">商品ID</label>

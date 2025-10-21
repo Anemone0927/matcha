@@ -1,10 +1,11 @@
-// com.example.matcha.controller.OrderController.java
 package com.example.matcha.controller;
 
 import org.springframework.stereotype.Controller;
 
 import java.util.List;
 
+import com.example.matcha.entity.Product;
+import com.example.matcha.repository.ProductRepository;
 
 import com.example.matcha.entity.Order;
 import com.example.matcha.repository.OrderRepository;
@@ -16,11 +17,10 @@ import java.time.LocalDateTime;
 import org.springframework.ui.Model;
 import java.util.Optional;
 
-import com.example.matcha.entity.Product;
-import com.example.matcha.repository.ProductRepository;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
-@RequestMapping("/order")
 public class OrderController {
 
     @Autowired
@@ -29,7 +29,8 @@ public class OrderController {
     @Autowired
     private ProductRepository productRepository;
 
-    @GetMapping("/list")
+
+    @GetMapping("/order/list")
     public String showOrderList(Model model) {
         model.addAttribute("orders", orderRepository.findAll());
         return "order_list"; // ← order_list.html を用意
@@ -41,7 +42,7 @@ public String createOrder(@ModelAttribute Order order) {
     // POST処理後にGETリクエストへリダイレクトする
     return "redirect:/order/success"; // もしくは "redirect:/order/list"
 }
-@GetMapping("/form")
+@GetMapping("/order/form")
 public String showOrderForm(Model model) {
     model.addAttribute("order", new Order());
     model.addAttribute("products", productRepository.findAll()); // 👈 ここが怪しい！

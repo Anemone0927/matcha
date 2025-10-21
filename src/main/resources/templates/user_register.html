@@ -1,69 +1,215 @@
 <!DOCTYPE html>
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8" />
-  <title>ユーザー登録 | OshiGiftBox</title>
-  <style>
+    <meta charset="UTF-8">
+    <title>ユーザー登録 | OshiGiftBox</title>
+
+<style>
+/* ------------------------------------
+    1. 共通ベーススタイル
+------------------------------------ */
     body {
-      background-color: #f0fff0;
-      font-family: "Arial", sans-serif;
-      padding: 20px;
-      color: #2f4f2f;
+        background-color: #ffd9ef; 
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: #333;
+        margin: 0;
+        padding: 0;
     }
+
+    main {
+        padding: 20px;
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    /* --- Header Style  --- */
+    header {
+        background-color: #159450;
+        padding: 10px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+        margin-bottom: 20px;
+    }
+    header img.home-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 20px;
+        cursor: pointer;
+    }
+    header h1 {
+        color: white;
+        font-size: 1.8em;
+        margin: 0 0 0 15px;
+        flex-grow: 1;
+    }
+    header .left {
+        display: flex;
+        align-items: center;
+    }
+    header .user-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 20px;
+        cursor: pointer;
+        transition: transform 0.3s;
+    }
+    header .user-icon:hover {
+        transform: scale(1.1);
+    }
+    
+/* ------------------------------------
+    2. ページ固有のスタイル (ユーザー登録)
+------------------------------------ */
     h1 {
-      text-align: center;
+        color: #a1835d; 
+        text-align: center;
+        margin-bottom: 30px;
+        margin-top: 0;
     }
-    form {
-      max-width: 500px;
-      margin: 0 auto;
-      background: #ffffff;
-      padding: 20px;
-      border-radius: 15px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+
+/* 💡 白いボックス（注文フォームと共通のデザイン） */
+.form-card {
+    background-color: #fff;
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto; /* 中央寄せ */
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(122, 111, 219, 0.2);
+    text-align: center;
+}
+
+/* フォームのレイアウト */
+.register-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* 要素間のスペースを確保 */
+    text-align: left;
+}
+
+
+/* h2 は .form-card 内のタイトルとして使用 */
+.form-card h2 {
+    color: #7a6fdb;
+    text-align: center;
+    font-size: 1.5em;
+    margin-top: 0;
+}
+
+/* ラベルのスタイル */
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+/* 入力欄（input）の共通スタイル */
+input[type="text"],
+input[type="email"],
+input[type="password"] { 
+    width: 100%;
+    box-sizing: border-box; 
+    padding: 10px 12px;
+    border: 2px solid #dcd6f7;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border-color 0.3s ease;
+}
+
+/* input のフォーカススタイル */
+    input[type="text"]:focus,
+    input[type="email"]:focus,
+    input[type="password"]:focus {
+    border-color: #7a6fdb;
+    outline: none;
     }
-    label {
-      font-weight: bold;
-      display: block;
-      margin-top: 15px;
-    }
-    input {
-      width: 90%;
-      padding: 10px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      margin-top: 5px;
-    }
+
+/* 送信ボタンのスタイル */
     button {
-      background-color: #7a6fdb;
-      color: #fff;
-      border: none;
-      padding: 10px 20px;
-      margin-top: 20px;
-      border-radius: 10px;
-      font-size: 1em;
-      cursor: pointer;
+    width: 100%;
+    background-color: #7a6fdb;
+    color: white;
+    border: none;
+    padding: 12px;
+    font-size: 18px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-weight: 700;
+    margin-top: 15px; /* フォーム要素との間に少しスペースを空ける */
     }
+
     button:hover {
-      background-color: #5c50c9;
+    background-color: #5d52b4;
     }
-  </style>
+
+/* ------------------------------------
+    3. レスポンシブ対応
+------------------------------------ */
+    @media screen and (max-width: 480px) {
+        header h1 {
+            font-size: 1.5em;
+        }
+        input[type="text"],
+        input[type="email"],
+        input[type="password"] {
+            font-size: 14px;
+        }
+        button {
+            font-size: 16px;
+            padding: 10px;
+        }
+    }
+</style>
 </head>
+
 <body>
-  <h1>ユーザー登録</h1>
-  <form th:action="@{/users/register}" method="post" th:object="${user}">
-    <label>名前:<br />
-      <input type="text" th:field="*{name}" required />
-    </label>
+    <header>
+    <div class="left">
+        <a th:href="@{/}">
+            <img src="/images/homebotan.jpg" alt="ホームページへ戻る" class="home-icon" />
+        </a>
+        <h1>OshiGiftBox</h1>
+    </div>
+    <div class="user-links">
+        <a th:href="@{/users/auth_select}">
+            <img src="/images/yuza.jpg" alt="ユーザー登録" class="user-icon" />
+        </a>
+    </div>
+    </header>
+    <main>
+        <h1>新規ユーザー登録</h1>
 
-    <label>メールアドレス:<br />
-      <input type="email" th:field="*{email}" required />
-    </label>
+<div class="form-card">
+    <h2>✨ アカウント作成</h2>
+    
+    <form th:action="@{/users/register}" method="post" th:object="${user}" class="register-form">
+        
+        <div>
+            <label for="name">お名前:</label>
+            <input type="text" id="name" th:field="*{name}" required
+                   placeholder="例: 白崎加恋" />
+        </div>
 
-    <label>パスワード:<br />
-      <input type="password" th:field="*{password}" required />
-    </label>
+        <div>
+            <label for="email">メールアドレス:</label>
+            <input type="email" id="email" th:field="*{email}" required
+                   placeholder="例: oshi@giftbox.com" />
+        </div>
 
-    <button type="submit">登録する</button>
-  </form>
+        <div>
+            <label for="password">パスワード:</label>
+            <input type="password" id="password" th:field="*{password}" required 
+                   placeholder="8文字以上の半角英数字" />
+        </div>
+
+        <button type="submit">
+            登録する
+        </button>
+    </form>
+</div>
+</main>
 </body>
 </html>

@@ -17,7 +17,6 @@ import org.springframework.http.ResponseEntity;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,11 +27,15 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
 
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.transaction.annotation.Transactional; // 👈 これを追加
 
 import com.example.matcha.entity.Product;
 import com.example.matcha.repository.ProductRepository;
 
 @Controller
+// 💡 クラス全体に @Transactional を適用し、各データベース操作が確実にコミットされるようにする
+// サービス層があればそこに付けるのが理想的だが、今回はコントローラーに適用
+@Transactional
 public class ProductController {
 
     @GetMapping("/products")
@@ -50,6 +53,7 @@ public class ProductController {
     // 商品一覧画面表示（Thymeleafでrender）
     @GetMapping("/products_list")
     public String showList(Model model) {
+        // 💡 データベースから取得したデータを表示
         List<Product> products = productRepository.findAll();
         model.addAttribute("products", products);
         return "products_list";  // templates/products_list.htmlを直接返す
@@ -63,6 +67,7 @@ public class ProductController {
     }
 
     // 商品追加処理（画像アップロード含む）
+    // POST処理には @Transactional が重要
     @PostMapping(value = "/products/new", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public String addProduct(
         @RequestParam String name,
@@ -77,7 +82,7 @@ public class ProductController {
         product.setPrice(price);
         product.setImagePath("/images/" + filename);
 
-        productRepository.save(product);
+        productRepository.save(product); // 💡 これが @Transactional により確実にDBに保存される
 
         return "redirect:/products_list";  // 追加後は一覧画面へリダイレクト
     }
@@ -86,6 +91,7 @@ public class ProductController {
     private String saveImage(MultipartFile imageFile) {
         try {
             String filename = UUID.randomUUID() + "_" + imageFile.getOriginalFilename();
+            // 💡 uploadDirが正しく設定されていることを前提とする
             Path path = Paths.get(uploadDir, filename);
             Files.createDirectories(path.getParent());
             Files.copy(imageFile.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
@@ -111,39 +117,39 @@ public class ProductController {
             .map(ResponseEntity::ok)
             .orElse(ResponseEntity.notFound().build());
     }
-@GetMapping("/products/edit/{id}")
-public String editProduct(@PathVariable Long id, Model model) {
-    Optional<Product> product = productRepository.findById(id);
-    if (product.isPresent()) {
-        model.addAttribute("product", product.get());
-        return "products_edit";  // templates/products_edit.html
-    } else {
-        return "error/404"; // 存在しない商品だった場合
+    @GetMapping("/products/edit/{id}")
+    public String editProduct(@PathVariable Long id, Model model) {
+        Optional<Product> product = productRepository.findById(id);
+        if (product.isPresent()) {
+            model.addAttribute("product", product.get());
+            return "products_edit";  // templates/products_edit.html
+        } else {
+            return "error/404"; // 存在しない商品だった場合
+        }
     }
-}
-@PostMapping(value = "/products/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-public String updateProduct(
-    @PathVariable Long id,
-    @RequestParam("name") String name,
-    @RequestParam("price") int price,
-    @RequestParam(value = "image", required = false) MultipartFile image,
-    Model model) {
+    @PostMapping(value = "/products/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public String updateProduct(
+        @PathVariable Long id,
+        @RequestParam("name") String name,
+        @RequestParam("price") int price,
+        @RequestParam(value = "image", required = false) MultipartFile image,
+        Model model) {
 
-    Optional<Product> optProduct = productRepository.findById(id);
-    if (optProduct.isPresent()) {
-        Product product = optProduct.get();
-        product.setName(name);
-        product.setPrice(price);
+        Optional<Product> optProduct = productRepository.findById(id);
+        if (optProduct.isPresent()) {
+            Product product = optProduct.get();
+            product.setName(name);
+            product.setPrice(price);
 
-        if (image != null && !image.isEmpty()) {
-            String filename = saveImage(image);
-            product.setImagePath("/images/" + filename);
+            if (image != null && !image.isEmpty()) {
+                String filename = saveImage(image);
+                product.setImagePath("/images/" + filename);
+            }
+
+            productRepository.save(product);
         }
 
-        productRepository.save(product);
+        return "redirect:/products_list"; // 更新後は一覧へ戻る
     }
-
-    return "redirect:/products_list"; // 更新後は一覧へ戻る
-}
 
 }

@@ -4,7 +4,7 @@
   <title>ホーム | 推し系食べ物通販サイト</title>
 <style>
     body {
-      background-color: #b2d8b2;
+      background-color: #ffd9ef;
       color: #2f4f2f;
       font-family: "Arial", sans-serif;
       margin: 0;
@@ -16,7 +16,7 @@
     margin: 0 auto;
   }
       header {
-        background-color: #7a6fdb;
+        background-color: #159450;
         padding: 10px 20px;
         display: flex;
         align-items: center;
@@ -51,23 +51,110 @@
         transform: scale(1.1);
       }
 
+/* ---------------------------------------------------- */
+/* 💡 更新されたボタンの共通スタイルとカラーバリエーション */
+/* ---------------------------------------------------- */
+
+    /* 共通ベーススタイル */
     a.btn {
-      background-color: #fff;
-      color: #2f4f2f;
-      border: 2px solid #2f4f2f;
-      padding: 10px 20px;
-      margin: 5px;
-      font-size: 1em;
-      border-radius: 10px;
-      cursor: pointer;
-      text-decoration: none;
-      display: inline-block;
-      transition: background-color 0.3s, color 0.3s;
+        color: #6e5230; /* テキストは統一 */
+        padding: 12px 25px; /* パディングを少し増やして押しやすく */
+        margin: 8px;
+        font-size: 1.05em;
+        border-radius: 10px;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        font-weight: bold; /* フォントを太く */
+        /* 立体感を出すために影を設定 */
+        box-shadow: 0 4px 0 rgba(0, 0, 0, 0.2); 
+        border: none; /* ボーダーを削除して立体感を影に任せる */
+        transition: transform 0.15s, box-shadow 0.15s;
     }
+
+    /* クリック時のアニメーション（共通） */
     a.btn:hover {
-      background-color: #2f4f2f;
-      color: #fff;
+        transform: translateY(1px); /* 少し沈む */
+        box-shadow: 0 3px 0 rgba(0, 0, 0, 0.2); 
     }
+    a.btn:active {
+        transform: translateY(4px); /* 大きく沈む */
+        box-shadow: 0 0 0 rgba(0, 0, 0, 0.2); /* 影をなくす */
+    }
+
+    /* カラーバリエーション (btn1〜btn7を適用) */
+    /* background-color と box-shadow の色をペアで設定し、統一感を保ちます */
+
+    .btn-1 { /* 商品一覧: ピンク系 */
+        background-color: #ff8ac6;
+        box-shadow: 0 4px 0 #d96aa6;
+    }
+    .btn-1:hover {
+        background-color: #e26baa;
+        box-shadow: 0 3px 0 #c25b90;
+        color: #fff;
+    }
+
+    .btn-2 { /* 商品登録: オレンジ系 */
+        background-color: #ffc280;
+        box-shadow: 0 4px 0 #d99f66;
+    }
+    .btn-2:hover {
+        background-color: #e2a66e;
+        box-shadow: 0 3px 0 #c28c5e;
+        color: #fff;
+    }
+
+    .btn-3 { /* 注文フォーム: 黄色系 */
+        background-color: #ffe066;
+        box-shadow: 0 4px 0 #d9b956;
+    }
+    .btn-3:hover {
+        background-color: #e2c25b;
+        box-shadow: 0 3px 0 #c2a14c;
+        color: #fff;
+    }
+    
+    .btn-4 { /* カートに追加: 緑系 */
+        background-color: #98edb7;
+        box-shadow: 0 4px 0 #7dd39d;
+    }
+    .btn-4:hover {
+        background-color: #79d39e;
+        box-shadow: 0 3px 0 #68b285;
+        color: #fff;
+    }
+
+    .btn-5 { /* カート一覧: 青系 */
+        background-color: #909ff5;
+        box-shadow: 0 4px 0 #7483d9;
+    }
+    .btn-5:hover {
+        background-color: #7687e2;
+        box-shadow: 0 3px 0 #6170c2;
+        color: #fff;
+    }
+    
+    .btn-6 { /* レビュー投稿: 紫系 */
+        background-color: #c598ed;
+        box-shadow: 0 4px 0 #a476d9;
+    }
+    .btn-6:hover {
+        background-color: #ae79e2;
+        box-shadow: 0 3px 0 #9267c2;
+        color: #fff;
+    }
+
+    .btn-7 { /* レビュー一覧: 濃い紫系 */
+        background-color: #ba87ed;
+        box-shadow: 0 4px 0 #9f66d9;
+    }
+    .btn-7:hover {
+        background-color: #a46be2;
+        box-shadow: 0 3px 0 #8959c2;
+        color: #fff;
+    }
+
   #result {
     margin-top: 20px;
     text-align: center;
@@ -102,8 +189,8 @@
       <h1>OshiGiftBox</h1>
     </div>
     <div class="user-links">
-      <a th:href="@{/users/register}">
-        <img src="images/yuza.jpg" alt="ユーザー登録" class="user-icon" />
+      <a th:href="@{/users/auth_select}">
+        <img src="images/yuza.jpg" alt="ユーザー情報" class="user-icon" />
       </a>
     </div>
   </header>
@@ -112,20 +199,20 @@
     <!-- ホームページの内容ここに -->
     <div style="text-align:center; margin-top: 40px;">
       <div style="max-width:600px; margin: auto;">
-        <div style="border-radius: 20px; background: linear-gradient(135deg, #ffbfdf, #d9a7f9); padding: 10px;">
+        <div style="border-radius: 20px; background: linear-gradient(135deg, #e6c8a3, #a1835d); padding: 10px;">
           <div style="border: 7px solid white; border-radius: 15px; box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); overflow: hidden;">
             <img src="/images/ogbtop.jpg" alt="ホーム画像" style="width: 100%; border-radius: 5px;">
           </div>
         </div>
       </div>
       <div style="margin-top: 20px;">
-        <a class="btn" th:href="@{/products_list}">商品一覧</a>
-        <a class="btn" th:href="@{/products/new}">商品登録</a>
-        <a class="btn" th:href="@{/order/form}">注文フォーム</a>
-        <a class="btn" th:href="@{/cart/add}">カートに追加</a>
-        <a class="btn" th:href="@{/cart_list}">カート一覧</a>
-        <a class="btn" th:href="@{/review/form}">レビュー投稿</a>
-        <a class="btn" th:href="@{/reviews/list}">レビュー一覧</a>
+        <a class="btn btn-1" th:href="@{/products_list}">商品一覧</a>
+        <a class="btn btn-2" th:href="@{/products/new}">商品登録</a>
+        <a class="btn btn-3" th:href="@{/order/form}">注文フォーム</a>
+        <a class="btn btn-4" th:href="@{/cart/add}">カートに追加</a>
+        <a class="btn btn-5" th:href="@{/cart_list}">カート一覧</a>
+        <a class="btn btn-6" th:href="@{/review/form}">レビュー投稿</a>
+        <a class="btn btn-7" th:href="@{/reviews/list}">レビュー一覧</a>
       </div>
     </div>
 </body>

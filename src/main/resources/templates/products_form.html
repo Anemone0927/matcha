@@ -1,57 +1,153 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <title>商品追加</title>
+    <meta charset="UTF-8">
+    <title>商品追加 | OshiGiftBox</title>
 
 <style>
-  body {
-    background-color: #f7f6f9; /* 薄いパステルグレー */
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    color: #333;
-    margin: 0;
-    padding: 20px;
-  }
-  h1 {
-    color: #7a6fdb; /* パステルパープル */
-    text-align: center;
-    margin-bottom: 30px;
-  }
-  form {
+/* ------------------------------------
+    1. 共通ベーススタイル (Orderフォームから継承)
+------------------------------------ */
+    body {
+        background-color: #ffd9ef;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: #333;
+        margin: 0;
+        padding: 0;
+    }
+
+    main {
+        padding: 20px;
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    /* --- Header Style  --- */
+    header {
+        background-color: #159450;
+        padding: 10px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+        margin-bottom: 20px;
+    }
+    header img.home-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 20px;
+        cursor: pointer;
+    }
+    header h1 {
+        color: white;
+        font-size: 1.8em;
+        margin: 0 0 0 15px;
+        flex-grow: 1;
+    }
+    header .left {
+        display: flex;
+        align-items: center;
+    }
+    header .user-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 20px;
+        cursor: pointer;
+        transition: transform 0.3s;
+    }
+    header .user-icon:hover {
+        transform: scale(1.1);
+    }
+    
+    /* --- Button Style --- */
+    a.btn {
+        background-color: #fff;
+        color: #7a6fdb;
+        border: 2px solid #7a6fdb;
+        padding: 10px 20px;
+        margin: 5px;
+        font-size: 1em;
+        border-radius: 10px;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        transition: background-color 0.3s, color 0.3s;
+    }
+    a.btn:hover {
+        background-color: #7a6fdb;
+        color: #fff;
+    }
+    
+/* ------------------------------------
+    2. ページ固有のスタイル (商品フォーム)
+------------------------------------ */
+    h1 {
+        color: #a1835d; 
+        text-align: center;
+        margin-bottom: 30px;
+        margin-top: 0;
+    }
+
+/* 💡 白いボックスのスタイル (Orderフォームの .form-card を適用) */
+.form-card {
     background-color: #fff;
     width: 100%;
     max-width: 400px;
-    margin: 0 auto;
-    padding: 25px;
+    margin: 0 auto; /* 中央寄せ */
+    padding: 30px; /* Orderフォームと同じパディング */
     border-radius: 12px;
     box-shadow: 0 4px 8px rgba(122, 111, 219, 0.2);
-  }
-  label {
-    display: block;
-    margin-bottom: 15px;
-    font-weight: 600;
-  }
+    text-align: center;
+}
 
-  input[type="text"],
-  input[type="number"],
-  input[type="file"] {
+/* フォームのレイアウト (Orderフォームの .order-form を流用) */
+.product-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px; /* 要素間のスペースを確保 */
+    text-align: left;
+}
+
+
+/* h2 は .form-card 内のタイトルとして使用 */
+.form-card h2 {
+    color: #7a6fdb;
+    text-align: center;
+    font-size: 1.5em;
+    margin-top: 0;
+}
+
+/* ラベルのスタイル */
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+/* 入力欄（input/select/file）の共通スタイル */
+input[type="text"],
+input[type="number"],
+input[type="file"], /* fileタイプも統一 */
+.input-field { 
     width: 100%;
-    box-sizing: border-box;
+    box-sizing: border-box; 
     padding: 8px 12px;
     border: 2px solid #dcd6f7;
     border-radius: 8px;
     font-size: 16px;
     transition: border-color 0.3s ease;
-  }
+}
 
-  input[type="text"]:focus,
-  input[type="number"]:focus,
-  input[type="file"]:focus {
+/* input のフォーカススタイル */
+    input[type="text"]:focus,
+    input[type="number"]:focus,
+    input[type="file"]:focus {
     border-color: #7a6fdb;
     outline: none;
-  }
+    }
 
-  button {
+/* 送信ボタンのスタイル */
+    button {
     width: 100%;
     background-color: #7a6fdb;
     color: white;
@@ -62,67 +158,112 @@
     cursor: pointer;
     transition: background-color 0.3s ease;
     font-weight: 700;
-  }
+    }
 
-  button:hover {
+    button:hover {
     background-color: #5d52b4;
-  }
-
-  #result {
-    margin-top: 20px;
-    text-align: center;
-    font-weight: 600;
-    color: #5a4dbd;
-  }
-
-  /* ▼ここから追加！ */
-  @media screen and (max-width: 480px) {
-    form {
-      padding: 15px;
     }
 
-    input[type="text"],
-    input[type="number"] {
-      font-size: 14px;
+    /* フォーム送信結果メッセージのスタイル */
+    #result {
+        margin-top: 20px;
+        text-align: center;
+        font-weight: 600;
+        color: #5d52b4; /* ボタンのホバー色と同じくらいの色 */
     }
 
-    button {
-      font-size: 16px;
-      padding: 10px;
+/* ------------------------------------
+    3. レスポンシブ対応
+------------------------------------ */
+    @media screen and (max-width: 480px) {
+        header h1 {
+            font-size: 1.5em;
+        }
+        input[type="text"],
+        input[type="number"],
+        input[type="file"] {
+            font-size: 14px;
+        }
+        button {
+            font-size: 16px;
+            padding: 10px;
+        }
     }
-  
-</style> 
+</style>
+</head>
+
 <body>
-    <h1>商品登録フォーム</h1>
-    <form id="product_form"action="/products/new" method="post"  enctype="multipart/form-data">
-        <label>商品名: <input type="text" id="name" name="name" required></label><br>
-        <label>価格: <input type="number" id="price" name="price" required></label><br>
-        <label>画像: <input type="file" name="image"  accept="image/*" required></label><br>
-        <button type="submit">登録</button>
-    </form>
+    <header>
+    <div class="left">
+        <a th:href="@{/}">
+            <img src="/images/homebotan.jpg" alt="ホームページへ戻る" class="home-icon" />
+        </a>
+        <h1>OshiGiftBox</h1>
+    </div>
+    <div class="user-links">
+        <a th:href="@{/users/auth_select}">
+            <img src="/images/yuza.jpg" alt="ユーザー登録" class="user-icon" />
+        </a>
+    </div>
+    </header>
+    <main>
+        <h1>商品登録フォーム</h1>
 
+<div class="form-card">
+    <h2>➕ 新しい商品を登録</h2>
+    
+    <form id="product_form" action="/products/new" method="post" enctype="multipart/form-data" class="product-form">
+        
+        <div>
+            <label for="name">商品名:</label>
+            <input type="text" id="name" name="name" required placeholder="例: 推しカラーの抹茶セット" />
+        </div>
+
+        <div>
+            <label for="price">価格 (円):</label>
+            <input type="number" id="price" name="price" required min="1" placeholder="例: 3500" />
+        </div>
+
+        <div>
+            <label for="image">商品画像:</label>
+            <input type="file" id="image" name="image" accept="image/*" required />
+        </div>
+
+        <button type="submit">
+            商品を登録する
+        </button>
+    </form>
+    
     <p id="result"></p>
+</div>
+
+</main>
 
     <script>
 document.getElementById("product_form").addEventListener("submit", function (e) {
     e.preventDefault();
 
-    const form = e.target;  // フォームそのもの
-
-    const formData = new FormData(form);  // これでname, price, imageが全部入る！
+    const form = e.target;
+    const formData = new FormData(form);
 
     fetch("/products/new", {
         method: "POST",
-        body: formData,  // headersは付けない！自動で正しく設定されるよ
+        body: formData,
     })
-    .then(response => response.text())  // サーバーからの返事をテキストで受け取る場合
+    .then(response => {
+        // レスポンスがOK (200-299) でない場合はエラーとして処理
+        if (!response.ok) {
+            throw new Error('サーバーエラー: ' + response.status);
+        }
+        return response.text();
+    })
     .then(msg => {
-        document.getElementById("result").innerText = "登録成功！";
-        form.reset();  // フォームの中身を空にしてリセット
+        document.getElementById("result").innerText = "✅ 登録成功！";
+        form.reset();
     })
     .catch(error => {
         console.error("エラー:", error);
-        document.getElementById("result").innerText = "登録失敗💦";
+        document.getElementById("result").innerText = "❌ 登録失敗。コンソールを確認してください。";
     });
 });
     </script>

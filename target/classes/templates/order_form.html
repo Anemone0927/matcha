@@ -1,105 +1,106 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>注文フォーム</title>
+    <title>注文フォーム | OshiGiftBox</title>
 
 <style>
-  body {
-    background-color: #f7f6f9; /* 薄いパステルグレー */
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    color: #333;
-    margin: 0;
-    padding: 0px;
-  }
+/* ------------------------------------
+    1. 共通ベーススタイル
+------------------------------------ */
+    body {
+        background-color: #ffd9ef;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: #333;
+        margin: 0;
+        padding: 0;
+    }
 
-        main {
-            padding: 20px;
-            max-width: 900px;
-            margin: 0 auto;
-        }
+    main {
+        padding: 20px;
+        max-width: 900px;
+        margin: 0 auto;
+    }
 
-        /* --- Header Style --- */
-        header {
-            background-color: #7a6fdb;
-            padding: 10px 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.15);
-            margin-bottom: 20px; /* コンテンツとの区切り */
-        }
-        header img.home-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 20px;
-            cursor: pointer;
-        }
-        header h1 {
-            color: white;
-            font-size: 1.8em;
-            margin: 0 0 0 15px;
-            flex-grow: 1;
-        }
-        header .left {
-            display: flex;
-            align-items: center;
-        }
-        header .user-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 20px;
-            cursor: pointer;
-            transition: transform 0.3s;
-        }
-        header .user-icon:hover {
-            transform: scale(1.1);
-        }
+    /* --- Header Style --- */
+    header {
+        background-color: #159450;
+        padding: 10px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+        margin-bottom: 20px;
+    }
+    header img.home-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 20px;
+        cursor: pointer;
+    }
+    header h1 {
+        color: white;
+        font-size: 1.8em;
+        margin: 0 0 0 15px;
+        flex-grow: 1;
+    }
+    header .left {
+        display: flex;
+        align-items: center;
+    }
+    header .user-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 20px;
+        cursor: pointer;
+        transition: transform 0.3s;
+    }
+    header .user-icon:hover {
+        transform: scale(1.1);
+    }
+    
+    /* --- Button Style --- */
+    a.btn {
+        background-color: #fff;
+        color: #7a6fdb;
+        border: 2px solid #7a6fdb;
+        padding: 10px 20px;
+        margin: 5px;
+        font-size: 1em;
+        border-radius: 10px;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        transition: background-color 0.3s, color 0.3s;
+    }
+    a.btn:hover {
+        background-color: #7a6fdb;
+        color: #fff;
+    }
+    
+/* ------------------------------------
+    2. ページ固有のスタイル (注文フォーム)
+------------------------------------ */
+    h1 {
+        color: #a1835d;
+        text-align: center;
+        margin-bottom: 30px;
+        margin-top: 0; /* main内のh1を上に詰める */
+    }
 
-        /* --- Button Style --- */
-        a.btn {
-            background-color: #fff;
-            color: #2f4f2f;
-            border: 2px solid #2f4f2f;
-            padding: 10px 20px;
-            margin: 5px;
-            font-size: 1em;
-            border-radius: 10px;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-block;
-            transition: background-color 0.3s, color 0.3s;
-        }
-        a.btn:hover {
-            background-color: #2f4f2f;
-            color: #fff;
-        }
-
-        /* ====================================
-           2. ページ固有のスタイル (review_list.html)
-           ==================================== */
-
-
-  h1 {
-    color: #7a6fdb; /* パステルパープル */
-    text-align: center;
-    margin-bottom: 30px;
-  }
-
+/* 💡 白いボックスのスタイル */
 .form-card {
-    background-color: #fff;
-    width: 100%;
-    max-width: 400px;
-    margin: 0 auto; /* 中央寄せ */
-    padding: 30px;
-    border-radius: 12px;
-    box-shadow: 0 4px 8px rgba(122, 111, 219, 0.2);
-    /* フォーム内のH2を中央寄せにするため */
+    background-color: #fff;
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto; /* 中央寄せ */
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(122, 111, 219, 0.2);
     text-align: center;
 }
 
-/* form タグはカードデザインではなく、レイアウトの制御に使用 */
-/* 💡 インラインCSSからここに移動させ、間隔を空け、テキストは左寄せ */
+/* フォームのレイアウト */
 .order-form {
     display: flex;
     flex-direction: column;
@@ -112,36 +113,40 @@
 .form-card h2 {
     color: #7a6fdb;
     text-align: center;
+    font-size: 1.5em;
     margin-top: 0;
 }
 
-/* ラベルのスタイルを調整し、要素間の間隔をフォームのgapに任せる */
+/* ラベルのスタイル */
 label {
-    display: block;
-    margin-bottom: 5px; /* ラベルと入力欄の間のスペースを小さく */
-    font-weight: 600;
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
 }
 
-/* input[type="text"], input[type="number"] に加えて select タグもまとめてスタイル適用 */
+/* 入力欄（input/select）の共通スタイル */
 input[type="text"],
 input[type="number"],
-.input-field { /* 💡 selectタグに適用するためのクラス */
-    width: 100%;
-    box-sizing: border-box; 
-    padding: 8px 12px;
-    border: 2px solid #dcd6f7;
-    border-radius: 8px;
-    font-size: 16px;
-    transition: border-color 0.3s ease;
+.input-field { 
+    width: 100%;
+    box-sizing: border-box; 
+    padding: 8px 12px;
+    border: 2px solid #dcd6f7;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border-color 0.3s ease;
 }
 
-  input[type="text"]:focus,
-  input[type="number"]:focus {
+/* input/select のフォーカススタイル */
+    input[type="text"]:focus,
+    input[type="number"]:focus,
+    .input-field:focus {
     border-color: #7a6fdb;
     outline: none;
-  }
+    }
 
-  button {
+/* 送信ボタンのスタイル */
+    button {
     width: 100%;
     background-color: #7a6fdb;
     color: white;
@@ -152,92 +157,80 @@ input[type="number"],
     cursor: pointer;
     transition: background-color 0.3s ease;
     font-weight: 700;
-  }
+    }
 
-  button:hover {
+    button:hover {
     background-color: #5d52b4;
-  }
+    }
 
-  #result {
-    margin-top: 20px;
-    text-align: center;
-    font-weight: 600;
-    color: #5a4dbd;
-  }
-
-        /* ====================================
-           3. レスポンシブ対応
-           ==================================== */
-        @media screen and (max-width: 480px) {
-            header h1 {
-                font-size: 1.5em;
-            }
-            .review-card {
-                margin: 10px 5px;
-                padding: 15px;
-            }
-            /* その他モバイル調整 */
-            input[type="text"],
-            input[type="number"] {
-                font-size: 14px;
-            }
-            button {
-                font-size: 16px;
-                padding: 10px;
-            }
+/* ------------------------------------
+    3. レスポンシブ対応
+------------------------------------ */
+    @media screen and (max-width: 480px) {
+        header h1 {
+            font-size: 1.5em;
         }
+        input[type="text"],
+        input[type="number"],
+        .input-field {
+            font-size: 14px;
+        }
+        button {
+            font-size: 16px;
+            padding: 10px;
+        }
+    }
 </style>
 </head>
 
 <body>
-    <!-- 共通ヘッダー -->
     <header>
-        <div class="left">
-            <a th:href="@{/}">
-                <img src="/images/homebotan.jpg" alt="ホームページへ戻る" class="home-icon" />
-            </a>
-            <h1>OshiGiftBox</h1>
-        </div>
-        <div class="user-links">
-            <a th:href="@{/users/register}">
-                <img src="/images/yuza.jpg" alt="ユーザー登録" class="user-icon" />
-            </a>
-        </div>
+    <div class="left">
+        <a th:href="@{/}">
+            <img src="/images/homebotan.jpg" alt="ホームページへ戻る" class="home-icon" />
+        </a>
+        <h1>OshiGiftBox</h1>
+    </div>
+    <div class="user-links">
+        <a th:href="@{/users/auth_select}">
+            <img src="/images/yuza.jpg" alt="ユーザー登録" class="user-icon" />
+        </a>
+    </div>
     </header>
     <main>
-        <h1 style="text-align: center; color: #7a6fdb; margin-top: 0;">商品を注文する</h1>
+        <h1>商品を注文する</h1>
 
 <div class="form-card">
-        <h2 style="font-size: 1.5em; margin-bottom: 20px;">📝 商品を注文</h2>
-    
-        <form th:action="@{/order}" method="post" th:object="${order}" class="order-form">
-        
-        <div>
-                        <label for="productId">商品を選択してください：</label>
-                        <select id="productId" name="productId" th:field="*{productId}" required class="input-field">
-                <option value="" disabled selected>商品を選択してください</option>
-                <option th:each="product : ${products}"
-                        th:value="${product.id}"
-                        th:text="|${product.name}（${product.price}円）|">
-                </option>
-            </select>
-        </div>
+    <h2>📝 商品を注文</h2>
+    
+    <form th:action="@{/order}" method="post" th:object="${order}" class="order-form">
+        
+        <div>
+            <label for="productId">商品を選択してください：</label>
+            <select id="productId" name="productId" th:field="*{productId}" required class="input-field">
+                <option value="" disabled selected>商品を選択してください</option>
+                <option th:each="product : ${products}"
+                        th:value="${product.id}"
+                        th:text="|${product.name}（${product.price}円）|">
+                </option>
+            </select>
+        </div>
 
-        <div>
-                        <label for="customerName">お名前:</label>
-            <input type="text" id="customerName" th:field="*{customerName}" required
-                   placeholder="例: 白崎加恋" />
-        </div>
+        <div>
+            <label for="customerName">お名前:</label>
+            <input type="text" id="customerName" th:field="*{customerName}" required
+                   placeholder="例: 白崎加恋" />
+        </div>
 
-        <div>
-                        <label for="quantity">数量:</label>
-            <input type="number" id="quantity" th:field="*{quantity}" value="1" min="1" required />
-        </div>
+        <div>
+            <label for="quantity">数量:</label>
+            <input type="number" id="quantity" th:field="*{quantity}" value="1" min="1" required />
+        </div>
 
-                <button type="submit">
-            注文する
-        </button>
-    </form>
+        <button type="submit">
+            注文する
+        </button>
+    </form>
 </div>
 </main>
 </body>

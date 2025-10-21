@@ -5,7 +5,7 @@
   <title>レビュー投稿フォーム</title>
   <style>
     body {
-      background-color: #f0fff0;
+      background-color: #ffd9ef;
       font-family: "Arial", sans-serif;
       margin: 0;
       padding: 0;
@@ -21,7 +21,7 @@
 
         /* --- Header Style --- */
         header {
-            background-color: #7a6fdb;
+            background-color: #159450;
             padding: 10px 20px;
             display: flex;
             align-items: center;
@@ -147,14 +147,14 @@
             <h1>OshiGiftBox</h1>
         </div>
         <div class="user-links">
-            <a th:href="@{/users/register}">
+            <a th:href="@{/users/auth_select}">
                 <img src="/images/yuza.jpg" alt="ユーザー登録" class="user-icon" />
             </a>
         </div>
     </header>
 
     <main>
-        <h1 style="text-align: center; color: #7a6fdb; margin-top: 0;">レビュー投稿</h1>
+        <h1 style="text-align: center; color: #a1835d; margin-top: 0;">レビュー投稿</h1>
   <form action="/api/reviews" method="post">
     <label for="productId">商品ID:</label>
     <input type="number" id="productId" name="productId" required>

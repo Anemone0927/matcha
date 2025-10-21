@@ -1,171 +1,340 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8" />
-  <title >商品編集</title>
-  <style>
+    <meta charset="UTF-8" />
+    <title>商品編集 | OshiGiftBox</title>
+    <style>
+/* ------------------------------------
+    1. 共通ベーススタイル (products_list.html から統合)
+------------------------------------ */
     body {
-      background-color: #f7f6f9;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      color: #333;
-      padding: 20px;
-      max-width: 600px;
-      margin: 0 auto;
+        background-color: #ffd9ef;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: #333;
+        margin: 0;
+        padding: 0;
     }
+
+    main {
+        padding: 20px;
+        max-width: 600px; /* フォームの最大幅 */
+        margin: 0 auto;
+    }
+    
+    /* --- Header Style  --- */
+    header {
+        background-color: #159450;
+        padding: 10px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+        margin-bottom: 20px;
+    }
+    header img.home-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 20px;
+        cursor: pointer;
+    }
+    header h1 {
+        color: white;
+        font-size: 1.8em;
+        margin: 0 0 0 15px;
+        flex-grow: 1;
+    }
+    header .left {
+        display: flex;
+        align-items: center;
+    }
+    header .user-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 20px;
+        cursor: pointer;
+        transition: transform 0.3s;
+    }
+    header .user-icon:hover {
+        transform: scale(1.1);
+    }
+
+/* ------------------------------------
+    2. ページ固有のスタイル (商品編集)
+------------------------------------ */
     h1 {
-      color: #7a6fdb;
-      text-align: center;
-      margin-bottom: 30px;
+        color: #a1835d;
+        text-align: center;
+        margin-bottom: 30px;
     }
     form {
-      background-color: #fff;
-      border: 2px solid #e2dcfb;
-      border-radius: 12px;
-      padding: 20px;
-      box-shadow: 0 4px 8px rgba(122, 111, 219, 0.1);
+        background-color: #fff;
+        border: 2px solid #e2dcfb;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 4px 8px rgba(122, 111, 219, 0.1);
     }
     label {
-      display: block;
-      margin-bottom: 12px;
-      font-size: 18px;
+        display: block;
+        margin-bottom: 15px; /* マージンを少し増やして見やすく */
+        font-size: 1.1em; /* フォントサイズを調整 */
+        font-weight: 600; /* 太字に */
+        color: #555;
     }
     input[type="text"],
     input[type="number"],
     input[type="file"] {
-      width: 100%;
-      padding: 8px;
-      font-size: 16px;
-      margin-top: 6px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
+        width: 100%;
+        padding: 10px; /* パディングを増やしてタップしやすく */
+        font-size: 16px;
+        margin-top: 8px;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        box-sizing: border-box; /* パディングを含めて幅を計算 */
+        transition: border-color 0.3s;
     }
+    input[type="text"]:focus,
+    input[type="number"]:focus {
+        border-color: #7a6fdb;
+        outline: none;
+    }
+    
+    .button-group {
+        margin-top: 20px;
+        text-align: right; /* ボタンを右寄せ */
+    }
+
     button {
-      background-color: #ff8ac6;
-      color: white;
-      border: none;
-      padding: 12px 20px;
-      font-size: 18px;
-      border-radius: 10px;
-      cursor: pointer;
-      font-weight: 600;
-      margin-right: 10px;
-      transition: background-color 0.3s ease;
+        background-color: #ff8ac6; /* ピンク系 */
+        color: white;
+        border: none;
+        padding: 12px 20px;
+        font-size: 18px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: 600;
+        margin-left: 10px;
+        transition: background-color 0.3s ease;
     }
     button:hover {
-      background-color: #e26baa;
+        background-color: #e26baa;
     }
+    
+    #cancelBtn {
+        background-color: #aaa;
+    }
+    #cancelBtn:hover {
+        background-color: #888;
+    }
+    
     #currentImage {
-      display: block;
-      max-width: 200px;
-      max-height: 200px;
-      margin-bottom: 20px;
-      border-radius: 12px;
-      border: 1px solid #ddd;
+        display: block;
+        width: 100px; /* サイズを固定 */
+        height: 100px;
+        object-fit: cover;
+        margin-bottom: 20px;
+        border-radius: 12px;
+        border: 2px solid #e2dcfb;
+    }
+    
+    /* メッセージボックス (products_list.html から統合) */
+    #messageBox {
+        text-align: center;
+        padding: 10px;
+        margin-bottom: 15px;
+        border-radius: 8px;
+        display: none; /* 初期状態では非表示 */
+        font-weight: 600;
+    }
+    .success {
+        background-color: #e6ffe6;
+        color: #4CAF50;
+        border: 1px solid #4CAF50;
+    }
+    .error {
+        background-color: #ffe6e6;
+        color: #f44336;
+        border: 1px solid #f44336;
     }
 
-  </style>
+/* ------------------------------------
+    3. レスポンシブ対応
+------------------------------------ */
+    @media screen and (max-width: 480px) {
+        .button-group {
+            text-align: center;
+        }
+        .button-group button {
+            display: block;
+            width: 100%;
+            margin: 10px 0;
+        }
+    }
+    </style>
 </head>
 <body>
-  <h1>商品編集</h1>
-  <form id="productEditForm" th:action="@{'/products/' + ${product.id}}" method="post"  enctype="multipart/form-data >
-    <input type="hidden"  name="id"  id="editProductId" />
-
-    <div id="imageContainer">
+    <header>
+    <div class="left">
+        <!-- 便宜上、ここでは /product_list に戻るようにします -->
+        <a href="/product_list">
+            <img src="/images/homebotan.jpg" alt="商品一覧へ戻る" class="home-icon" />
+        </a>
+        <h1>OshiGiftBox</h1>
     </div>
-
-    <label>
-      商品名:
-      <input type="text" id="editName" name="name" required />
-    </label>
-    <label>
-      価格:
-      <input type="number" id="editPrice" name="price" required min="0" step="1" />
-    </label>
-    <label>
-      画像:
-      <input type="file" id="editImage" name="image" accept="image/*" />
-    </label>
-    <div>
-      <button type="submit">更新する</button>
-      <button type="button" id="cancelBtn">キャンセル</button>
+    <div class="user-links">
+        <a th:href="@{/users/auth_select}">
+            <img src="/images/yuza.jpg" alt="ユーザー登録" class="user-icon" />
+        </a>
     </div>
-  </form>
+    </header>
+    <main>
+    
+    <h1>商品編集</h1>
+
+    <!-- メッセージ表示エリア -->
+    <div id="messageBox"></div>
+
+    <!-- enctypeの閉じ引用符を修正 -->
+    <form id="productEditForm" th:action="@{'/products/' + ${product.id}}" method="post" enctype="multipart/form-data">
+        <input type="hidden" name="id" id="editProductId" />
+
+        <div id="imageContainer">
+            <!-- 画像パスがあればここに <img id="currentImage" ... > が挿入される -->
+        </div>
+
+        <label>
+            商品名:
+            <input type="text" id="editName" name="name" required />
+        </label>
+        <label>
+            価格 (円):
+            <input type="number" id="editPrice" name="price" required min="0" step="1" />
+        </label>
+        <label>
+            画像:
+            <input type="file" id="editImage" name="image" accept="image/*" />
+        </label>
+        <div class="button-group">
+            <button type="button" id="cancelBtn">キャンセル</button>
+            <button type="submit">更新する</button>
+        </div>
+    </form>
+    </main>
 
 <script>
+// products_list.html から統合したメッセージ表示関数
+function displayMessage(message, type = 'success') {
+    const box = document.getElementById('messageBox');
+    box.textContent = message;
+    box.className = '';
+    box.classList.add(type);
+    box.style.display = 'block';
+    // 3秒後にメッセージを消す
+    setTimeout(() => {
+        box.style.display = 'none';
+    }, 3000);
+}
+
 document.addEventListener("DOMContentLoaded", function () {
-  const cancelBtn = document.getElementById('cancelBtn');
-  if (cancelBtn) {
-    cancelBtn.addEventListener('click', () => {
-      window.location.href = '/product_list';
-    });
-  }
+    const cancelBtn = document.getElementById('cancelBtn');
+    // window.location.href をハードコードされた /product_list に変更
+    if (cancelBtn) {
+        cancelBtn.addEventListener('click', () => {
+            window.location.href = '/product_list';
+        });
+    }
 
-  const form = document.getElementById('productEditForm');
-  if (form) {
-    form.addEventListener('submit', function (e) {
-      e.preventDefault();
+    const form = document.getElementById('productEditForm');
+    if (form) {
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
 
-      const id = document.getElementById('editProductId').value;
-      const name = document.getElementById('editName').value;
-      const price = document.getElementById('editPrice').value;
-      const imageFile = document.getElementById('editImage').files[0];
+            const id = document.getElementById('editProductId').value;
+            const name = document.getElementById('editName').value;
+            const price = document.getElementById('editPrice').value;
+            const imageFile = document.getElementById('editImage').files[0];
 
-      const formData = new FormData();
-      formData.append('name', name);
-      formData.append('price', price);
-      if (imageFile) {
-        formData.append('image', imageFile);
-      }
+            // 必須フィールドの簡単なチェック
+            if (!name || !price) {
+                displayMessage('商品名と価格は必須項目です。', 'error');
+                return;
+            }
 
-      fetch(`/products/${id}`, {
-        method: 'PUT',
-        body: formData
-      })
-      .then(res => res.json())
-      .then(data => {
-        if (data.message) {
-          alert(data.message);
-          window.location.href = "/product_list";
-        } else if (data.error) {
-          alert(data.error);
-        } else {
-          alert("更新に失敗しました！");
-        }
-      })
-      .catch(err => {
-        alert('更新エラー');
-        console.error(err);
-      });
-    });
-  }
+            const formData = new FormData();
+            formData.append('name', name);
+            formData.append('price', price);
+            if (imageFile) {
+                formData.append('image', imageFile);
+            }
 
-  const pathSegments = window.location.pathname.split('/');
-  const productId = pathSegments[pathSegments.length - 1];
+            // PUTリクエストの代わりにPOSTメソッドオーバーライドを使用
+            // Spring Bootなどの環境では、PUTをFormDataで送る際に問題が発生しやすいため
+            formData.append('_method', 'PUT'); 
 
-  if (!productId) {
-    alert('商品IDが指定されていません');
-    window.location.href = '/product_list';
-    return;
-  }
+            fetch(`/products/${id}`, {
+                method: 'POST', // FormDataとメソッドオーバーライドを使う
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.message) {
+                    displayMessage(data.message, 'success'); // alert()を置換
+                    // 成功メッセージを表示後、1秒待ってリダイレクト
+                    setTimeout(() => { window.location.href = "/product_list"; }, 1000);
+                } else if (data.error) {
+                    displayMessage(data.error, 'error'); // alert()を置換
+                } else {
+                    displayMessage("更新に失敗しました！レスポンスを確認してください。", 'error'); // alert()を置換
+                    console.error("更新失敗レスポンス:", data);
+                }
+            })
+            .catch(err => {
+                displayMessage('更新中に通信エラーが発生しました。', 'error'); // alert()を置換
+                console.error('更新エラー:', err);
+            });
+        });
+    }
 
-  fetch(`/products/${productId}`)
-    .then(res => {
-      if (!res.ok) throw new Error('商品が見つかりません');
-      return res.json();
-    })
-    .then(product => {
-      document.getElementById('editProductId').value = product.id;
-      document.getElementById('editName').value = product.name;
-      document.getElementById('editPrice').value = product.price;
-      if (product.imagePath) {
-        const imageContainer = document.getElementById('imageContainer');
-        imageContainer.innerHTML = `<img id="currentImage" src="${product.imagePath}" alt="現在の画像">`;
-      }
-    })
-    .catch(err => {
-      alert(err.message);
-      window.location.href = '/product_list';
-    });
+    // URLから商品IDを取得
+    const pathSegments = window.location.pathname.split('/');
+    const productId = pathSegments[pathSegments.length - 1];
+
+    if (!productId || isNaN(productId)) {
+        displayMessage('商品IDが正しく指定されていません。', 'error'); // alert()を置換
+        setTimeout(() => { window.location.href = '/product_list'; }, 1000);
+        return;
+    }
+
+    // 既存の商品データを取得
+    fetch(`/products/${productId}`)
+        .then(res => {
+            if (!res.ok) throw new Error('商品が見つかりません。商品一覧に戻ります。');
+            return res.json();
+        })
+        .then(product => {
+            document.getElementById('editProductId').value = product.id;
+            document.getElementById('editName').value = product.name;
+            document.getElementById('editPrice').value = product.price;
+            
+            // フォームのaction URLもここで動的に設定する
+            form.action = `/products/${product.id}`;
+
+            if (product.imagePath) {
+                const imageContainer = document.getElementById('imageContainer');
+                // 画像がない場合のフォールバックを追加
+                const imageFallback = "https://placehold.co/100x100/cccccc/ffffff?text=No+Img";
+                imageContainer.innerHTML = `
+                    <img id="currentImage" 
+                         src="${product.imagePath}" 
+                         alt="現在の画像"
+                         onerror="this.onerror=null;this.src='${imageFallback}';" 
+                    >`;
+            }
+        })
+        .catch(err => {
+            displayMessage(err.message, 'error'); // alert()を置換
+            console.error('データ取得エラー:', err);
+            setTimeout(() => { window.location.href = '/product_list'; }, 1000);
+        });
 });
 </script>
 </body>

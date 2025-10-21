@@ -6,7 +6,7 @@
   <style>
         body {
             /* ホームページと共通の背景色を使用 */
-            background-color: #f9f9f9; 
+            background-color: #ffd9ef;
             color: #2f4f2f;
             font-family: "Arial", sans-serif;
             margin: 0;
@@ -20,7 +20,7 @@
         
         /* --- Header Style --- */
         header {
-            background-color: #7a6fdb;
+            background-color: #159450;
             padding: 10px 20px;
             display: flex;
             align-items: center;
@@ -127,13 +127,13 @@
             <h1>OshiGiftBox</h1>
         </div>
         <div class="user-links">
-            <a th:href="@{/users/register}">
+            <a th:href="@{/users/auth_select}">
                 <img src="/images/yuza.jpg" alt="ユーザー登録" class="user-icon" />
             </a>
         </div>
     </header>
     <main>
-        <h1 style="text-align: center; color: #7a6fdb; margin-top: 0;">📦 ユーザーレビュー一覧</h1>
+        <h1 style="text-align: center; color: #a1835d; margin-top: 0;">📦 ユーザーレビュー一覧</h1>
 
         <!-- レビューリストの表示（Thymeleaf） -->
         <div th:each="review : ${reviews}" class="review-card">
