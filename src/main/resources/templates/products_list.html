@@ -9,13 +9,13 @@
 /* --- 全ての要素に box-sizing: border-box を適用して、幅の計算を正確にします --- */
 * {
     box-sizing: border-box; 
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 /* ------------------------------------
     1. 共通ベーススタイル
 ------------------------------------ */
     body {
         background-color: #ffd9ef;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         color: #333;
         margin: 0;
         padding: 0;
@@ -37,12 +37,17 @@
         box-shadow: 0 2px 5px rgba(0,0,0,0.15);
         margin-bottom: 20px;
     }
-    header img.home-icon, header .user-icon {
+    header .home-icon,
+    header .user-icon {
         width: 40px;
         height: 40px;
         border-radius: 20px;
         cursor: pointer;
-        object-fit: cover; /* 画像が崩れないように */
+        transition: transform 0.3s;
+    }
+    header .home-icon:hover,
+    header .user-icon:hover {
+        transform: scale(1.1);
     }
     header h1 {
         color: white;
@@ -54,11 +59,9 @@
         display: flex;
         align-items: center;
     }
-    header .user-icon {
-        transition: transform 0.3s;
-    }
-    header .user-icon:hover {
-        transform: scale(1.1);
+    header .user-links {
+        display: flex;
+        align-items: center;
     }
     
     /* ------------------------------------
@@ -89,6 +92,21 @@
         font-size: 1.5em;
         margin-top: 0;
         margin-bottom: 20px;
+    }
+    /* 商品登録へのボタン */
+    .add-product-link {
+        display: inline-block;
+        background-color: #7a6fdb;
+        color: white;
+        padding: 10px 20px;
+        margin-bottom: 20px;
+        border-radius: 10px;
+        text-decoration: none;
+        font-weight: 700;
+        transition: background-color 0.3s;
+    }
+    .add-product-link:hover {
+        background-color: #5d52b4;
     }
 
     /* 商品リスト (ul) のスタイル */
@@ -122,10 +140,23 @@
         margin-right: 15px;
         min-width: 150px;
     }
-    .product-info img {
-        margin-left: 10px;
-        object-fit: cover;
+
+    /* 画像コンテナのスタイル */
+    .product-image-container {
+        margin-left: 20px;
+        width: 80px;
+        height: 80px;
+        overflow: hidden;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
+    .product-image-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
 
     .actions {
         display: flex;
@@ -142,7 +173,7 @@
         font-size: 0.9em;
         transition: background-color 0.3s;
         font-weight: 600;
-        white-space: nowrap; /* ボタンが改行されないように */
+        white-space: nowrap; 
     }
     .edit-btn:hover {
         background-color: #4a9e96;
@@ -158,7 +189,7 @@
         font-size: 0.9em;
         transition: background-color 0.3s;
         font-weight: 600;
-        white-space: nowrap; /* ボタンが改行されないように */
+        white-space: nowrap; 
     }
     .actions button:hover {
         background-color: #e55e5e;
@@ -184,63 +215,6 @@
         border: 1px solid #f44336;
     }
 
-    /* --- 削除確認モーダル --- */
-    .modal-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.6);
-        display: none; /* 初期状態では非表示 */
-        justify-content: center;
-        align-items: center;
-        z-index: 1000;
-    }
-    .modal-content {
-        background: #fff;
-        padding: 30px;
-        border-radius: 10px;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-        max-width: 90%;
-        width: 350px;
-        text-align: center;
-    }
-    .modal-content h3 {
-        color: #ff7f7f;
-        margin-top: 0;
-    }
-    .modal-actions {
-        margin-top: 20px;
-        display: flex;
-        justify-content: space-around;
-        gap: 15px;
-    }
-    .modal-actions button {
-        padding: 10px 20px;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-        font-weight: 700;
-        transition: background-color 0.3s;
-        flex: 1; /* ボタンを均等幅にする */
-    }
-    #confirmDeleteBtn {
-        background-color: #ff7f7f;
-        color: white;
-    }
-    #confirmDeleteBtn:hover {
-        background-color: #e55e5e;
-    }
-    #cancelDeleteBtn {
-        background-color: #cccccc;
-        color: #333;
-    }
-    #cancelDeleteBtn:hover {
-        background-color: #a0a0a0;
-    }
-
-
     /* ------------------------------------
         3. レスポンシブ対応
     ------------------------------------ */
@@ -256,20 +230,26 @@
         .product-info {
             flex-direction: column;
             align-items: flex-start;
-            width: 100%;
+            width: 100%; /* スマホで幅いっぱいにする */
         }
         .product-info strong {
             min-width: auto;
             margin-right: 0;
             margin-bottom: 5px;
         }
-        .actions {
-            justify-content: space-between;
-            width: 100%;
+        .product-info > div:not(.product-image-container) {
+             /* 価格情報の調整 */
+             margin-top: 0 !important;
+             font-size: 1em !important;
         }
-        .product-info > div:last-child {
-            margin-left: 0 !important; /* 画像の左マージンをリセット */
+
+        .product-image-container {
+            margin-left: 0;
             margin-top: 10px;
+        }
+        .actions {
+            justify-content: flex-end;
+            width: 100%;
         }
     }
 </style>
@@ -278,12 +258,14 @@
 <body>
     <header>
         <div class="left">
+            <!-- Thymeleaf: ホームへのリンク -->
             <a th:href="@{/}" href="/">
                 <img src="/images/homebotan.jpg" alt="ホームページへ戻る" class="home-icon" />
             </a>
             <h1>OshiGiftBox</h1>
         </div>
         <div class="user-links">
+            <!-- Thymeleaf: ユーザー関連ページへのリンク -->
             <a th:href="@{/users/auth_select}">
                 <img src="/images/yuza.jpg" alt="ユーザー登録" class="user-icon" />
             </a>
@@ -295,6 +277,11 @@
         <div class="list-card">
             <h2>📦 登録済み商品リスト</h2>
 
+            <!-- 商品登録フォームへの誘導 (Spring Bootのルーティングを想定) -->
+            <a th:href="@{/products/new}" class="add-product-link">
+                + 新しい商品を登録する
+            </a>
+
             <!-- メッセージ表示エリア -->
             <div id="messageBox"></div>
             
@@ -303,52 +290,8 @@
             </ul>
         </div>
     </main>
-    
-    <!-- 削除確認モーダル -->
-    <div id="deleteConfirmationModal" class="modal-overlay">
-        <div class="modal-content">
-            <h3>削除の確認</h3>
-            <p id="modalProductName">この商品を本当に削除しますか？</p>
-            <div class="modal-actions">
-                <button type="button" id="cancelDeleteBtn">キャンセル</button>
-                <button type="button" id="confirmDeleteBtn">削除する</button>
-            </div>
-        </div>
-    </div>
 
-<script type="module">
-// --- Firebase Imports ---
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-import { 
-    getAuth, 
-    signInAnonymously, 
-    signInWithCustomToken, 
-    onAuthStateChanged,
-    setLogLevel as setAuthLogLevel
-} from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-import { 
-    getFirestore, 
-    collection, 
-    doc, 
-    onSnapshot, 
-    deleteDoc, 
-    query, 
-    setLogLevel as setFirestoreLogLevel,
-    orderBy,
-    limit
-} from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-// --- Global Variables ---
-const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
-const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-
-// Initialize Firebase
-let app, db, auth;
-let userId = null;
-let isAuthReady = false;
-let productToDeleteId = null; 
-
+    <script>
 // メッセージ表示関数
 function displayMessage(message, type = 'success') {
     const box = document.getElementById('messageBox');
@@ -362,163 +305,105 @@ function displayMessage(message, type = 'success') {
     }, 3000);
 }
 
-// 削除確認モーダル表示
-function showDeleteModal(productId, productName) {
-    productToDeleteId = productId;
-    // 削除対象の商品名をモーダルに表示
-    document.getElementById('modalProductName').innerHTML = `<strong style="color: #333;">${productName}</strong> を本当に削除しますか？`;
-    document.getElementById('deleteConfirmationModal').style.display = 'flex';
-}
-
-// 削除確認モーダル非表示
-function hideDeleteModal() {
-    document.getElementById('deleteConfirmationModal').style.display = 'none';
-    productToDeleteId = null;
-}
-
-// 実際の削除処理（実行は確認後）
-async function confirmDeletion() {
-    if (!db || !userId || !productToDeleteId) {
-        displayMessage('データベース接続または認証が完了していません。', 'error');
-        hideDeleteModal();
+// 削除処理の関数
+async function deleteProduct(id) {
+    // ⚠ 注意: 実際のアプリケーションでは、カスタムモーダルを使用してください。
+    // Canvas環境では confirm() は動作しません。
+    if (!confirm(`商品ID: ${id} を削除してもよろしいですか？`)) {
         return;
     }
-
-    const id = productToDeleteId;
-    hideDeleteModal(); // モーダルを閉じる
-
+    
+    // 💡 修正ポイント: DELETEメソッドで /products/{id} を呼び出す
     try {
-        const productDocRef = doc(db, `artifacts/${appId}/users/${userId}/products`, id);
-        await deleteDoc(productDocRef);
-        
-        console.log("商品ID:", id, "をFirestoreから削除しました。");
-        // onSnapshotがリストを自動更新するため、ここではメッセージ表示のみ
-        displayMessage(`商品ID: ${id} の削除が完了しました。`, 'success');
-
-    } catch (error) {
-        console.error("削除エラー:", error);
-        displayMessage('削除処理中にエラーが発生しました。', 'error');
-    }
-}
-
-// 削除ボタンクリック時のエントリーポイント
-function deleteProduct(id, name) {
-    showDeleteModal(id, name);
-}
-
-// 商品リストを取得し表示する処理 (onSnapshotを使用)
-function setupProductListener() {
-    if (!db || !userId) {
-        console.log("FirestoreまたはUserIdが未設定のため、リスナーを起動できません。");
-        return;
-    }
-
-    const list = document.getElementById('productList');
-    const productsColRef = collection(db, `artifacts/${appId}/users/${userId}/products`);
-    
-    // 取得時のクエリ (ソートは今回はスキップし、Firestoreから取得した順番のまま表示)
-    const q = query(productsColRef); 
-    
-    // リアルタイムリスナーを設定
-    onSnapshot(q, (snapshot) => {
-        list.innerHTML = ''; // リストをクリア
-        const products = [];
-
-        snapshot.forEach((doc) => {
-            const product = doc.data();
-            product.id = doc.id; // ドキュメントIDを商品IDとして使用
-            products.push(product);
+        const response = await fetch(`/products/${id}`, { 
+            method: 'DELETE' // 👈 POST から DELETE に変更
         });
 
-        if (products.length === 0) {
-            list.innerHTML = '<p style="text-align: center; color: #7a6fdb; font-weight: 600; padding: 15px;">商品が登録されていません。</p>';
-            return;
-        }
-
-        // リスト生成ロジック
-        products.forEach((product, index) => {
-            const li = document.createElement('li');
-            // product.id はドキュメントID、product.name はデータ内の名前フィールド
-            li.innerHTML = `
-                <div class="product-info">
-                    <strong>${index + 1}. ${product.name || '名前なし'}</strong>
-                    <div style="margin-top: 5px; font-size: 0.9em; color: #555;">
-                        （${(product.price || 0).toLocaleString()}円）
-                    </div>
-                    <div style="margin-left: 20px;">
-                        ${product.imagePath ? `<img src="${product.imagePath}" width="80" height="80" onerror="this.onerror=null;this.src='https://placehold.co/80x80/cccccc/ffffff?text=No+Img';" style="border-radius: 8px;">` : ''}
-                    </div>
-                </div>
-                <div class="actions">
-                    <!-- 編集リンクは、実際のページ遷移を想定してハードコード -->
-                    <a href="/products/edit/${product.id}" class="edit-btn">編集</a>
-                    <button type="button" onclick="deleteProduct('${product.id}', '${product.name || 'この商品'}')">削除</button>
-                </div>
-            `;
-            list.appendChild(li);
-        });
-
-    }, (error) => {
-        console.error("Firestoreリスナーエラー:", error);
-        list.innerHTML = '<p style="text-align: center; color: red;">商品情報の取得中にエラーが発生しました。</p>';
-    });
-}
-
-// --- 初期化処理 ---
-async function initializeAppAndAuth() {
-    try {
-        setAuthLogLevel('Debug');
-        setFirestoreLogLevel('Debug');
-
-        app = initializeApp(firebaseConfig);
-        db = getFirestore(app);
-        auth = getAuth(app);
-
-        if (initialAuthToken) {
-            await signInWithCustomToken(auth, initialAuthToken);
+        if (response.ok) {
+            displayMessage(`商品ID: ${id} を削除しました。`, 'success');
+            fetchAndDisplayProducts(); // リストを更新
         } else {
-            await signInAnonymously(auth);
+            // サーバーからエラー詳細を取得
+            const errorText = await response.text();
+            // サーバーがエラーレスポンスを返した場合
+            throw new Error(`[${response.status}] ${errorText || 'サーバーエラー'}`);
         }
-
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                userId = user.uid;
-                isAuthReady = true;
-                console.log("Firebase Auth Ready. User ID:", userId);
-                
-                // 認証完了後、商品リスナーを設定
-                setupProductListener();
-            } else {
-                console.log("No user signed in.");
-                isAuthReady = true;
-                document.getElementById('productList').innerHTML = '<p style="text-align: center; color: red;">認証が必要です。ユーザーログインを確認してください。</p>';
-            }
-        });
-
-    } catch (error) {
-        console.error("Firebase Initialization Error:", error);
-        document.getElementById('productList').innerHTML = '<p style="text-align: center; color: red;">システムエラー: Firebaseの初期化に失敗しました。</p>';
+    } catch (err) {
+        console.error('削除エラー:', err);
+        // エラーメッセージに詳細を含める
+        displayMessage(`削除処理中にエラーが発生しました。詳細: ${err.message}`, 'error');
     }
 }
 
-// --- イベントリスナー設定 ---
-function setupEventListeners() {
-    // モーダルのイベントリスナーを設定（一度だけ）
-    document.getElementById('confirmDeleteBtn').addEventListener('click', confirmDeletion);
-    document.getElementById('cancelDeleteBtn').addEventListener('click', hideDeleteModal);
-    document.getElementById('deleteConfirmationModal').addEventListener('click', (e) => {
-        if (e.target.id === 'deleteConfirmationModal') {
-            hideDeleteModal(); // モーダル背景クリックで非表示
+// 商品リストを取得し表示する処理
+async function fetchAndDisplayProducts() {
+    const list = document.getElementById('productList');
+    list.innerHTML = '<p style="text-align: center; color: #7a6fdb; font-weight: 600;">商品情報を読み込み中...</p>';
+    
+    let data = []; // データを格納する変数を宣言
+
+    try {
+        // ----------------------------------------------------
+        // 💡 修正: モックデータではなく、実際のAPIエンドポイントを呼び出す
+        // ----------------------------------------------------
+        const response = await fetch('/api/products'); // 👈 ProductControllerのAPIエンドポイント
+        if (!response.ok) {
+            // サーバーからのエラー応答の場合
+            throw new Error(`商品情報の取得に失敗しました。ステータス: ${response.status}`);
         }
+        
+        // データをJSONとしてパース
+        data = await response.json();
+
+    } catch (err) {
+        console.error('データ取得エラー:', err);
+        list.innerHTML = '<p style="text-align: center; color: red;">商品情報の取得に失敗しました。サーバー側のログを確認してください。</p>';
+        return;
+    }
+    
+    list.innerHTML = ''; // ロードメッセージをクリア
+
+    if (data.length === 0) {
+        // データが空の場合のメッセージ
+        list.innerHTML = '<p style="text-align: center; color: #7a6fdb; font-weight: 600; padding: 15px;">商品が登録されていません。<br>上記の「新しい商品を登録する」ボタンから登録してください。</p>';
+        return;
+    }
+
+    data.forEach((product, index) => {
+        const li = document.createElement('li');
+        
+        // 画像URLが設定されていない場合の代替画像
+        const imageSrc = product.imagePath 
+            ? product.imagePath 
+            : `https://placehold.co/80x80/cccccc/ffffff?text=No+Image`;
+
+        li.innerHTML = `
+            <div class="product-info">
+                <strong>${index + 1}. ${product.name}</strong>
+                <div style="margin-top: 5px; font-size: 0.9em; color: #555;">
+                    （${product.price.toLocaleString()}円）
+                </div>
+                <!-- 画像コンテナ -->
+                <div class="product-image-container">
+                    <img src="${imageSrc}" 
+                         alt="${product.name}の画像"
+                         onerror="this.onerror=null;this.src='https://placehold.co/80x80/cccccc/ffffff?text=No+Img';">
+                </div>
+            </div>
+            <div class="actions">
+                <!-- Spring Boot: /products/edit/{id} へのリンク -->
+                <a href="/products/edit/${product.id}" 
+                    class="edit-btn">編集</a>
+                <!-- 削除ボタン: JS関数をコール -->
+                <button type="button" onclick="deleteProduct(${product.id})">削除</button>
+            </div>
+        `;
+        list.appendChild(li);
     });
-    // グローバルスコープに関数を公開（onclick属性用）
-    window.deleteProduct = deleteProduct;
 }
 
-window.onload = () => {
-    setupEventListeners();
-    initializeAppAndAuth();
-};
-</script>
+// ページロード時に実行
+window.onload = fetchAndDisplayProducts;
+    </script>
 </body>
 </html>

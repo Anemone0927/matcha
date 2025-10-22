@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 | ページが見つかりません | OshiGiftBox</title>
+    <style>
+/* --- 全ての要素に box-sizing: border-box を適用して、幅の計算を正確にします --- */
+* {
+    box-sizing: border-box; 
+}
+/* ------------------------------------
+    1. 共通ベーススタイル
+------------------------------------ */
+    body {
+        /* products_list.html と同じ背景色 */
+        background-color: #ffd9ef;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: #333;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+    }
+
+    main {
+        padding: 20px;
+        max-width: 900px; 
+        margin: 0 auto;
+        flex-grow: 1; 
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+    }
+
+    /* --- Header Style  --- */
+    header {
+        background-color: #159450;
+        padding: 10px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+        margin-bottom: 20px;
+    }
+    header .home-icon,
+    header .user-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 20px;
+        cursor: pointer;
+        transition: transform 0.3s;
+    }
+    header .home-icon:hover,
+    header .user-icon:hover {
+        transform: scale(1.1);
+    }
+    header h1 {
+        color: white;
+        font-size: 1.8em;
+        margin: 0 0 0 15px;
+        flex-grow: 1;
+    }
+    header .left {
+        display: flex;
+        align-items: center;
+    }
+    header .user-links {
+        display: flex;
+        align-items: center;
+    }
+
+/* ------------------------------------
+    2. ページ固有のスタイル (404エラー)
+------------------------------------ */
+    /* products_list.html の .list-card に合わせたデザイン */
+    .error-card {
+        background-color: #fff;
+        width: 100%; 
+        max-width: 600px; /* リストより少し小さめに */
+        margin: 0 auto;
+        padding: 40px;
+        border-radius: 12px;
+        /* products_list.html と同じシャドウ */
+        box-shadow: 0 4px 8px rgba(122, 111, 219, 0.2); 
+        text-align: center;
+    }
+
+    .error-card h2 {
+        /* products_list.html の h2 に合わせた色 */
+        color: #7a6fdb; 
+        font-size: 3em;
+        margin: 0 0 10px 0;
+        font-weight: 800;
+    }
+
+    .error-card p {
+        font-size: 1.2em;
+        color: #a1835d; 
+        margin-bottom: 30px;
+    }
+
+    /* 戻るボタンのスタイル (products_list.html の .add-product-link と統一) */
+    .home-link-btn {
+        display: inline-block;
+        background-color: #7a6fdb;
+        color: white;
+        padding: 12px 25px;
+        border-radius: 10px;
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 1.1em;
+        transition: background-color 0.3s;
+    }
+    .home-link-btn:hover {
+        background-color: #5d52b4;
+    }
+    
+/* ------------------------------------
+    3. レスポンシブ対応
+------------------------------------ */
+    @media screen and (max-width: 600px) {
+        .error-card {
+            padding: 30px 20px;
+        }
+        .error-card h2 {
+            font-size: 2.5em;
+        }
+        .error-card p {
+            font-size: 1em;
+        }
+        .home-link-btn {
+            padding: 10px 20px;
+            font-size: 1em;
+        }
+    }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="left">
+            <!-- Thymeleaf: ホームへのリンク -->
+            <a th:href="@{/}">
+                <!-- 実際の画像パスを使用。フォールバックとしてPlaceholdを追加 -->
+                <img src="/images/homebotan.jpg" alt="ホームページへ戻る" class="home-icon" 
+                     onerror="this.onerror=null;this.src='https://placehold.co/40x40/159450/ffffff?text=HOME';" />
+            </a>
+            <h1>OshiGiftBox</h1>
+        </div>
+        <div class="user-links">
+            <!-- Thymeleaf: ユーザー関連ページへのリンク -->
+            <a th:href="@{/users/auth_select}">
+                <!-- 実際の画像パスを使用。フォールバックとしてPlaceholdを追加 -->
+                <img src="/images/yuza.jpg" alt="ユーザー登録" class="user-icon" 
+                     onerror="this.onerror=null;this.src='https://placehold.co/40x40/159450/ffffff?text=USER';" />
+            </a>
+        </div>
+    </header>
+    <main>
+        <div class="error-card">
+            <h2>404</h2>
+            <p style="font-size: 1.5em; color: #ff8ac6; margin-top: 10px; margin-bottom: 10px;">
+                ページが見つかりません
+            </p>
+            <p style="color: #555; font-size: 1em;">
+                お探しのページは、移動または削除された可能性があります。
+            </p>
+            <!-- Thymeleaf: 商品一覧へのリンクをボタンとして表示 -->
+            <a th:href="@{/products_list}" class="home-link-btn">
+                商品一覧へ戻る
+            </a>
+        </div>
+    </main>
+
+</body>
+</html>

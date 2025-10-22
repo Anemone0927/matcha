@@ -2,11 +2,12 @@ package com.example.matcha.controller;
 
 import com.example.matcha.entity.User;
 import com.example.matcha.repository.UserRepository;
+import com.example.matcha.dto.ProductEditForm; // 💡 新しいDTOをインポート
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.util.StringUtils; // パスワードの空チェックに使用
+import org.springframework.util.StringUtils;
 
 import java.util.Optional;
 
@@ -41,7 +42,7 @@ public class UserController {
     @GetMapping("/login")
     public String showLoginForm(Model model) {
         // Thymeleafでエラーメッセージなどを表示できるように、空のUserオブジェクトを渡しておきます。
-        model.addAttribute("user", new User());
+        model.addAttribute("user", new User()); 
         return "login"; // login.htmlを表示
     }
 
@@ -65,6 +66,35 @@ public class UserController {
         }
     }
     
+    // -----------------------------------------------------
+    // 💡 商品編集画面表示のための仮のメソッド (修正済)
+    // -----------------------------------------------------
+    @GetMapping("/products/{id}/edit")
+    public String showEditProductForm(@PathVariable Long id, Model model) {
+        // 💡 修正: ProductEditForm DTO を使用して、Thymeleafが期待するすべてのフィールドを持つオブジェクトを渡します。
+        ProductEditForm productEditForm = new ProductEditForm();
+        productEditForm.setId(id);
+        
+        // 例: IDが1の場合の初期データ
+        if (id == 1L) {
+            productEditForm.setName("おしゅしセット"); // 商品名
+            productEditForm.setPrice(1500L);          // 価格
+            productEditForm.setImagePath("https://placehold.co/100x100/3675a9/ffffff?text=Product+Image"); // 画像パス
+        } else {
+            productEditForm.setName("テスト商品" + id);
+            productEditForm.setPrice(999L);
+            productEditForm.setImagePath(""); // 画像なし
+        }
+
+        // 💡 Modelに渡すオブジェクトの名前は "product" のまま維持します。
+        model.addAttribute("product", productEditForm);
+        
+        // ⚠️ 実際には、このクラスは ProductController に分割し、Product エンティティと
+        // ProductService を使うべきです。
+        
+        return "products_edit"; // products_edit.htmlを表示
+    }
+
     // 💡 プロフィール表示（ユーザー情報編集）
     @GetMapping("/profile")
     public String showProfile(Model model) {

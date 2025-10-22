@@ -2,6 +2,7 @@
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>商品追加 | OshiGiftBox</title>
 
 <style>
@@ -32,11 +33,17 @@
         box-shadow: 0 2px 5px rgba(0,0,0,0.15);
         margin-bottom: 20px;
     }
-    header img.home-icon {
+    header .home-icon,
+    header .user-icon {
         width: 40px;
         height: 40px;
         border-radius: 20px;
         cursor: pointer;
+        transition: transform 0.3s;
+    }
+    header .home-icon:hover,
+    header .user-icon:hover {
+        transform: scale(1.1);
     }
     header h1 {
         color: white;
@@ -48,34 +55,9 @@
         display: flex;
         align-items: center;
     }
-    header .user-icon {
-        width: 40px;
-        height: 40px;
-        border-radius: 20px;
-        cursor: pointer;
-        transition: transform 0.3s;
-    }
-    header .user-icon:hover {
-        transform: scale(1.1);
-    }
-    
-    /* --- Button Style --- */
-    a.btn {
-        background-color: #fff;
-        color: #7a6fdb;
-        border: 2px solid #7a6fdb;
-        padding: 10px 20px;
-        margin: 5px;
-        font-size: 1em;
-        border-radius: 10px;
-        cursor: pointer;
-        text-decoration: none;
-        display: inline-block;
-        transition: background-color 0.3s, color 0.3s;
-    }
-    a.btn:hover {
-        background-color: #7a6fdb;
-        color: #fff;
+    header .user-links {
+        display: flex;
+        align-items: center;
     }
     
 /* ------------------------------------
@@ -195,12 +177,14 @@ input[type="file"], /* fileタイプも統一 */
 <body>
     <header>
     <div class="left">
+        <!-- Thymeleafリンク -->
         <a th:href="@{/}">
             <img src="/images/homebotan.jpg" alt="ホームページへ戻る" class="home-icon" />
         </a>
         <h1>OshiGiftBox</h1>
     </div>
     <div class="user-links">
+        <!-- Thymeleafリンク -->
         <a th:href="@{/users/auth_select}">
             <img src="/images/yuza.jpg" alt="ユーザー登録" class="user-icon" />
         </a>
@@ -212,8 +196,10 @@ input[type="file"], /* fileタイプも統一 */
 <div class="form-card">
     <h2>➕ 新しい商品を登録</h2>
     
+    <!-- Spring Boot連携のための設定 -->
     <form id="product_form" action="/products/new" method="post" enctype="multipart/form-data" class="product-form">
         
+        <!-- 商品名はSpring BootのProductDTOなどのフィールド名と一致させる -->
         <div>
             <label for="name">商品名:</label>
             <input type="text" id="name" name="name" required placeholder="例: 推しカラーの抹茶セット" />
@@ -225,6 +211,7 @@ input[type="file"], /* fileタイプも統一 */
         </div>
 
         <div>
+            <!-- name="image" は Spring BootのMultipartFileに対応 -->
             <label for="image">商品画像:</label>
             <input type="file" id="image" name="image" accept="image/*" required />
         </div>
@@ -246,6 +233,11 @@ document.getElementById("product_form").addEventListener("submit", function (e) 
     const form = e.target;
     const formData = new FormData(form);
 
+    // 結果メッセージをリセット
+    const resultElement = document.getElementById("result");
+    resultElement.innerText = "データをサーバーに送信中...";
+    resultElement.style.color = "#7a6fdb"; // ロード中の色
+
     fetch("/products/new", {
         method: "POST",
         body: formData,
@@ -253,17 +245,23 @@ document.getElementById("product_form").addEventListener("submit", function (e) 
     .then(response => {
         // レスポンスがOK (200-299) でない場合はエラーとして処理
         if (!response.ok) {
-            throw new Error('サーバーエラー: ' + response.status);
+            // サーバーからの具体的なエラーメッセージを試みる
+            return response.text().then(text => {
+                throw new Error('サーバーエラー (' + response.status + '): ' + (text || '不明なエラー'));
+            });
         }
+        // 成功時はJSONやテキストとして処理
         return response.text();
     })
     .then(msg => {
-        document.getElementById("result").innerText = "✅ 登録成功！";
+        resultElement.innerText = "✅ 登録成功！";
+        resultElement.style.color = "#159450"; // 成功の色
         form.reset();
     })
     .catch(error => {
-        console.error("エラー:", error);
-        document.getElementById("result").innerText = "❌ 登録失敗。コンソールを確認してください。";
+        console.error("登録エラー:", error);
+        resultElement.innerText = "❌ 登録失敗。コンソールを確認してください。\n詳細: " + error.message;
+        resultElement.style.color = "#f44336"; // エラーの色
     });
 });
     </script>
