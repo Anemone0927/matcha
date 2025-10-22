@@ -9,7 +9,7 @@
 /* --- 全ての要素に box-sizing: border-box を適用して、幅の計算を正確にします --- */
 * {
     box-sizing: border-box; 
-    font-family: "Inter", sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 /* ------------------------------------
     1. 共通ベーススタイル
@@ -278,18 +278,14 @@
 <body>
     <header>
         <div class="left">
-            <!-- Thymeleaf属性を復活 -->
             <a th:href="@{/}" href="/">
-                <!-- プレースホルダー画像に修正 -->
-                <img src="https://placehold.co/40x40/159450/ffffff?text=%E2%99%A5" alt="ホームページへ戻る" class="home-icon" />
+                <img src="/images/homebotan.jpg" alt="ホームページへ戻る" class="home-icon" />
             </a>
             <h1>OshiGiftBox</h1>
         </div>
         <div class="user-links">
-            <!-- Thymeleaf属性を復活 -->
-            <a th:href="@{/users/auth_select}" href="/users/auth_select">
-                <!-- プレースホルダー画像に修正 -->
-                <img src="https://placehold.co/40x40/ff7f7f/ffffff?text=%E2%98%BA" alt="ユーザー登録" class="user-icon" />
+            <a th:href="@{/users/auth_select}">
+                <img src="/images/yuza.jpg" alt="ユーザー登録" class="user-icon" />
             </a>
         </div>
     </header>
