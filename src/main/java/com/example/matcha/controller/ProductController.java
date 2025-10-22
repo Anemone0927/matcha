@@ -27,22 +27,18 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
 
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.transaction.annotation.Transactional; // 👈 これを追加
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.matcha.entity.Product;
 import com.example.matcha.repository.ProductRepository;
+import org.slf4j.Logger; // 💡 Loggerをインポート
+import org.slf4j.LoggerFactory; // 💡 LoggerFactoryをインポート
 
 @Controller
-// 💡 クラス全体に @Transactional を適用し、各データベース操作が確実にコミットされるようにする
-// サービス層があればそこに付けるのが理想的だが、今回はコントローラーに適用
 @Transactional
 public class ProductController {
-
-    @GetMapping("/products")
-    @ResponseBody
-    public List<Product> getAllProducts() {
-        return productRepository.findAll();
-    }
+    // 💡 ロガーインスタンスの定義
+    private static final Logger logger = LoggerFactory.getLogger(ProductController.class);
 
     @Value("${upload.dir}")
     private String uploadDir;
@@ -50,9 +46,18 @@ public class ProductController {
     @Autowired
     private ProductRepository productRepository;
 
+    // 商品一覧API (JSONで返す)
+    @GetMapping("/products")
+    @ResponseBody
+    public List<Product> getAllProducts() {
+        logger.info("APIエンドポイント /products が呼び出されました。findAll()を実行します。"); // 💡 デバッグログ
+        return productRepository.findAll();
+    }
+
     // 商品一覧画面表示（Thymeleafでrender）
     @GetMapping("/products_list")
     public String showList(Model model) {
+        logger.info("Viewエンドポイント /products_list が呼び出されました。findAll()を実行します。"); // 💡 デバッグログ
         // 💡 データベースから取得したデータを表示
         List<Product> products = productRepository.findAll();
         model.addAttribute("products", products);
@@ -67,7 +72,6 @@ public class ProductController {
     }
 
     // 商品追加処理（画像アップロード含む）
-    // POST処理には @Transactional が重要
     @PostMapping(value = "/products/new", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public String addProduct(
         @RequestParam String name,
@@ -82,7 +86,8 @@ public class ProductController {
         product.setPrice(price);
         product.setImagePath("/images/" + filename);
 
-        productRepository.save(product); // 💡 これが @Transactional により確実にDBに保存される
+        productRepository.save(product); 
+        logger.info("新しい商品が登録されました: {}", name); // 💡 登録ログ
 
         return "redirect:/products_list";  // 追加後は一覧画面へリダイレクト
     }
@@ -106,6 +111,7 @@ public class ProductController {
     @ResponseBody
     public ResponseEntity<String> deleteProduct(@PathVariable Long id) {
         productRepository.deleteById(id);
+        logger.info("商品ID: {} が削除されました。", id); // 💡 削除ログ
         return ResponseEntity.ok("削除しました！");
     }
 
@@ -117,6 +123,8 @@ public class ProductController {
             .map(ResponseEntity::ok)
             .orElse(ResponseEntity.notFound().build());
     }
+    
+    // 商品編集フォーム画面表示
     @GetMapping("/products/edit/{id}")
     public String editProduct(@PathVariable Long id, Model model) {
         Optional<Product> product = productRepository.findById(id);
@@ -127,6 +135,8 @@ public class ProductController {
             return "error/404"; // 存在しない商品だった場合
         }
     }
+    
+    // 商品更新処理
     @PostMapping(value = "/products/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public String updateProduct(
         @PathVariable Long id,
@@ -147,6 +157,7 @@ public class ProductController {
             }
 
             productRepository.save(product);
+            logger.info("商品ID: {} が更新されました。", id); // 💡 更新ログ
         }
 
         return "redirect:/products_list"; // 更新後は一覧へ戻る
