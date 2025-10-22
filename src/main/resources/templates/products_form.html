@@ -328,19 +328,17 @@
 
 <body>
     <header>
-        <div class="left">
-            <!-- ホームアイコン。Thymeleaf環境でルートパスが変わる場合は th:href="@{/}" などを使用します -->
-            <a href="/" title="ホームページへ戻る">
-                <div class="home-icon"><i class="fa-solid fa-house"></i></div>
-            </a>
-            <h1>OshiGiftBox</h1>
-        </div>
-        <div class="user-links">
-            <!-- ユーザーアイコン。Thymeleaf環境でパスが変わる場合は th:href="@{/users/auth_select}" などを使用します -->
-            <a href="/users/auth_select" title="ユーザー登録">
-                <div class="user-icon"><i class="fa-solid fa-user"></i></div>
-            </a>
-        </div>
+    <div class="left">
+        <a th:href="@{/}">
+            <img src="/images/homebotan.jpg" alt="ホームページへ戻る" class="home-icon" />
+        </a>
+        <h1>OshiGiftBox</h1>
+    </div>
+    <div class="user-links">
+        <a th:href="@{/users/auth_select}">
+            <img src="/images/yuza.jpg" alt="ユーザー登録" class="user-icon" />
+        </a>
+    </div>
     </header>
     <main>
         <h1>商品一覧</h1>
