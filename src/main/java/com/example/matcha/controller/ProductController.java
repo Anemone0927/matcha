@@ -47,10 +47,10 @@ public class ProductController {
     private ProductRepository productRepository;
 
     // 商品一覧API (JSONで返す)
-    @GetMapping("/products")
+    @GetMapping("/api/products") // 💡 /products から /api/products に変更し、APIとしての役割を明確化
     @ResponseBody
     public List<Product> getAllProducts() {
-        logger.info("APIエンドポイント /products が呼び出されました。findAll()を実行します。"); // 💡 デバッグログ
+        logger.info("APIエンドポイント /api/products が呼び出されました。findAll()を実行します。"); // 💡 デバッグログを更新
         return productRepository.findAll();
     }
 
