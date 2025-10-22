@@ -3,6 +3,7 @@ package com.example.matcha.entity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.persistence.Table; // データベースに合わせてこのTableアノテーションも確認
 
 @Entity
@@ -10,7 +11,9 @@ import jakarta.persistence.Table; // データベースに合わせてこのTabl
 public class Product {
 
     // 💡 必須: IDフィールド
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) // PostgreSQL (bigserial) / H2 DBで自動採番を使うための設定
+    private Long id;
 
     // 💡 必須: 商品名
     private String name;
@@ -25,6 +28,13 @@ public class Product {
     public Product() {}
 
     // --- ゲッターとセッター ---
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getName() {
         return name;

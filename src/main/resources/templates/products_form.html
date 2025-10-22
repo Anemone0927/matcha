@@ -1,271 +1,331 @@
 <!DOCTYPE html>
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>商品追加 | OshiGiftBox</title>
+    <meta charset="UTF-8">
+    <title>商品一覧 | OshiGiftBox</title>
 
 <style>
+/* --- 全ての要素に box-sizing: border-box を適用して、幅の計算を正確にします --- */
+* {
+    box-sizing: border-box; 
+}
 /* ------------------------------------
-    1. 共通ベーススタイル (Orderフォームから継承)
+    1. 共通ベーススタイル
 ------------------------------------ */
-    body {
-        background-color: #ffd9ef;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        color: #333;
-        margin: 0;
-        padding: 0;
-    }
+    body {
+        background-color: #ffd9ef;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: #333;
+        margin: 0;
+        padding: 0;
+    }
 
-    main {
-        padding: 20px;
-        max-width: 900px;
-        margin: 0 auto;
-    }
+    main {
+        padding: 20px;
+        max-width: 900px; 
+        margin: 0 auto;
+    }
 
-    /* --- Header Style  --- */
-    header {
-        background-color: #159450;
-        padding: 10px 20px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.15);
-        margin-bottom: 20px;
-    }
-    header img.home-icon {
-        width: 40px;
-        height: 40px;
-        border-radius: 20px;
-        cursor: pointer;
-    }
-    header h1 {
-        color: white;
-        font-size: 1.8em;
-        margin: 0 0 0 15px;
-        flex-grow: 1;
-    }
-    header .left {
-        display: flex;
-        align-items: center;
-    }
-    header .user-icon {
-        width: 40px;
-        height: 40px;
-        border-radius: 20px;
-        cursor: pointer;
-        transition: transform 0.3s;
-    }
-    header .user-icon:hover {
-        transform: scale(1.1);
-    }
-    
-    /* --- Button Style --- */
-    a.btn {
-        background-color: #fff;
-        color: #7a6fdb;
-        border: 2px solid #7a6fdb;
-        padding: 10px 20px;
-        margin: 5px;
-        font-size: 1em;
-        border-radius: 10px;
-        cursor: pointer;
-        text-decoration: none;
-        display: inline-block;
-        transition: background-color 0.3s, color 0.3s;
-    }
-    a.btn:hover {
-        background-color: #7a6fdb;
-        color: #fff;
-    }
-    
-/* ------------------------------------
-    2. ページ固有のスタイル (商品フォーム)
------------------------------------- */
-    h1 {
-        color: #a1835d; 
-        text-align: center;
-        margin-bottom: 30px;
-        margin-top: 0;
-    }
+    /* --- Header Style  --- */
+    header {
+        background-color: #159450;
+        padding: 10px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+        margin-bottom: 20px;
+    }
+    header img.home-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 20px;
+        cursor: pointer;
+    }
+    header h1 {
+        color: white;
+        font-size: 1.8em;
+        margin: 0 0 0 15px;
+        flex-grow: 1;
+    }
+    header .left {
+        display: flex;
+        align-items: center;
+    }
+    header .user-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 20px;
+        cursor: pointer;
+        transition: transform 0.3s;
+    }
+    header .user-icon:hover {
+        transform: scale(1.1);
+    }
+    
+    /* ------------------------------------
+        2. ページ固有のスタイル (商品一覧)
+    ------------------------------------ */
+    h1 {
+        color: #a1835d; 
+        text-align: center;
+        margin-bottom: 30px;
+        margin-top: 0;
+    }
 
-/* 💡 白いボックスのスタイル (Orderフォームの .form-card を適用) */
-.form-card {
-    background-color: #fff;
-    width: 100%;
-    max-width: 400px;
-    margin: 0 auto; /* 中央寄せ */
-    padding: 30px; /* Orderフォームと同じパディング */
-    border-radius: 12px;
-    box-shadow: 0 4px 8px rgba(122, 111, 219, 0.2);
-    text-align: center;
-}
+    /* 💡 白いボックスのスタイル (リスト全体を囲む) */
+    .list-card {
+        background-color: #fff;
+        width: 100%; 
+        max-width: 750px;
+        margin: 0 auto;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 4px 8px rgba(122, 111, 219, 0.2);
+        text-align: center;
+    }
 
-/* フォームのレイアウト (Orderフォームの .order-form を流用) */
-.product-form {
-    display: flex;
-    flex-direction: column;
-    gap: 20px; /* 要素間のスペースを確保 */
-    text-align: left;
-}
+    .list-card h2 {
+        color: #7a6fdb;
+        text-align: center;
+        font-size: 1.5em;
+        margin-top: 0;
+        margin-bottom: 20px;
+    }
 
+    /* 商品リスト (ul) のスタイル */
+    #productList {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        text-align: left;
+    }
 
-/* h2 は .form-card 内のタイトルとして使用 */
-.form-card h2 {
-    color: #7a6fdb;
-    text-align: center;
-    font-size: 1.5em;
-    margin-top: 0;
-}
+    /* 個別商品アイテム (li) のスタイル */
+    #productList li {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 0;
+        border-bottom: 1px solid #eee;
+    }
+    #productList li:last-child {
+        border-bottom: none;
+    }
 
-/* ラベルのスタイル */
-label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: 600;
-}
+    .product-info {
+        display: flex;
+        align-items: center;
+        flex-grow: 1;
+    }
 
-/* 入力欄（input/select/file）の共通スタイル */
-input[type="text"],
-input[type="number"],
-input[type="file"], /* fileタイプも統一 */
-.input-field { 
-    width: 100%;
-    box-sizing: border-box; 
-    padding: 8px 12px;
-    border: 2px solid #dcd6f7;
-    border-radius: 8px;
-    font-size: 16px;
-    transition: border-color 0.3s ease;
-}
+    .product-info strong {
+        font-size: 1.1em;
+        margin-right: 15px;
+        min-width: 150px;
+    }
+    .product-info img {
+        margin-left: 10px;
+        object-fit: cover;
+    }
 
-/* input のフォーカススタイル */
-    input[type="text"]:focus,
-    input[type="number"]:focus,
-    input[type="file"]:focus {
-    border-color: #7a6fdb;
-    outline: none;
-    }
+    .actions {
+        display: flex;
+        gap: 10px;
+        min-width: 130px;
+    }
 
-/* 送信ボタンのスタイル */
-    button {
-    width: 100%;
-    background-color: #7a6fdb;
-    color: white;
-    border: none;
-    padding: 12px;
-    font-size: 18px;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    font-weight: 700;
-    }
+    .edit-btn {
+        background-color: #60c5ba;
+        color: white;
+        padding: 6px 12px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-size: 0.9em;
+        transition: background-color 0.3s;
+        font-weight: 600;
+    }
+    .edit-btn:hover {
+        background-color: #4a9e96;
+    }
 
-    button:hover {
-    background-color: #5d52b4;
-    }
+    .actions button {
+        background-color: #ff7f7f;
+        color: white;
+        border: none;
+        padding: 6px 12px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 0.9em;
+        transition: background-color 0.3s;
+        font-weight: 600;
+    }
+    .actions button:hover {
+        background-color: #e55e5e;
+    }
 
-    /* フォーム送信結果メッセージのスタイル */
-    #result {
-        margin-top: 20px;
-        text-align: center;
-        font-weight: 600;
-        color: #5d52b4; /* ボタンのホバー色と同じくらいの色 */
-    }
+    /* メッセージボックス */
+    #messageBox {
+        text-align: center;
+        padding: 10px;
+        margin-bottom: 15px;
+        border-radius: 8px;
+        display: none; 
+        font-weight: 600;
+    }
+    .success {
+        background-color: #e6ffe6;
+        color: #4CAF50;
+        border: 1px solid #4CAF50;
+    }
+    .error {
+        background-color: #ffe6e6;
+        color: #f44336;
+        border: 1px solid #f44336;
+    }
 
-/* ------------------------------------
-    3. レスポンシブ対応
------------------------------------- */
-    @media screen and (max-width: 480px) {
-        header h1 {
-            font-size: 1.5em;
-        }
-        input[type="text"],
-        input[type="number"],
-        input[type="file"] {
-            font-size: 14px;
-        }
-        button {
-            font-size: 16px;
-            padding: 10px;
-        }
-    }
+    /* ------------------------------------
+        3. レスポンシブ対応
+    ------------------------------------ */
+    @media screen and (max-width: 600px) {
+        .list-card {
+            padding: 20px;
+        }
+        #productList li {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        .product-info {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .actions {
+            justify-content: flex-end;
+            width: 100%;
+        }
+    }
 </style>
 </head>
 
 <body>
-    <header>
-    <div class="left">
-        <a th:href="@{/}">
-            <img src="/images/homebotan.jpg" alt="ホームページへ戻る" class="home-icon" />
-        </a>
-        <h1>OshiGiftBox</h1>
-    </div>
-    <div class="user-links">
-        <a th:href="@{/users/auth_select}">
-            <img src="/images/yuza.jpg" alt="ユーザー登録" class="user-icon" />
-        </a>
-    </div>
-    </header>
-    <main>
-        <h1>商品登録フォーム</h1>
+    <header>
+        <div class="left">
+            <a th:href="@{/}" href="/">
+                <img src="/images/homebotan.jpg" alt="ホームページへ戻る" class="home-icon" />
+            </a>
+            <h1>OshiGiftBox</h1>
+        </div>
+        <div class="user-links">
+            <a th:href="@{/users/auth_select}">
+                <img src="/images/yuza.jpg" alt="ユーザー登録" class="user-icon" />
+            </a>
+        </div>
+    </header>
+    <main>
+        <h1>商品一覧</h1>
 
-<div class="form-card">
-    <h2>➕ 新しい商品を登録</h2>
+        <div class="list-card">
+            <h2>📦 登録済み商品リスト</h2>
+
+            <!-- メッセージ表示エリア (Thymeleafでメッセージがあれば表示) -->
+            <div id="messageBox" th:if="${message}" th:text="${message}" th:classappend="${messageType ?: 'success'}" style="display: block;"></div>
+           
+            <ul id="productList">
+                <!-- 💡 Thymeleafによるループ処理をここに追加します -->
+                <li th:if="${#lists.isEmpty(products)}" style="text-align: center; color: #7a6fdb; font-weight: 600; padding: 15px;">
+                    商品が登録されていません。
+                </li>
+
+                <li th:each="product, stat : ${products}">
+                    <div class="product-info">
+                        <!-- stat.index は 0 始まりなので、 +1 して連番にする -->
+                        <strong><span th:text="${stat.count} + '. ' + ${product.name}">1. 抹茶マカロン</span></strong>
+                        <div style="margin-top: 5px; font-size: 0.9em; color: #555;">
+                            （<span th:text="${#numbers.formatInteger(product.price, 1, 'COMMA')}">1,200</span>円）
+                        </div>
+                        <div style="margin-left: 20px;">
+                            <!-- 画像パスがnullでなければ画像を表示。エラー時にはプレースホルダーを表示 -->
+                            <img th:if="${product.imagePath}" th:src="${product.imagePath}" width="80" height="80" 
+                                 onerror="this.onerror=null;this.src='https://placehold.co/80x80/cccccc/ffffff?text=No+Img';" 
+                                 style="border-radius: 8px;" alt="商品画像"/>
+                        </div>
+                    </div>
+                    <div class="actions">
+                        <a th:href="@{/products/edit/{id}(id=${product.id})}" class="edit-btn">編集</a>
+                        <!-- 削除ボタンはJSで処理するため、idをdata属性に持つように変更 -->
+                        <button type="button" class="delete-btn" th:data-id="${product.id}">削除</button>
+                    </div>
+                </li>
+
+            </ul>
+        </div>
+    </main>
+
+    <script>
+// -----------------------------------------------------------
+// 💡 Thymeleafでリストが表示されるようになったため、JSでのデータ取得は不要です。
+//    ここでは削除処理のみを実装します。
+// -----------------------------------------------------------
+
+// メッセージ表示関数
+function displayMessage(message, type = 'success') {
+    const box = document.getElementById('messageBox');
+    box.textContent = message;
+    box.className = type; // スタイルを適用
+    box.style.display = 'block';
+    // 3秒後にメッセージを消す
+    setTimeout(() => {
+        box.style.display = 'none';
+    }, 3000);
+}
+
+// 削除処理の関数
+function deleteProduct(id) {
+    if (!confirm('本当にこの商品を削除しますか？')) {
+        return;
+    }
+
+    // 削除確認のロジックは省略し、即座に処理実行を模擬します
+    console.log("商品ID:", id, "を削除します...");
     
-    <form id="product_form" action="/products/new" method="post" enctype="multipart/form-data" class="product-form">
-        
-        <div>
-            <label for="name">商品名:</label>
-            <input type="text" id="name" name="name" required placeholder="例: 推しカラーの抹茶セット" />
-        </div>
+    // 実際にはFetch APIを使ってサーバーに削除リクエストを送ります
+    fetch(`/products/${id}`, { method: 'DELETE' }) // DELETEメソッドを使用
+        .then(res => {
+            if (res.ok) {
+                // 成功したらメッセージを表示し、ページをリロードしてリストを更新
+                displayMessage('商品を削除しました。', 'success');
+                // ページの再読み込み
+                setTimeout(() => window.location.reload(), 500);
+            } else {
+                displayMessage('削除に失敗しました。', 'error');
+            }
+        })
+        .catch(err => {
+            console.error('エラー:', err);
+            displayMessage('削除処理中にエラーが発生しました。', 'error');
+        });
+}
 
-        <div>
-            <label for="price">価格 (円):</label>
-            <input type="number" id="price" name="price" required min="1" placeholder="例: 3500" />
-        </div>
-
-        <div>
-            <label for="image">商品画像:</label>
-            <input type="file" id="image" name="image" accept="image/*" required />
-        </div>
-
-        <button type="submit">
-            商品を登録する
-        </button>
-    </form>
-    
-    <p id="result"></p>
-</div>
-
-</main>
-
-    <script>
-document.getElementById("product_form").addEventListener("submit", function (e) {
-    e.preventDefault();
-
-    const form = e.target;
-    const formData = new FormData(form);
-
-    fetch("/products/new", {
-        method: "POST",
-        body: formData,
-    })
-    .then(response => {
-        // レスポンスがOK (200-299) でない場合はエラーとして処理
-        if (!response.ok) {
-            throw new Error('サーバーエラー: ' + response.status);
-        }
-        return response.text();
-    })
-    .then(msg => {
-        document.getElementById("result").innerText = "✅ 登録成功！";
-        form.reset();
-    })
-    .catch(error => {
-        console.error("エラー:", error);
-        document.getElementById("result").innerText = "❌ 登録失敗。コンソールを確認してください。";
+// ページロード時のイベントリスナー設定
+window.onload = function() {
+    // 削除ボタンにイベントリスナーを一括設定
+    document.querySelectorAll('.delete-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const productId = this.getAttribute('data-id');
+            deleteProduct(productId);
+        });
     });
-});
-    </script>
+
+    // URLパラメータからメッセージを取得し表示（リダイレクト時など）
+    const urlParams = new URLSearchParams(window.location.search);
+    const message = urlParams.get('message');
+    const messageType = urlParams.get('type') || 'success';
+
+    if (message) {
+        displayMessage(decodeURIComponent(message), messageType);
+    }
+};
+    </script>
 </body>
 </html>
