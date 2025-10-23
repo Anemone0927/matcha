@@ -1,0 +1,9 @@
+2025-10-22 13:23:08.231237+09:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "PRODUCTS" not found (this database is empty); SQL statement:
+select p1_0.id,p1_0.image_path,p1_0.name,p1_0.price from products p1_0 [42104-224]
+2025-10-22 13:23:34.181366+09:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "PRODUCTS" not found (this database is empty); SQL statement:
+select p1_0.id,p1_0.image_path,p1_0.name,p1_0.price from products p1_0 [42104-224]
+2025-10-22 14:09:03.545429+09:00 jdbc[13]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "PRODUCTS" not found (this database is empty); SQL statement:
+select p1_0.id,p1_0.image_path,p1_0.name,p1_0.price from products p1_0 [42104-224]

@@ -3,9 +3,7 @@
 # =========================================
 
 # データベース接続（環境変数方式）
-spring.datasource.url=${SPRING_DATASOURCE_URL}
-spring.datasource.username=${SPRING_DATASOURCE_USERNAME}
-spring.datasource.password=${SPRING_DATASOURCE_PASSWORD}
+spring.datasource.url=${DATABASE_URL}
 spring.datasource.driver-class-name=org.postgresql.Driver
 
 # JPA / Hibernate
@@ -30,9 +28,5 @@ spring.thymeleaf.cache=false
 spring.mvc.hiddenmethod.filter.enabled=true
 
 # ログレベル（必要に応じて調整）
-logging.level.org.springframework=DEBUG
+logging.level.org.springframework=INFO
 logging.level.com.example=DEBUG
-logging.level.org.springframework.web=DEBUG
-logging.level.org.hibernate.SQL=DEBUG
-logging.level.org.springframework.boot.autoconfigure.web.servlet.error.BasicErrorController=TRACE
-logging.level.org.springframework.web.servlet.DispatcherServlet=TRACE
