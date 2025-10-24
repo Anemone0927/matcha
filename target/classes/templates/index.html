@@ -23,11 +23,16 @@
         justify-content: space-between;
         box-shadow: 0 2px 5px rgba(0,0,0,0.15);
       }
-      header img.home-icon {
+      header img.home-icon,
+      header img.user-icon {
         width: 40px;
         height: 40px;
         border-radius: 20px;
         cursor: pointer;
+        transition: transform 0.3s;
+      }
+      header img.user-icon:hover {
+        transform: scale(1.1);
       }
       header h1 {
         color: white;
@@ -40,17 +45,7 @@
         align-items: center;
       }
       header .user-links {}
-      header .user-icon {
-        width: 40px;
-        height: 40px;
-        border-radius: 20px;
-        cursor: pointer;
-        transition: transform 0.3s;
-      }
-      header .user-icon:hover {
-        transform: scale(1.1);
-      }
-
+      
 /* ---------------------------------------------------- */
 /* 💡 更新されたボタンの共通スタイルとカラーバリエーション */
 /* ---------------------------------------------------- */
@@ -184,13 +179,15 @@
   <header>
     <div class="left">
       <a th:href="@{/}">
-        <img th:src="@{/images/homebotan.jpg}" alt="ホーム" class="home-icon" />
+        <!-- 最終修正1: srcとth:srcを併用してパス解決の確実性を高める -->
+        <img src="/images/homebotan.jpg" th:src="@{/images/homebotan.jpg}" alt="ホーム" class="home-icon" />
       </a>
       <h1>OshiGiftBox</h1>
     </div>
     <div class="user-links">
       <a th:href="@{/users/auth_select}">
-        <img th:src="@{/images/yuza.jpg}" alt="ユーザー情報" class="user-icon" />
+        <!-- 最終修正2: srcとth:srcを併用してパス解決の確実性を高める -->
+        <img src="/images/yuza.jpg" th:src="@{/images/yuza.jpg}" alt="ユーザー情報" class="user-icon" />
       </a>
     </div>
   </header>
@@ -201,7 +198,8 @@
       <div style="max-width:600px; margin: auto;">
         <div style="border-radius: 20px; background: linear-gradient(135deg, #e6c8a3, #a1835d); padding: 10px;">
           <div style="border: 7px solid white; border-radius: 15px; box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); overflow: hidden;">
-            <img src="/images/ogbtop.jpg" alt="ホーム画像" style="width: 100%; border-radius: 5px;">
+            <!-- 最終修正3: srcとth:srcを併用してパス解決の確実性を高める -->
+            <img src="/images/ogbtop.jpg" th:src="@{/images/ogbtop.jpg}" alt="ホーム画像" style="width: 100%; border-radius: 5px;">
           </div>
         </div>
       </div>
