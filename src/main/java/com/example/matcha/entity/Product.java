@@ -1,28 +1,36 @@
 package com.example.matcha.entity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Table; // データベースに合わせてこのTableアノテーションも確認
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import java.util.List;
+
+// ※ Reviewエンティティのパスが不明なため、仮に com.example.matcha.entity.Review としています
 
 @Entity
-@Table(name = "products") // データベースのテーブル名と一致しているか確認
+@Table(name = "products")
 public class Product {
 
-    // 💡 必須: IDフィールド
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // PostgreSQL (bigserial) / H2 DBで自動採番を使うための設定
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // 💡 必須: 商品名
     private String name;
 
-    // 💡 必須: 価格
     private int price;
 
-    // 💡 必須: 画像パス
     private String imagePath;
+    
+    // 💡 修正・追加箇所: OneToMany リレーションシップの設定
+    // mappedBy = "product": Reviewエンティティ側のフィールド名
+    // cascade = CascadeType.ALL: このProductが削除されたとき、関連するReviewも全て削除されるように設定
+    // orphanRemoval = true: 関連づけが切れたReviewも自動的に削除
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Review> reviews; // 関連するレビューを保持するリスト
 
     // --- コンストラクタ ---
     public Product() {}
@@ -58,5 +66,14 @@ public class Product {
 
     public void setImagePath(String imagePath) {
         this.imagePath = imagePath;
+    }
+
+    // List<Review> のゲッターとセッターも追加します
+    public List<Review> getReviews() {
+        return reviews;
+    }
+
+    public void setReviews(List<Review> reviews) {
+        this.reviews = reviews;
     }
 }
