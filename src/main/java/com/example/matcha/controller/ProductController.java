@@ -36,6 +36,9 @@ public class ProductController {
     @Value("${upload.dir}")
     private String uploadDir;
 
+    // 画像URLのプレフィックス (例: /images/)
+    private static final String IMAGE_PATH_PREFIX = "/images/";
+
     private final ProductRepository productRepository;
     
     /**
@@ -81,7 +84,7 @@ public class ProductController {
         Product product = new Product();
         product.setName(name);
         product.setPrice(price);
-        product.setImagePath("/images/" + filename);
+        product.setImagePath(IMAGE_PATH_PREFIX + filename); // 定数を使用
 
         productRepository.save(product);
         logger.info("新しい商品が登録されました: {}", name);
@@ -113,14 +116,48 @@ public class ProductController {
         }
     }
 
-    // 商品削除（API的に）
+    // 💡 修正箇所: 商品削除（DBレコードとサーバー上の画像ファイルを削除する）
     @DeleteMapping("/products/{id}")
     @ResponseBody
     public ResponseEntity<String> deleteProduct(@PathVariable Long id) {
-        // 削除対象の商品が存在しない場合はエラーを返すべきですが、ここではシンプルに削除を試みます。
-        productRepository.deleteById(id);
-        logger.info("商品ID: {} が削除されました。", id);
-        return ResponseEntity.ok("削除しました！");
+        Optional<Product> optionalProduct = productRepository.findById(id);
+
+        if (optionalProduct.isEmpty()) {
+            // 商品が存在しない場合は404 Not Foundを返す
+            logger.warn("商品ID: {} は存在しないため削除できませんでした。", id);
+            return ResponseEntity.notFound().build();
+        }
+
+        Product product = optionalProduct.get();
+        String imagePath = product.getImagePath();
+        
+        try {
+            // 1. サーバー上の画像ファイルを削除
+            if (imagePath != null && imagePath.startsWith(IMAGE_PATH_PREFIX)) {
+                // /images/ プレフィックスを取り除き、実際のファイル名を取得
+                String filename = imagePath.substring(IMAGE_PATH_PREFIX.length());
+                Path filePath = Paths.get(uploadDir, filename);
+                
+                // ファイルが存在する場合のみ削除を試みる
+                if (Files.exists(filePath)) {
+                    Files.delete(filePath);
+                    logger.info("関連画像ファイルが削除されました: {}", filename);
+                } else {
+                    logger.warn("関連画像ファイルが見つかりませんでした: {}", filename);
+                }
+            }
+
+            // 2. データベースのレコードを削除
+            productRepository.delete(product);
+            logger.info("商品ID: {} がデータベースから削除されました。", id);
+            
+            return ResponseEntity.ok("商品と関連ファイルを削除しました！");
+            
+        } catch (Exception e) {
+            logger.error("商品ID: {} の削除処理中にエラーが発生しました。", id, e);
+            // 削除処理中にIOエラーやDBエラーが発生した場合、500 Internal Server Errorを返す
+            return ResponseEntity.internalServerError().body("削除処理中にエラーが発生しました: " + e.getMessage());
+        }
     }
 
     // 商品詳細取得（API的にJSONで返す）
@@ -169,8 +206,11 @@ public class ProductController {
 
             // 画像がアップロードされた場合のみ、画像を保存し、パスを更新する
             if (image != null && !image.isEmpty()) {
+                // 既存の画像を削除するロジックをここに含めることも可能だが、
+                // 今回は新規画像がアップロードされた場合のみ上書き（クリーンアップを簡略化）
+                
                 String filename = saveImage(image);
-                product.setImagePath("/images/" + filename);
+                product.setImagePath(IMAGE_PATH_PREFIX + filename);
             }
             
             // データベースに保存
