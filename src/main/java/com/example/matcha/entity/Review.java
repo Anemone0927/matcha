@@ -1,6 +1,11 @@
 package com.example.matcha.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne; // 追記
+import jakarta.persistence.JoinColumn; // 追記
 
 @Entity
 public class Review {
@@ -9,7 +14,11 @@ public class Review {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long productId;
+    // 💡 修正点: Long productId を削除し、@ManyToOne の Product 参照に置き換え
+    @ManyToOne 
+    @JoinColumn(name = "product_id", nullable = false) 
+    private Product product; // このフィールド名が Product.java の mappedBy="product" に対応
+
     private String author;
     private String content;
     private int rating;
@@ -24,12 +33,13 @@ public class Review {
         this.id = id;
     }
 
-    public Long getProductId() {
-        return productId;
+    // 💡 修正点: getProductId/setProductId を getProduct/setProduct に変更
+    public Product getProduct() {
+        return product;
     }
 
-    public void setProductId(Long productId) {
-        this.productId = productId;
+    public void setProduct(Product product) {
+        this.product = product;
     }
 
     public String getAuthor() {
