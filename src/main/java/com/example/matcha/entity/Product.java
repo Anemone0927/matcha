@@ -1,6 +1,7 @@
 package com.example.matcha.entity;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -29,7 +30,7 @@ public class Product {
     // mappedBy = "product": Reviewエンティティ側のフィールド名
     // cascade = CascadeType.ALL: このProductが削除されたとき、関連するReviewも全て削除されるように設定
     // orphanRemoval = true: 関連づけが切れたReviewも自動的に削除
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Review> reviews; // 関連するレビューを保持するリスト
 
     // --- コンストラクタ ---
