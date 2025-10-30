@@ -1,6 +1,6 @@
 package com.example.matcha.service;
 
-import com.example.matcha.model.Post; // 💡 あなたのPostモデルに合わせてパッケージ名を修正してください
+import com.example.matcha.entity.Post; // 💡 あなたのPostモデルに合わせてパッケージ名を修正してください
 import com.example.matcha.repository.PostRepository; // 💡 あなたのPostRepositoryに合わせてパッケージ名を修正してください
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
