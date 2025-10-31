@@ -1,10 +1,14 @@
 package com.example.matcha.entity;
 
-import jakarta.persistence.*;
-import java.util.List;
+import java.util.List; // 💡 追記: Listをインポート
+import jakarta.persistence.CascadeType; // 💡 追記: カスケードタイプをインポート
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany; // 💡 追記: OneToManyをインポート
 
 @Entity
-@Table(name = "products")
 public class Product {
 
     @Id
@@ -12,53 +16,22 @@ public class Product {
     private Long id;
 
     private String name;
-    
-    private Integer price;
-
-    @Column(name = "image_path")
+    private int price;
     private String imagePath;
+    
+    // 💡 追記: ここが最重要！カスケード削除の設定
+    // mappedBy="product" は Review.java の private Product product; のフィールド名と一致させる
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Review> reviews; // レビュー一覧を保持するフィールド
+    
+    // --- Getter & Setter (既存のフィールドに対応) ---
 
-    // --- 修正箇所: CascadeType.REMOVE と orphanRemoval = true を追加 ---
-    // Productが削除されると、関連するReviewも自動的に削除されます。
-    @OneToMany(mappedBy = "product", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<Review> reviews;
-
-    // Constructors
-    public Product() {}
-
-    // Getters and Setters
     public Long getId() {
         return id;
     }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
+    // ... (既存のgetId, setId, getName, setName, getPrice, setPrice, getImagePath, setImagePath)
     
-    public Integer getPrice() {
-        return price;
-    }
-
-    public void setPrice(Integer price) {
-        this.price = price;
-    }
-
-    public String getImagePath() {
-        return imagePath;
-    }
-
-    public void setImagePath(String imagePath) {
-        this.imagePath = imagePath;
-    }
-
+    // --- 💡 追記: reviews の Getter & Setter ---
     public List<Review> getReviews() {
         return reviews;
     }
@@ -66,4 +39,10 @@ public class Product {
     public void setReviews(List<Review> reviews) {
         this.reviews = reviews;
     }
+    
+    // その他の既存のGetter & Setter
+    public void setId(Long id) {
+        this.id = id;
+    }
+    // ... (既存のコードを維持)
 }

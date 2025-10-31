@@ -306,10 +306,13 @@ function displayMessage(message, type = 'success') {
 }
 
 // 削除処理の関数
-async function deleteProduct(id) {
+// 💡 修正1: name引数を追加
+async function deleteProduct(id, name) {
     // ⚠ 注意: 実際のアプリケーションでは、カスタムモーダルを使用してください。
     // Canvas環境では confirm() は動作しません。
-    if (!confirm(`商品ID: ${id} を削除してもよろしいですか？`)) {
+    
+    // 💡 修正2: confirmメッセージに商品名を使用
+    if (!confirm(`商品: ${name}を削除してもよろしいですか？`)) {
         return;
     }
     
@@ -320,7 +323,11 @@ async function deleteProduct(id) {
         });
 
         if (response.ok) {
-            displayMessage(`商品ID: ${id} を削除しました。`, 'success');
+            // サーバーから返されたメッセージ本文（商品名入りのメッセージ）を取得
+            const successMessage = await response.text();
+            
+            // 取得したメッセージをそのまま表示
+            displayMessage(successMessage, 'success'); 
             fetchAndDisplayProducts(); // リストを更新
         } else {
             // サーバーからエラー詳細を取得
@@ -394,8 +401,8 @@ async function fetchAndDisplayProducts() {
                 <!-- Spring Boot: /products/edit/{id} へのリンク -->
                 <a href="/products/edit/${product.id}" 
                     class="edit-btn">編集</a>
-                <!-- 削除ボタン: JS関数をコール -->
-                <button type="button" onclick="deleteProduct(${product.id})">削除</button>
+                <!-- 💡 修正3: 削除ボタンに商品名を渡すように変更 -->
+                <button type="button" onclick="deleteProduct(${product.id}, '${product.name}')">削除</button>
             </div>
         `;
         list.appendChild(li);

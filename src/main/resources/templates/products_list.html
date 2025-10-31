@@ -312,7 +312,7 @@ async function deleteProduct(id, name) {
     // Canvas環境では confirm() は動作しません。
     
     // 💡 修正2: confirmメッセージに商品名を使用
-    if (!confirm(`商品: ${name} (ID: ${id}) を削除してもよろしいですか？`)) {
+    if (!confirm(`商品: ${name}を削除してもよろしいですか？`)) {
         return;
     }
     
