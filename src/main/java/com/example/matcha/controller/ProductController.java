@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.transaction.annotation.Transactional; // 💡 追記: トランザクション管理用
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.matcha.entity.Product;
 import com.example.matcha.repository.ProductRepository;
@@ -120,12 +120,11 @@ public class ProductController {
     // 💡 修正箇所: 商品削除（DBレコードとサーバー上の画像ファイルを削除する）
     @DeleteMapping("/products/{id}")
     @ResponseBody
-    @Transactional // 💡 これを追加！
+    @Transactional 
     public ResponseEntity<String> deleteProduct(@PathVariable Long id) {
         Optional<Product> optionalProduct = productRepository.findById(id);
 
         if (optionalProduct.isEmpty()) {
-            // 商品が存在しない場合は404 Not Foundを返す
             logger.warn("商品ID: {} は存在しないため削除できませんでした。", id);
             return ResponseEntity.notFound().build();
         }
@@ -133,33 +132,40 @@ public class ProductController {
         Product product = optionalProduct.get();
         String imagePath = product.getImagePath();
         
-        try {
-            // 1. サーバー上の画像ファイルを削除
-            if (imagePath != null && imagePath.startsWith(IMAGE_PATH_PREFIX)) {
-                // /images/ プレフィックスを取り除き、実際のファイル名を取得
-                String filename = imagePath.substring(IMAGE_PATH_PREFIX.length());
-                Path filePath = Paths.get(uploadDir, filename);
-                
-                // ファイルが存在する場合のみ削除を試みる
+        // 💡 削除メッセージ用に商品名を保持
+        String productName = product.getName(); 
+        
+        // --- 1. サーバー上の画像ファイルを削除 (失敗してもDB削除は継続) ---
+        if (imagePath != null && imagePath.startsWith(IMAGE_PATH_PREFIX)) {
+            String filename = imagePath.substring(IMAGE_PATH_PREFIX.length());
+            Path filePath = Paths.get(uploadDir, filename);
+            
+            try {
                 if (Files.exists(filePath)) {
                     Files.delete(filePath);
                     logger.info("関連画像ファイルが削除されました: {}", filename);
                 } else {
                     logger.warn("関連画像ファイルが見つかりませんでした: {}", filename);
                 }
+            } catch (IOException e) {
+                logger.error("画像ファイル {} の削除中にIOエラーが発生しましたが、DB削除を試行します。", filename, e);
             }
-
-            // 2. データベースのレコードを削除
-            // @Transactionalがあることで、Reviewエンティティもここで自動削除される
+        }
+        
+        // --- 2. データベースのレコードを削除 ---
+        try {
+            // @Transactionalがあるため、関連するReviewも削除されるはず
             productRepository.delete(product);
             logger.info("商品ID: {} がデータベースから削除されました。", id);
             
-            return ResponseEntity.ok("商品と関連ファイルを削除しました！");
+            // 💡 成功メッセージを修正: 商品名を含める
+            return ResponseEntity.ok("商品: " + productName + " を削除しました！");
             
         } catch (Exception e) {
-            logger.error("商品ID: {} の削除処理中にエラーが発生しました。", id, e);
-            // 削除処理中にIOエラーやDBエラーが発生した場合、500 Internal Server Errorを返す
-            return ResponseEntity.internalServerError().body("削除処理中にエラーが発生しました: " + e.getMessage());
+            // DB削除（カスケード削除含む）でエラーが発生した場合
+            logger.error("商品ID: {} のデータベース削除処理中にエラーが発生しました。", id, e);
+            // 削除処理中にDBエラーが発生した場合、500 Internal Server Errorを返す
+            return ResponseEntity.internalServerError().body("データベース削除中にエラーが発生しました: " + e.getMessage());
         }
     }
 
