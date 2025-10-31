@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.transaction.annotation.Transactional; // 💡 追記: トランザクション管理用
 
 import com.example.matcha.entity.Product;
 import com.example.matcha.repository.ProductRepository;
@@ -119,6 +120,7 @@ public class ProductController {
     // 💡 修正箇所: 商品削除（DBレコードとサーバー上の画像ファイルを削除する）
     @DeleteMapping("/products/{id}")
     @ResponseBody
+    @Transactional // 💡 これを追加！
     public ResponseEntity<String> deleteProduct(@PathVariable Long id) {
         Optional<Product> optionalProduct = productRepository.findById(id);
 
@@ -148,6 +150,7 @@ public class ProductController {
             }
 
             // 2. データベースのレコードを削除
+            // @Transactionalがあることで、Reviewエンティティもここで自動削除される
             productRepository.delete(product);
             logger.info("商品ID: {} がデータベースから削除されました。", id);
             
