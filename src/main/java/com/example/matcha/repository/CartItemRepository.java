@@ -10,6 +10,6 @@ import com.example.matcha.entity.CartItem;
 @Repository
 public interface CartItemRepository extends JpaRepository<CartItem, Long> {
 
-    // 💡 修正点 1: ユーザーIDに基づいてカートアイテムのリストを取得するメソッドを追加
+    // ユーザーIDに基づいてカートアイテムのリストを取得する
     List<CartItem> findByUserId(String userId);
 }
