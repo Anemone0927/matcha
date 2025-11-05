@@ -1,26 +1,83 @@
 package com.example.matcha.service;
 
-import com.example.matcha.model.CartItemModel;
+import com.example.matcha.entity.CartItem;
+import com.example.matcha.entity.Product;
+import com.example.matcha.repository.CartItemRepository;
+import com.example.matcha.repository.ProductRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
+import java.util.Optional;
 
-/**
- * カート機能のビジネスロジックを定義するインターフェース。
- * Controllerがこのインターフェースを通じて機能を利用します。
- */
-public interface CartService {
+@Service
+@Transactional
+public class CartService {
+
+    private final CartItemRepository cartItemRepository;
+    private final ProductRepository productRepository; // 商品情報を取得するためにリポジトリが必要
+
+    @Autowired
+    public CartService(CartItemRepository cartItemRepository, ProductRepository productRepository) {
+        this.cartItemRepository = cartItemRepository;
+        this.productRepository = productRepository;
+    }
 
     /**
-     * 現在のユーザーのカートアイテムをすべて取得し、DTOとして返します。
-     * @return CartItemModelのリスト
+     * ユーザーIDに基づいてカートアイテムのリストを取得します。
+     * @param userId 現在ログインしているユーザーのID
+     * @return カートアイテムのリスト
      */
-    List<CartItemModel> findAllItems();
+    public List<CartItem> getCartItemsByUserId(String userId) {
+        // CartItemRepositoryで定義したfindByUserIdを利用
+        return cartItemRepository.findByUserId(userId);
+    }
 
     /**
-     * 指定されたIDのカートアイテムを削除します。
-     * @param itemId 削除するアイテムのID
+     * カートに商品を追加、または数量を更新します。
+     * ユーザーが既に同じ商品をカートに入れている場合、数量をインクリメントします。
+     * @param userId 現在ログインしているユーザーのID
+     * @param productId 追加する商品のID
+     * @param quantity 追加する数量
+     * @return 更新されたカートアイテム
      */
-    void deleteItem(Long itemId);
-    
-    // 💡 既存のロジックを保持するため、商品追加メソッドも定義
-    void addItemToCart(String userId, Long productId, int quantity);
+    public CartItem addItemToCart(String userId, Long productId, int quantity) {
+        // 1. 既存のカートアイテムを検索
+        // 実際には、userIdとproductIdの両方で検索するカスタムメソッドが望ましいですが、
+        // 今回はシンプルに、まず全アイテムを取得し、該当商品をJava側で探します。
+        // ※より効率的なDB検索 (findByUserIdAndProductId) は、必要に応じてリポジトリに追加してください。
+        
+        List<CartItem> existingItems = cartItemRepository.findByUserId(userId);
+        Optional<CartItem> existingItemOpt = existingItems.stream()
+            .filter(item -> item.getProduct().getId().equals(productId))
+            .findFirst();
+
+        // 2. 数量と商品情報を取得
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new RuntimeException("Product not found with ID: " + productId));
+
+        if (existingItemOpt.isPresent()) {
+            // 既存の商品があれば数量を更新
+            CartItem existingItem = existingItemOpt.get();
+            existingItem.setQuantity(existingItem.getQuantity() + quantity);
+            return cartItemRepository.save(existingItem);
+        } else {
+            // 新しいカートアイテムを作成
+            CartItem newItem = new CartItem();
+            newItem.setUserId(userId);
+            newItem.setProduct(product);
+            newItem.setQuantity(quantity);
+            return cartItemRepository.save(newItem);
+        }
+    }
+
+    /**
+     * カートアイテムを削除します。
+     * @param cartItemId 削除対象のカートアイテムID
+     */
+    public void removeItemFromCart(Long cartItemId) {
+        // 削除するだけで、ユーザーIDによる権限チェックはController側で行うのが理想
+        cartItemRepository.deleteById(cartItemId);
+    }
 }
