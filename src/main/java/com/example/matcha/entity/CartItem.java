@@ -8,6 +8,10 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
+/**
+ * データベースの 'cart_items' テーブルに対応するJPAエンティティ。
+ * ユーザーIDと商品へのリレーション、数量を保持します。
+ */
 @Entity
 @Table(name = "cart_items")
 public class CartItem {
@@ -16,13 +20,11 @@ public class CartItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // 💡 必要なフィールド 1: ユーザーID (setUserIdのために必須)
-    private String userId; 
-    
-    // 💡 必要なフィールド 2: 商品情報 (getProductのために必須)
-    @ManyToOne 
+    private String userId;
+
+    @ManyToOne
     @JoinColumn(name = "product_id")
-    private Product product; 
+    private Product product;
 
     private int quantity;
 
@@ -39,7 +41,6 @@ public class CartItem {
         this.id = id;
     }
 
-    // 💡 setUserId の定義
     public String getUserId() {
         return userId;
     }
@@ -48,7 +49,6 @@ public class CartItem {
         this.userId = userId;
     }
 
-    // 💡 getProduct の定義
     public Product getProduct() {
         return product;
     }
