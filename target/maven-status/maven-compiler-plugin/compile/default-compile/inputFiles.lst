@@ -10,6 +10,7 @@ C:\Users\24i1004\matcha\src\main\java\com\example\matcha\controller\ImageControl
 C:\Users\24i1004\matcha\src\main\java\com\example\matcha\controller\PostController.java
 C:\Users\24i1004\matcha\src\main\java\com\example\matcha\entity\CartItem.java
 C:\Users\24i1004\matcha\src\main\java\com\example\matcha\repository\ProductRepository.java
+C:\Users\24i1004\matcha\src\main\java\com\example\matcha\service\CartService.java
 C:\Users\24i1004\matcha\src\main\java\com\example\matcha\service\PostService.java
 C:\Users\24i1004\matcha\src\main\java\com\example\matcha\entity\Order.java
 C:\Users\24i1004\matcha\src\main\java\com\example\matcha\controller\HealthController.java
