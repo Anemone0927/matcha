@@ -1,206 +1,245 @@
 <!DOCTYPE html>
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8" />
-  <title>カートに商品を追加 | 推し系食べ物通販サイト</title>
-  <style>
-    body {
-      background-color: #ffd9ef;
-      color: #2f4f2f;
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-    }
+  <meta charset="UTF-8" />
+  <title>カートに商品を追加 | 推し系食べ物通販サイト</title>
+  <style>
+    body {
+      background-color: #ffd9ef;
+      color: #2f4f2f;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
 
-        main {
-            padding: 20px;
-            max-width: 900px;
-            margin: 0 auto;
-        }
-        
-        /* --- Header Style --- */
-        header {
-            background-color: #159450;
-            padding: 10px 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.15);
-            margin-bottom: 20px; /* コンテンツとの区切り */
-        }
-        header img.home-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 20px;
-            cursor: pointer;
-        }
-        header h1 {
-            color: white;
-            font-size: 1.8em;
-            margin: 0 0 0 15px;
-            flex-grow: 1;
-        }
-        header .left {
-            display: flex;
-            align-items: center;
-        }
-        header .user-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 20px;
-            cursor: pointer;
-            transition: transform 0.3s;
-        }
-        header .user-icon:hover {
-            transform: scale(1.1);
-        }
+        main {
+            padding: 20px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        /* --- Header Style --- */
+        header {
+            background-color: #159450;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+            margin-bottom: 20px; /* コンテンツとの区切り */
+        }
+        header img.home-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+        header h1 {
+            color: white;
+            font-size: 1.8em;
+            margin: 0 0 0 15px;
+            flex-grow: 1;
+        }
+        header .left {
+            display: flex;
+            align-items: center;
+        }
+        header .user-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        header .user-icon:hover {
+            transform: scale(1.1);
+        }
 
-        /* --- Button Style --- */
-        a.btn {
-            background-color: #fff;
-            color: #2f4f2f;
-            border: 2px solid #2f4f2f;
-            padding: 10px 20px;
-            margin: 5px;
-            font-size: 1em;
-            border-radius: 10px;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-block;
-            transition: background-color 0.3s, color 0.3s;
-        }
-        a.btn:hover {
-            background-color: #2f4f2f;
-            color: #fff;
-        }
+        /* --- Button Style --- */
+        a.btn {
+            background-color: #fff;
+            color: #2f4f2f;
+            border: 2px solid #2f4f2f;
+            padding: 10px 20px;
+            margin: 5px;
+            font-size: 1em;
+            border-radius: 10px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        a.btn:hover {
+            background-color: #2f4f2f;
+            color: #fff;
+        }
 
 
-        /* ====================================
-           2. ページ固有のスタイル (review_list.html)
-           ==================================== */
-    h1 {
-      text-align: center;
-    }
-    form {
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-    }
-    label {
-      font-weight: bold;
-    }
-    input[type="number"], input[type="text"] {
-      padding: 8px;
-      border: 1px solid #2f4f2f;
-      border-radius: 6px;
-      font-size: 1em;
-    }
-    button {
-      background-color: #2f4f2f;
-      color: white;
-      padding: 12px;
-      border: none;
-      border-radius: 8px;
-      font-size: 1.1em;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
-    button:hover {
-      background-color: #1f2f1f;
-    }
+        /* ====================================
+           2. ページ固有のスタイル (review_list.html)
+           ==================================== */
+    h1 {
+      text-align: center;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    label {
+      font-weight: bold;
+    }
+    /* 💡 selectタグにもスタイルが適用されるように追記 */
+    input[type="number"], input[type="text"], select {
+      padding: 8px;
+      border: 1px solid #2f4f2f;
+      border-radius: 6px;
+      font-size: 1em;
+      background-color: white; /* selectの背景色を白に */
+    }
+    button {
+      background-color: #2f4f2f;
+      color: white;
+      padding: 12px;
+  S     border: none;
+      border-radius: 8px;
+      font-size: 1.1em;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #1f2f1f;
+    }
 
-        /* ====================================
-           3. レスポンシブ対応
-           ==================================== */
-        @media screen and (max-width: 480px) {
-            header h1 {
-                font-size: 1.5em;
-            }
-            .review-card {
-                margin: 10px 5px;
-                padding: 15px;
-            }
-            /* その他モバイル調整 */
-            input[type="text"],
-            input[type="number"] {
-                font-size: 14px;
-            }
-            button {
-                font-size: 16px;
-                padding: 10px;
-            }
-        }
+        /* ====================================
+           3. レスポンシブ対応
+           ==================================== */
+        @media screen and (max-width: 480px) {
+            header h1 {
+                font-size: 1.5em;
+            }
+            .review-card {
+                margin: 10px 5px;
+                padding: 15px;
+            }
+            /* その他モバイル調整 */
+            input[type="text"],
+            input[type="number"], 
+            select { /* 💡 selectも */
+                font-size: 14px;
+            }
+            button {
+                font-size: 16px;
+                padding: 10px;
+            }
+        }
 
-  </style>
+  </style>
 </head>
 <body>
-    <!-- 共通ヘッダー -->
-    <header>
-        <div class="left">
-            <a th:href="@{/}">
-                <img src="/images/homebotan.jpg" alt="ホームページへ戻る" class="home-icon" />
-            </a>
-            <h1>OshiGiftBox</h1>
-        </div>
-        <div class="user-links">
-            <a th:href="@{/users/auth_select}">
-                <img src="/images/yuza.jpg" alt="ユーザー登録" class="user-icon" />
-            </a>
-        </div>
-    </header>
-    <main>
+    <!-- 共通ヘッダー -->
+    <header>
+        <div class="left">
+            <a th:href="@{/}">
+                <img src="/images/homebotan.jpg" alt="ホームページへ戻る" class="home-icon" />
+            </a>
+            <h1>OshiGiftBox</h1>
+        </div>
+        <div class="user-links">
+            <a th:href="@{/users/auth_select}">
+                <img src="/images/yuza.jpg" alt="ユーザー登録" class="user-icon" />
+            </a>
+        </div>
+    </header>
+    <main>
 <div style="text-align: center; color: #2f4f2f; margin-top: 20px; padding: 30px; background-color: #fff; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.15); max-width: 400px; margin-left: auto; margin-right: auto;">
-    <h1 style="color: #a1835d; font-size: 1.5em; margin-bottom: 20px;">🛒 カートに商品を追加</h1>
-    <form th:action="@{/api/cart}" method="post" id="addCartForm" style="display: flex; flex-direction: column; gap: 15px; text-align: left;">
-        <div style="display: flex; flex-direction: column;">
-            <label for="productId" style="font-weight: bold; margin-bottom: 5px;">商品ID</label>
-            <input type="number" id="productId" name="productId" required 
-                   placeholder="例: 101" 
-                   style="padding: 10px; border: 1px solid #ccc; border-radius: 5px;" />
-        </div>
+    <h1 style="color: #a1835d; font-size: 1.5em; margin-bottom: 20px;">🛒 カートに商品を追加</h1>
+    
+    <!-- 💡 修正点 1: フォームの th:action と method を削除 (JavaScriptで処理するため) -->
+    <form id="addCartForm" style="display: flex; flex-direction: column; gap: 15px; text-align: left;">
+        
+        <!-- 💡 修正点 2: 「商品ID」の入力欄を「商品」のドロップダウンリストに変更 -->
+        <div style="display: flex; flex-direction: column;">
+            <label for="productId" style="font-weight: bold; margin-bottom: 5px;">商品</label>
+            <!-- input を select に変更 -->
+            <select id="productId" name="productId" required 
+                   style="padding: 10px; border: 1px solid #ccc; border-radius: 5px; background-color: white; font-size: 1em;">
+                
+                <!-- デフォルトの選択肢 -->
+                <option value="" disabled selected>-- 商品を選んでください --</option>
+                
+                <!-- ThymeleafでControllerから渡された 'allProducts' をループ処理 -->
+                <option th:each="product : ${allProducts}" 
+                        th:value="${product.id}" 
+                        th:text="${product.name} + ' (' + ${product.price} + '円)'">
+                    <!-- (例: キャンディ (150円)) -->
+                </option>
+            </select>
+        </div>
 
-        <div style="display: flex; flex-direction: column;">
-            <label for="quantity" style="font-weight: bold; margin-bottom: 5px;">数量</label>
-            <input type="number" id="quantity" name="quantity" min="1" value="1" required 
-                   style="padding: 10px; border: 1px solid #ccc; border-radius: 5px;" />
-        </div>
+        <div style="display: flex; flex-direction: column;">
+            <label for="quantity" style="font-weight: bold; margin-bottom: 5px;">数量</label>
+            <input type="number" id="quantity" name="quantity" min="1" value="1" required 
+                   style="padding: 10px; border: 1px solid #ccc; border-radius: 5px;" />
+        </div>
 
-        <button type="submit" 
-                style="background-color: #2f4f2f; color: white; padding: 12px; border: none; border-radius: 5px; font-size: 1.1em; cursor: pointer; transition: background-color 0.3s;">
-            カートに追加する
-        </button>
-    </form>
+        <button type="submit" 
+                style="background-color: #2f4f2f; color: white; padding: 12px; border: none; border-radius: 5px; font-size: 1.1em; cursor: pointer; transition: background-color 0.3s;">
+            カートに追加する
+        </button>
+    </form>
 </div>
 
 <script>
-  // フォームの送信をAjaxで行いページ遷移しないようにする例
-  document.getElementById('addCartForm').addEventListener('submit', function(e) {
-    e.preventDefault();
+  // フォームの送信をAjaxで行いページ遷移しないようにする
+  document.getElementById('addCartForm').addEventListener('submit', function(e) {
+    e.preventDefault(); // フォームの通常の送信を停止
 
-    const productId = document.getElementById('productId').value;
-    const quantity = document.getElementById('quantity').value;
+    const productId = document.getElementById('productId').value;
+    const quantity = document.getElementById('quantity').value;
 
-    fetch('/api/cart', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ productId: Number(productId), quantity: Number(quantity) })
-    })
-    .then(res => {
-      if (!res.ok) throw new Error('追加失敗');
-      return res.json();
-    })
-    .then(data => {
-      alert('カートに追加しました！ID: ' + data.id);
-      // フォームリセットなど
-      this.reset();
-    })
-    .catch(err => {
-      alert('エラーが発生しました: ' + err.message);
-    });
-  });
+    // 💡 修正点 3: 送信するJSONの形式を変更
+    // CartControllerの@RequestBody CartItem item が、
+    // CartItemエンティティ内の "Product" オブジェクトとの関連付けを
+    // 正しく解釈できるように、JSONをネストさせます。
+    const requestBody = {
+      product: {
+        id: Number(productId) // 選択されたIDを product.id として送信
+      },
+      quantity: Number(quantity)
+    };
+
+    fetch('/api/cart', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(requestBody) // 💡 修正したリクエストボディ
+    })
+    .then(res => {
+      if (!res.ok) {
+        // エラーレスポンスをテキストとして読み取る
+        return res.text().then(text => { throw new Error(`追加失敗: ${text}`) });
+      }
+      return res.json();
+    })
+    .then(data => {
+      // 💡 成功メッセージを具体的に
+      // ドロップダウンから選択された商品のテキストを取得
+      const selectedOption = document.getElementById('productId').options[document.getElementById('productId').selectedIndex];
+      const productName = selectedOption.text.split(' (')[0]; // '(150円)' の部分を除去
+      
+      alert(`${productName} を ${quantity} 点カートに追加しました！`);
+      
+      // フォームリセット
+      this.reset();
+    })
+    .catch(err => {
+      console.error('カート追加エラー:', err);
+      alert('エラーが発生しました: ' + err.message);
+    });
+  });
 </script>
-    </main>
+    </main>
 </body>
 </html>
