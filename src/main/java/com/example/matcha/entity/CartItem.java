@@ -1,42 +1,60 @@
 package com.example.matcha.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 @Entity
+@Table(name = "cart_items")
 public class CartItem {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long productId;
+    // 💡 必要なフィールド 1: ユーザーID (setUserIdのために必須)
+    private String userId; 
+    
+    // 💡 必要なフィールド 2: 商品情報 (getProductのために必須)
+    @ManyToOne 
+    @JoinColumn(name = "product_id")
+    private Product product; 
+
     private int quantity;
 
-    // コンストラクタ（引数なし）
+    // --- コンストラクタ ---
     public CartItem() {
     }
 
-    // コンストラクタ（引数あり）
-    public CartItem(Long productId, int quantity) {
-        this.productId = productId;
-        this.quantity = quantity;
-    }
-
-    // getter / setter
+    // --- ゲッターとセッター ---
     public Long getId() {
         return id;
     }
 
-    // idは自動生成されるため、setterはあってもなくてもOKですが一応用意
     public void setId(Long id) {
         this.id = id;
     }
 
-    public Long getProductId() {
-        return productId;
+    // 💡 setUserId の定義
+    public String getUserId() {
+        return userId;
     }
 
-    public void setProductId(Long productId) {
-        this.productId = productId;
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    // 💡 getProduct の定義
+    public Product getProduct() {
+        return product;
+    }
+
+    public void setProduct(Product product) {
+        this.product = product;
     }
 
     public int getQuantity() {
