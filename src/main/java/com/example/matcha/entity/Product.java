@@ -1,23 +1,29 @@
 package com.example.matcha.entity;
 
 import jakarta.persistence.*;
+import java.util.List;
 
 @Entity
-@Table(name = "cart_items") // テーブル名が cart_items だと仮定
-public class CartItem {
+@Table(name = "products")
+public class Product {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // 💡 エラーの原因: CartControllerで必要とされるフィールド
-    @Column(name = "product_id")
-    private Long productId; 
+    private String name;
     
-    private Integer quantity;
+    private Integer price;
+
+    @Column(name = "image_path")
+    private String imagePath;
+
+    // Productが削除されると、関連するReviewも自動的に削除されます。
+    @OneToMany(mappedBy = "product", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<Review> reviews;
 
     // Constructors
-    public CartItem() {}
+    public Product() {}
 
     // Getters and Setters
     public Long getId() {
@@ -28,20 +34,36 @@ public class CartItem {
         this.id = id;
     }
 
-    // 💡 CartController のエラーを解消する必須メソッド
-    public Long getProductId() {
-        return productId;
+    public String getName() {
+        return name;
     }
 
-    public void setProductId(Long productId) {
-        this.productId = productId;
+    public void setName(String name) {
+        this.name = name;
+    }
+    
+    public Integer getPrice() {
+        // Integer型なので getPrice() は Integer を返します。
+        return price; 
     }
 
-    public Integer getQuantity() {
-        return quantity;
+    public void setPrice(Integer price) {
+        this.price = price;
     }
 
-    public void setQuantity(Integer quantity) {
-        this.quantity = quantity;
+    public String getImagePath() {
+        return imagePath;
+    }
+
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
+    }
+
+    public List<Review> getReviews() {
+        return reviews;
+    }
+
+    public void setReviews(List<Review> reviews) {
+        this.reviews = reviews;
     }
 }

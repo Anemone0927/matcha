@@ -9,14 +9,11 @@ import org.springframework.web.bind.annotation.*;
 import com.example.matcha.entity.CartItem;
 import com.example.matcha.entity.Product; 
 import com.example.matcha.repository.CartItemRepository;
-// 💡 CartItemがProductオブジェクトを持っているため、ProductRepositoryはインポートも不要
-// import com.example.matcha.repository.ProductRepository; 
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Map;
-// import java.util.stream.Collectors; // 不要になったインポートを削除
 
 /**
  * カート機能（Thymeleaf表示とREST API）を管理するコントローラー
@@ -27,10 +24,6 @@ public class CartController {
     @Autowired
     private CartItemRepository cartItemRepository;
     
-    // 💡 ProductRepositoryは不要になりました
-    // @Autowired
-    // private ProductRepository productRepository; 
-
     // ==========================================
     // 1. カート一覧表示（Thymeleaf View）の処理
     // ==========================================
@@ -51,7 +44,7 @@ public class CartController {
         
         for (CartItem item : cartItems) {
             
-            // 💡 修正点: CartItem.getProduct().getName() を使用
+            // CartItem.getProduct().getName() を使用
             Product product = item.getProduct();
             String productName = (product != null) ? product.getName() : "不明な商品";
             
