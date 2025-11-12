@@ -2,29 +2,22 @@ package com.example.matcha.entity;
 
 import jakarta.persistence.*;
 
-import java.util.List;
-
 @Entity
-@Table(name = "products")
-public class Product {
+@Table(name = "cart_items") // テーブル名が cart_items だと仮定
+public class CartItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name;
+    // 💡 エラーの原因: CartControllerで必要とされるフィールド
+    @Column(name = "product_id")
+    private Long productId; 
     
-    private Integer price;
-
-    @Column(name = "image_path")
-    private String imagePath;
-
-    // Productが削除されると、関連するReviewも自動的に削除されます。
-    @OneToMany(mappedBy = "product", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<Review> reviews;
+    private Integer quantity;
 
     // Constructors
-    public Product() {}
+    public CartItem() {}
 
     // Getters and Setters
     public Long getId() {
@@ -35,35 +28,20 @@ public class Product {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    // 💡 CartController のエラーを解消する必須メソッド
+    public Long getProductId() {
+        return productId;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-    
-    public Integer getPrice() {
-        return price;
+    public void setProductId(Long productId) {
+        this.productId = productId;
     }
 
-    public void setPrice(Integer price) {
-        this.price = price;
+    public Integer getQuantity() {
+        return quantity;
     }
 
-    public String getImagePath() {
-        return imagePath;
-    }
-
-    public void setImagePath(String imagePath) {
-        this.imagePath = imagePath;
-    }
-
-    public List<Review> getReviews() {
-        return reviews;
-    }
-
-    public void setReviews(List<Review> reviews) {
-        this.reviews = reviews;
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
     }
 }
