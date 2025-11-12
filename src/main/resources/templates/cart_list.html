@@ -1,314 +1,627 @@
 <!DOCTYPE html>
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8" />
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>カート一覧 | 推し系食べ物通販サイト</title>
-    <style>
-        /* --- General Reset & Body Style --- */
-        body {
-            background-color: #ffd9ef; /* 薄いピンク */
-            color: #2f4f2f; /* 濃い緑 */
-            font-family: 'Inter', Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            line-height: 1.6;
-        }
+    <title>商品一覧 | OshiGiftBox</title>
+    <!-- Font Awesome (ハートアイコンのために使用) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
-        main {
+<style>
+/* --- 全ての要素に box-sizing: border-box を適用して、幅の計算を正確にします --- */
+* {
+    box-sizing: border-box; 
+}
+/* ------------------------------------
+    1. 共通ベーススタイル
+------------------------------------ */
+    body {
+        background-color: #ffd9ef;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: #333;
+        margin: 0;
+        padding: 0;
+    }
+
+    main {
+        padding: 20px;
+        max-width: 900px; 
+        margin: 0 auto;
+    }
+
+    /* --- Header Style  --- */
+    header {
+        background-color: #159450;
+        padding: 10px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+        margin-bottom: 20px;
+    }
+    header .home-icon,
+    header .user-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 20px;
+        cursor: pointer;
+        transition: transform 0.3s;
+    }
+    header .home-icon:hover,
+    header .user-icon:hover {
+        transform: scale(1.1);
+    }
+    header h1 {
+        color: white;
+        font-size: 1.8em;
+        margin: 0 0 0 15px;
+        flex-grow: 1;
+    }
+    header .left {
+        display: flex;
+        align-items: center;
+    }
+    header .user-links {
+        display: flex;
+        align-items: center;
+    }
+    
+    /* ------------------------------------
+        2. ページ固有のスタイル (商品一覧)
+    ------------------------------------ */
+    h1 {
+        color: #a1835d; 
+        text-align: center;
+        margin-bottom: 30px;
+        margin-top: 0;
+    }
+
+    /* 💡 白いボックスのスタイル (リスト全体を囲む) */
+    .list-card {
+        background-color: #fff;
+        width: 100%; 
+        max-width: 750px;
+        margin: 0 auto;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 4px 8px rgba(122, 111, 219, 0.2);
+        text-align: center;
+    }
+
+    .list-card h2 {
+        color: #7a6fdb;
+        text-align: center;
+        font-size: 1.5em;
+        margin-top: 0;
+        margin-bottom: 20px;
+    }
+    /* 商品登録へのボタン */
+    .add-product-link {
+        display: inline-block;
+        background-color: #7a6fdb;
+        color: white;
+        padding: 10px 20px;
+        margin-bottom: 20px;
+        border-radius: 10px;
+        text-decoration: none;
+        font-weight: 700;
+        transition: background-color 0.3s;
+    }
+    .add-product-link:hover {
+        background-color: #5d52b4;
+    }
+
+    /* 商品リスト (ul) のスタイル */
+    #productList {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        text-align: left;
+    }
+
+    /* 個別商品アイテム (li) のスタイル */
+    #productList li {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 0;
+        border-bottom: 1px solid #eee;
+    }
+    #productList li:last-child {
+        border-bottom: none;
+    }
+
+    .product-info {
+        display: flex;
+        align-items: center;
+        flex-grow: 1;
+    }
+
+    .product-info strong {
+        font-size: 1.1em;
+        margin-right: 15px;
+        min-width: 150px;
+    }
+
+    /* 画像コンテナのスタイル */
+    .product-image-container {
+        margin-left: 20px;
+        width: 80px;
+        height: 80px;
+        overflow: hidden;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .product-image-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+    /* 💡 お気に入りボタンのコンテナとお気に入りボタン自体のスタイル */
+    .item-controls { /* 削除・編集ボタンとまとめてコントロールするコンテナ */
+        display: flex;
+        align-items: center;
+        gap: 15px; /* お気に入りボタンとアクションボタンの隙間 */
+        min-width: 200px; /* 削除・編集ボタン + お気に入りボタンの合計幅 */
+    }
+
+    .favorite-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 5px;
+        font-size: 1.5em;
+        color: #ccc; /* デフォルトのハートの色 (グレー) */
+        transition: color 0.3s, transform 0.1s;
+        min-width: 30px; /* 適切なクリック領域を確保 */
+    }
+    .favorite-btn:hover {
+        color: #ff3366;
+        transform: scale(1.1);
+    }
+    .favorite-btn.favorited {
+        color: #ff3366; /* お気に入り済みの色 (ピンク) */
+        transform: scale(1.05);
+    }
+
+    .actions {
+        display: flex;
+        gap: 10px;
+        min-width: 130px;
+    }
+
+    .edit-btn {
+        background-color: #60c5ba;
+        color: white;
+        padding: 6px 12px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-size: 0.9em;
+        transition: background-color 0.3s;
+        font-weight: 600;
+        white-space: nowrap; 
+    }
+    .edit-btn:hover {
+        background-color: #4a9e96;
+    }
+
+    .actions button {
+        background-color: #ff7f7f;
+        color: white;
+        border: none;
+        padding: 6px 12px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 0.9em;
+        transition: background-color 0.3s;
+        font-weight: 600;
+        white-space: nowrap; 
+    }
+    .actions button:hover {
+        background-color: #e55e5e;
+    }
+
+    /* メッセージボックス */
+    #messageBox {
+        text-align: center;
+        padding: 10px;
+        margin-bottom: 15px;
+        border-radius: 8px;
+        display: none; /* 初期状態では非表示 */
+        font-weight: 600;
+    }
+    .success {
+        background-color: #e6ffe6;
+        color: #4CAF50;
+        border: 1px solid #4CAF50;
+    }
+    .error {
+        background-color: #ffe6e6;
+        color: #f44336;
+        border: 1px solid #f44336;
+    }
+
+    /* ------------------------------------
+        3. レスポンシブ対応
+    ------------------------------------ */
+    @media screen and (max-width: 600px) {
+        .list-card {
             padding: 20px;
-            max-width: 900px;
-            margin: 0 auto;
+        }
+        #productList li {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        .product-info {
+            flex-direction: column;
+            align-items: flex-start;
+            width: 100%; /* スマホで幅いっぱいにする */
+        }
+        .product-info strong {
+            min-width: auto;
+            margin-right: 0;
+            margin-bottom: 5px;
+        }
+        .product-info > div:not(.product-image-container) {
+             /* 価格情報の調整 */
+             margin-top: 0 !important;
+             font-size: 1em !important;
         }
 
-        /* --- Header Style (Original, preserved) --- */
-        header {
-            background-color: #159450; /* 濃い緑 */
-            padding: 10px 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.15);
-            margin-bottom: 30px;
+        .product-image-container {
+            margin-left: 0;
+            margin-top: 10px;
         }
-        header img.home-icon,
-        header img.user-icon {
-            /* Thymeleaf環境のため、画像URLはそのまま維持 */
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            object-fit: cover;
-            cursor: pointer;
-            transition: transform 0.3s;
-        }
-        header .user-icon:hover {
-            transform: scale(1.1);
-        }
-        header h1 {
-            color: white;
-            font-size: 1.8em;
-            margin: 0 0 0 15px;
-            flex-grow: 1;
-        }
-        header .left {
-            display: flex;
-            align-items: center;
-        }
-
-        /* --- Button & Link Style (Refactored) --- */
-        .btn-base {
-            background-color: #fff;
-            color: #2f4f2f;
-            border: 2px solid #2f4f2f;
-            padding: 10px 20px;
-            margin: 5px;
-            font-size: 1em;
-            border-radius: 10px;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-block;
-            transition: all 0.3s;
-            text-align: center;
-        }
-        .btn-base:hover {
-            background-color: #2f4f2f;
-            color: #fff;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-            transform: translateY(-2px);
-        }
-
-        .btn-primary {
-            background-color: #ff69b4; /* ショッキングピンク */
-            border-color: #ff69b4;
-            color: white;
-            font-weight: bold;
-        }
-        .btn-primary:hover {
-            background-color: #e64e9d;
-            border-color: #e64e9d;
-            color: white;
-        }
-
-        /* --- Cart Container Style --- */
-        .cart-container {
-            text-align: center;
-            color: #2f4f2f;
-            margin-top: 20px;
-            padding: 20px;
-            background-color: #fff;
-            border-radius: 12px;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .page-title {
-            text-align: center;
-            color: #a1835d; /* 落ち着いた茶色 */
-            margin-top: 0;
-            font-size: 2em;
-            margin-bottom: 20px;
-        }
-
-        .cart-section-title {
-            color: #2f4f2f;
-            font-size: 1.5em;
-            margin-bottom: 20px;
-        }
-
-        /* --- Table Style & Responsiveness --- */
-        .responsive-table-wrapper {
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            margin-top: 20px;
-            border: 1px solid #2f4f2f; /* テーブル全体を囲むボーダーを追加 */
-            border-radius: 8px;
-        }
-
-        table {
-            min-width: 450px;
+        .item-controls { /* スマホで右寄せにする */
+            justify-content: flex-end;
             width: 100%;
-            border-collapse: collapse;
-            margin: 0;
         }
-        th, td {
-            padding: 12px;
-            border: none;
-            border-bottom: 1px solid #ddd; /* 下線のみ残す */
-            text-align: left;
+        .actions {
+             /* アクションボタンはまとめて右端に */
+            justify-content: flex-end;
         }
-        th {
-            background-color: #b2d8b2;
-            color: #2f4f2f;
-            font-weight: bold;
-        }
-        td {
-            background-color: #fff;
-        }
-        .cart-item:hover {
-            background-color: #f9f9f9;
-        }
-        /* 単価、数量、小計を中央揃え */
-        td:nth-child(2), td:nth-child(3), td:nth-child(4) {
-            text-align: center;
-        }
-        td:last-child {
-            text-align: center; /* 操作 */
-        }
-        /* 最後の行のボーダーを削除 */
-        .cart-item:last-child td {
-            border-bottom: none;
-        }
+    }
 
-        /* --- Delete Button Style --- */
-        .delete-form {
-            margin: 0;
-            display: inline-block;
-        }
-
-        .delete-btn {
-            background-color: #dc3545; /* 赤 */
-            color: white;
-            padding: 8px 12px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 0.9em;
-            transition: background-color 0.3s, transform 0.1s;
-            font-weight: 500;
-        }
-
-        .delete-btn:hover {
-            background-color: #c82333;
-            transform: scale(1.05);
-        }
-
-        .action-area {
-            margin-top: 30px;
-            display: flex;
-            justify-content: space-around;
-            flex-wrap: wrap;
-        }
-        .total-area {
-            margin-top: 20px;
-            padding: 15px;
-            background-color: #fce4ec; /* カート合計エリアを強調 (薄いピンク) */
-            border-radius: 8px;
-            font-size: 1.2em;
-            font-weight: bold;
-            color: #ff69b4; /* ショッキングピンク */
-            display: flex;
-            justify-content: space-between;
-        }
-
-        /* ====================================
-           4. レスポンシブ対応 (Mobile Specific)
-           ==================================== */
-        @media screen and (max-width: 650px) {
-            .cart-container {
-                border-radius: 0;
-                box-shadow: none;
-                padding: 10px 0;
-            }
-        }
-        @media screen and (max-width: 480px) {
-            header h1 {
-                font-size: 1.5em;
-            }
-            .page-title {
-                font-size: 1.8em;
-            }
-            .btn-base {
-                width: 100%;
-                margin: 5px 0;
-            }
-            .action-area {
-                flex-direction: column;
-                gap: 10px;
-            }
-            .total-area {
-                font-size: 1.1em;
-            }
-        }
-    </style>
+    /* ------------------------------------
+        4. Custom Modal Style
+    ------------------------------------ */
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: none; /* JSで表示/非表示を制御 */
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        padding: 20px;
+    }
+    .modal-content {
+        background-color: #fff;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 5px 25px rgba(122, 111, 219, 0.4);
+        max-width: 400px;
+        width: 100%;
+        text-align: center;
+    }
+    #modalMessage {
+        font-size: 1.1em;
+        font-weight: 600;
+        margin-bottom: 25px;
+        color: #7a6fdb; /* メインカラーを適用 */
+    }
+    .modal-actions {
+        display: flex;
+        justify-content: space-around;
+        gap: 15px;
+    }
+    .modal-actions button {
+        flex-grow: 1;
+        padding: 12px 15px;
+        border: none;
+        border-radius: 8px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background-color 0.3s, transform 0.1s;
+        font-size: 1em;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .confirm-btn {
+        background-color: #ff7f7f; /* 削除色 */
+        color: white;
+    }
+    .confirm-btn:hover {
+        background-color: #e55e5e;
+        transform: translateY(-1px);
+    }
+    .cancel-btn {
+        background-color: #f0f0f0;
+        color: #555;
+    }
+    .cancel-btn:hover {
+        background-color: #e0e0e0;
+        transform: translateY(-1px);
+    }
+</style>
 </head>
+
 <body>
-    <!-- ヘッダー部分は元のコードをそのまま維持 -->
     <header>
         <div class="left">
-            <a th:href="@{/}">
+            <!-- Thymeleaf: ホームへのリンク -->
+            <a th:href="@{/}" href="/">
                 <img src="/images/homebotan.jpg" alt="ホームページへ戻る" class="home-icon" />
             </a>
             <h1>OshiGiftBox</h1>
         </div>
         <div class="user-links">
+            <!-- Thymeleaf: ユーザー関連ページへのリンク -->
             <a th:href="@{/users/auth_select}">
                 <img src="/images/yuza.jpg" alt="ユーザー登録" class="user-icon" />
             </a>
         </div>
     </header>
-    <!-- ヘッダー終了 -->
-
     <main>
-        <h1 class="page-title">カート一覧</h1>
+        <h1>商品一覧</h1>
 
-        <div class="cart-container">
-            <h2 class="cart-section-title">🛒 カート内容</h2>
+        <div class="list-card">
+            <h2>📦 登録済み商品リスト</h2>
 
-            <div class="responsive-table-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>商品名</th>
-                            <th>単価</th>
-                            <th>数量</th>
-                            <th>小計</th>
-                            <th>操作</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- カートアイテムの繰り返し処理 -->
-                        <!-- cartItemsはコントローラから渡されるList<CartItem>を想定 -->
-                        <tr class="cart-item" th:each="item : ${cartItems}">
-                            <!-- 商品名 -->
-                            <td th:text="${item.productName}">ダミー商品名</td>
-                            <!-- 単価 (カンマ区切り、小数点なし) -->
-                            <td th:text="${#numbers.formatDecimal(item.price, 0, 'COMMA', 0, 'POINT')} + '円'">000円</td>
-                            <!-- 数量 -->
-                            <td th:text="${item.quantity}">0</td>
-                            <!-- 小計 = 単価 * 数量 (カンマ区切り、小数点なし) -->
-                            <td th:text="${#numbers.formatDecimal(item.price * item.quantity, 0, 'COMMA', 0, 'POINT')} + '円'">0,000円</td>
-                            <td>
-                                <!-- 削除フォーム (item.idでAPIパスを構築) -->
-                                <form th:action="@{'/api/cart/' + ${item.id}}" method="post" class="delete-form">
-                                    <input type="hidden" name="_method" value="delete" />
-                                    <button type="submit" class="delete-btn">削除</button>
-                                </form>
-                            </td>
-                        </tr>
+            <!-- 商品登録フォームへの誘導 (Spring Bootのルーティングを想定) -->
+            <a th:href="@{/products/new}" class="add-product-link">
+                + 新しい商品を登録する
+            </a>
 
-                        <!-- カートが空の場合のメッセージ -->
-                        <tr th:if="${#lists.isEmpty(cartItems)}">
-                            <td colspan="5" style="color: #888; text-align: center; border-bottom: none;">カートに商品がありません</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- 合計金額エリア -->
-            <!-- totalPriceはコントローラから渡される合計金額を想定 -->
-            <div class="total-area">
-                <span>合計金額（税込）:</span>
-                <span th:text="${#numbers.formatDecimal(totalPrice, 0, 'COMMA', 0, 'POINT')} + '円'">0,000円</span>
-            </div>
-
-            <div class="action-area">
-                <!-- リンク先を商品一覧と注文確認に変更 -->
-                <a th:href="@{/products}" class="btn-base">お買い物を続ける</a>
-                <a th:href="@{/order/confirm}" class="btn-base btn-primary">注文を確定する</a>
-            </div>
+            <!-- メッセージ表示エリア -->
+            <div id="messageBox"></div>
+            
+            <ul id="productList">
+                <p style="text-align: center; color: #7a6fdb; font-weight: 600;">商品情報を読み込み中...</p>
+            </ul>
         </div>
     </main>
+
+    <!-- Custom Confirmation Modal -->
+    <div id="deleteModal" class="modal-overlay">
+        <div class="modal-content">
+            <p id="modalMessage">商品を削除してもよろしいですか？</p>
+            <div class="modal-actions">
+                <button id="modalConfirmBtn" class="confirm-btn">削除する</button>
+                <button id="modalCancelBtn" class="cancel-btn">キャンセル</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+// 削除処理の状態を保持するグローバル変数
+let productToDeleteId = null;
+let productToDeleteName = null;
+
+// メッセージ表示関数
+function displayMessage(message, type = 'success') {
+    const box = document.getElementById('messageBox');
+    box.textContent = message;
+    box.className = '';
+    box.classList.add(type);
+    box.style.display = 'block';
+    // 3秒後にメッセージを消す
+    setTimeout(() => {
+        box.style.display = 'none';
+    }, 3000);
+}
+
+// ----------------------------------------------------
+// 💡 お気に入り状態をトグルする関数
+// ----------------------------------------------------
+async function toggleFavorite(id, buttonElement) {
+    // 現在のお気に入り状態を取得
+    const isFavorited = buttonElement.classList.contains('favorited');
+    const method = isFavorited ? 'DELETE' : 'POST'; // お気に入り解除ならDELETE、お気に入り登録ならPOST
+    const actionText = isFavorited ? 'お気に入り解除' : 'お気に入り登録';
+
+    try {
+        // Spring BootのAPIエンドポイントを呼び出すことを想定
+        const response = await fetch(`/api/products/${id}/favorite`, {
+            method: method,
+            headers: {
+                'Content-Type': 'application/json',
+                // 必要に応じて認証ヘッダーを追加
+            },
+        });
+
+        if (response.ok) {
+            // UIを更新
+            buttonElement.classList.toggle('favorited');
+            
+            // アイコンのクラスを更新
+            const icon = buttonElement.querySelector('i');
+            if (icon) {
+                icon.classList.toggle('far', isFavorited); // お気に入り解除ならfar (輪郭)
+                icon.classList.toggle('fas', !isFavorited); // お気に入り登録ならfas (塗りつぶし)
+            }
+
+
+            // 成功メッセージを表示
+            const message = `${actionText}が完了しました。`;
+            displayMessage(message, 'success');
+
+        } else if (response.status === 401) {
+            displayMessage('お気に入り機能はログイン後にご利用いただけます。', 'error');
+        } else {
+            const errorText = await response.text();
+            throw new Error(`[${response.status}] ${actionText}に失敗しました: ${errorText}`);
+        }
+    } catch (err) {
+        console.error('お気に入り処理エラー:', err);
+        displayMessage(`${actionText}処理中にエラーが発生しました。`, 'error');
+    }
+}
+
+
+// 削除確認モーダルを表示
+function showDeleteModal(id, name) {
+    productToDeleteId = id;
+    productToDeleteName = name;
+
+    const modal = document.getElementById('deleteModal');
+    const message = document.getElementById('modalMessage');
+
+    // モーダルメッセージを設定
+    message.textContent = `商品: ${name}を削除してもよろしいですか？`;
+    
+    // モーダルを表示
+    modal.style.display = 'flex';
+}
+
+// 削除確認モーダルを非表示
+function hideDeleteModal() {
+    document.getElementById('deleteModal').style.display = 'none';
+    productToDeleteId = null;
+    productToDeleteName = null;
+}
+
+// 削除ボタンが押されたときの処理 (モーダル表示)
+function deleteProduct(id, name) {
+    // Canvas環境で禁止されている confirm() の代わりにカスタムモーダルを表示
+    showDeleteModal(id, name);
+}
+
+// モーダルで「削除する」がクリックされたときの実際の削除処理
+async function confirmDelete() {
+    if (productToDeleteId === null) return;
+    
+    const id = productToDeleteId;
+    const name = productToDeleteName;
+    
+    hideDeleteModal(); // モーダルを閉じる
+
+    try {
+        const response = await fetch(`/products/${id}`, { 
+            method: 'DELETE' // 👈 DELETE に変更
+        });
+
+        if (response.ok) {
+            // サーバーから返されたメッセージ本文（商品名入りのメッセージ）を取得
+            const successMessage = await response.text();
+            
+            // 取得したメッセージをそのまま表示
+            displayMessage(successMessage, 'success'); 
+            fetchAndDisplayProducts(); // リストを更新
+        } else {
+            // サーバーからエラー詳細を取得
+            const errorText = await response.text();
+            // サーバーがエラーレスポンスを返した場合
+            throw new Error(`[${response.status}] ${errorText || 'サーバーエラー'}`);
+        }
+    } catch (err) {
+        console.error('削除エラー:', err);
+        // エラーメッセージに詳細を含める
+        displayMessage(`削除処理中にエラーが発生しました。詳細: ${err.message}`, 'error');
+    }
+}
+
+
+// 商品リストを取得し表示する処理
+async function fetchAndDisplayProducts() {
+    const list = document.getElementById('productList');
+    list.innerHTML = '<p style="text-align: center; color: #7a6fdb; font-weight: 600;">商品情報を読み込み中...</p>';
+    
+    let data = []; 
+
+    try {
+        const response = await fetch('/api/products'); 
+        if (!response.ok) {
+            // サーバーからエラー詳細を取得し、エラーメッセージとして表示するためにthrowする
+            const errorDetail = await response.text();
+            throw new Error(`商品情報の取得に失敗しました。ステータス: ${response.status} 詳細: ${errorDetail}`);
+        }
+        
+        data = await response.json();
+
+    } catch (err) {
+        console.error('データ取得エラー:', err);
+        // エラーが発生した場合、dataは空のまま（[]）で続行する
+        // ユーザーにはエラーメッセージを表示
+        displayMessage(`データの読み込み中にエラーが発生しました。サーバーが起動しているか確認してください。`, 'error');
+    }
+    
+    list.innerHTML = ''; // ロードメッセージをクリア
+
+    if (data.length === 0) {
+        // データが空の場合のメッセージ
+        list.innerHTML = '<p style="text-align: center; color: #7a6fdb; font-weight: 600; padding: 15px;">商品が登録されていません。<br>上記の「新しい商品を登録する」ボタンから登録してください。</p>';
+        return;
+    }
+
+    data.forEach((product, index) => {
+        const li = document.createElement('li');
+        
+        // 画像URLが設定されていない場合の代替画像
+        const imageSrc = product.imagePath 
+            ? product.imagePath 
+            : `https://placehold.co/80x80/cccccc/ffffff?text=No+Image`;
+        
+        // お気に入り状態に基づいてクラスを設定
+        const favoriteClass = product.isFavorited ? 'favorited' : '';
+        const iconClass = product.isFavorited ? 'fas' : 'far';
+
+        li.innerHTML = `
+            <div class="product-info">
+                <strong>${index + 1}. ${product.name}</strong>
+                <div style="margin-top: 5px; font-size: 0.9em; color: #555;">
+                    （${product.price ? product.price.toLocaleString() : '価格不明'}円）
+                </div>
+                <!-- 画像コンテナ -->
+                <div class="product-image-container">
+                    <img src="${imageSrc}" 
+                         alt="${product.name}の画像"
+                         onerror="this.onerror=null;this.src='https://placehold.co/80x80/cccccc/ffffff?text=No+Img';">
+                </div>
+            </div>
+            <!-- 💡 編集・削除ボタンの前に、お気に入りボタンを追加 -->
+            <div class="item-controls">
+                <button type="button" 
+                        class="favorite-btn ${favoriteClass}" 
+                        onclick="toggleFavorite(${product.id}, this)">
+                    <!-- Font Awesomeのハートアイコン -->
+                    <i class="${iconClass} fa-heart"></i>
+                </button>
+
+                <div class="actions">
+                    <!-- Spring Boot: /products/edit/{id} へのリンク -->
+                    <a href="/products/edit/${product.id}" 
+                        class="edit-btn">編集</a>
+                    <!-- 削除ボタンはカスタムモーダルを表示する関数を呼び出す -->
+                    <button type="button" onclick="deleteProduct(${product.id}, '${product.name}')">削除</button>
+                </div>
+            </div>
+        `;
+        list.appendChild(li);
+    });
+}
+
+// ページロード時に実行
+window.onload = function() {
+    fetchAndDisplayProducts();
+
+    // モーダルボタンにイベントを設定
+    document.getElementById('modalConfirmBtn').onclick = confirmDelete;
+    document.getElementById('modalCancelBtn').onclick = hideDeleteModal;
+    
+    // オーバーレイをクリックで閉じられるようにする
+    document.getElementById('deleteModal').addEventListener('click', function(event) {
+        // モーダルコンテンツ自体がクリックされた場合は閉じない
+        if (event.target === this) {
+            hideDeleteModal();
+        }
+    });
+};
+    </script>
 </body>
 </html>

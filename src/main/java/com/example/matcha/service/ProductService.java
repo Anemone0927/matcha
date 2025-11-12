@@ -7,7 +7,9 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set; // 【★追加】
 import java.util.UUID;
+import java.util.stream.Collectors; // 【★追加】
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,11 +18,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.example.matcha.entity.Favorite; // 【★追加】
 import com.example.matcha.entity.Product;
+import com.example.matcha.repository.CartItemRepository;
+import com.example.matcha.repository.FavoriteRepository; // 【★追加】
+import com.example.matcha.repository.OrderRepository;
 import com.example.matcha.repository.ProductRepository;
 import com.example.matcha.repository.ReviewRepository;
-import com.example.matcha.repository.CartItemRepository; 
-import com.example.matcha.repository.OrderRepository; // 【★追加: OrderRepositoryのインポート】
 
 @Service
 public class ProductService {
@@ -32,10 +36,15 @@ public class ProductService {
 
     private static final String IMAGE_PATH_PREFIX = "/images/";
 
+    // 定数: 今回はユーザー認証がないため、固定のユーザーIDを使用します。
+    // 実際には認証情報から取得する必要があります。
+    private static final Long DEFAULT_USER_ID = 1L; // 【★追加】
+
     private final ProductRepository productRepository;
     private final ReviewRepository reviewRepository;
     private final CartItemRepository cartItemRepository;
-    private final OrderRepository orderRepository; // 【★追加: OrderRepositoryフィールド】
+    private final OrderRepository orderRepository;
+    private final FavoriteRepository favoriteRepository; // 【★追加: FavoriteRepositoryフィールド】
 
     /**
      * コンストラクタインジェクション
@@ -44,11 +53,13 @@ public class ProductService {
         ProductRepository productRepository, 
         ReviewRepository reviewRepository, 
         CartItemRepository cartItemRepository,
-        OrderRepository orderRepository) { // 【★修正: OrderRepositoryを引数に追加】
+        OrderRepository orderRepository,
+        FavoriteRepository favoriteRepository) { // 【★修正: FavoriteRepositoryを引数に追加】
         this.productRepository = productRepository;
         this.reviewRepository = reviewRepository;
         this.cartItemRepository = cartItemRepository;
-        this.orderRepository = orderRepository; // 【★追加: OrderRepository初期化】
+        this.orderRepository = orderRepository;
+        this.favoriteRepository = favoriteRepository; // 【★追加: FavoriteRepository初期化】
     }
 
     // --- Product CRUD Operations ---
@@ -115,7 +126,11 @@ public class ProductService {
         String imagePath = product.getImagePath();
         
         try {
-            // 【★追加: 1. 注文テーブル (orders) の関連レコードを先に削除 (最後の外部キー対策)】
+            // 【★追加: 0. お気に入りテーブル (favorites) の関連レコードを先に削除】
+            favoriteRepository.deleteByProductId(id);
+            logger.info("商品ID: {} に関連するお気に入りレコードを全て削除しました。", id);
+
+            // 【1. 注文テーブル (orders) の関連レコードを先に削除】
             orderRepository.deleteByProductId(id);
             logger.info("商品ID: {} に関連する注文レコードを全て削除しました。", id);
 
@@ -141,6 +156,57 @@ public class ProductService {
         }
     }
 
+
+    // --- お気に入り関連のサービスロジック (Favorite Logic) --- // 【★新規追加】
+
+    /**
+     * 現在のユーザーのお気に入り商品IDのセットを取得します。
+     * @return お気に入りに登録されている商品IDのSet
+     */
+    public Set<Long> getFavoriteProductIdsForCurrentUser() {
+        // DEFAULT_USER_ID を使ってユーザーのお気に入り情報を取得
+        List<Favorite> favorites = favoriteRepository.findByUserId(DEFAULT_USER_ID);
+        
+        // お気に入りリストから商品IDのみを抽出し、Setにして返却
+        return favorites.stream()
+                .map(favorite -> favorite.getProduct().getId())
+                .collect(Collectors.toSet());
+    }
+
+    /**
+     * 指定された商品をお気に入りに追加します。
+     * @param productId 商品ID
+     * @return 成功した場合true
+     */
+    @Transactional
+    public boolean addToFavorites(Long productId) {
+        Optional<Product> productOpt = productRepository.findById(productId);
+        if (productOpt.isEmpty()) {
+            return false;
+        }
+
+        Product product = productOpt.get();
+        // 既にお気に入り登録済みかチェック
+        if (favoriteRepository.findByUserIdAndProduct(DEFAULT_USER_ID, product).isPresent()) {
+            return true; // 既に登録済みなら成功とみなす
+        }
+
+        Favorite favorite = new Favorite(DEFAULT_USER_ID, product);
+        favoriteRepository.save(favorite);
+        return true;
+    }
+
+    /**
+     * 指定された商品をお気に入りから削除します。
+     * @param productId 商品ID
+     * @return 成功した場合true
+     */
+    @Transactional
+    public boolean removeFromFavorites(Long productId) {
+        // Repositoryのカスタムメソッド deleteByUserIdAndProductId を使用
+        favoriteRepository.deleteByUserIdAndProductId(DEFAULT_USER_ID, productId);
+        return true;
+    }
 
     // --- File Handling Methods ---
 
