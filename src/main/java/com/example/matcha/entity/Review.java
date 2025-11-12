@@ -4,20 +4,26 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne; // 追記
-import jakarta.persistence.JoinColumn; // 追記
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Table; // Tableアノテーションを追加
 
+/**
+ * レビューエンティティ
+ * 商品(Product)との間に多対一 (Many-to-One) の関係を持つ
+ */
 @Entity
+@Table(name = "reviews") // データベースのテーブル名を明示
 public class Review {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // 💡 修正点: Long productId を削除し、@ManyToOne の Product 参照に置き換え
-    @ManyToOne 
-    @JoinColumn(name = "product_id", nullable = false) 
-    private Product product; // このフィールド名が Product.java の mappedBy="product" に対応
+    // 多対一 (ManyToOne): 複数のレビューが1つの商品に紐づく
+    @ManyToOne
+    @JoinColumn(name = "product_id", nullable = false) // 外部キーカラムを "product_id" として設定
+    private Product product;
 
     private String author;
     private String content;
@@ -33,7 +39,6 @@ public class Review {
         this.id = id;
     }
 
-    // 💡 修正点: getProductId/setProductId を getProduct/setProduct に変更
     public Product getProduct() {
         return product;
     }

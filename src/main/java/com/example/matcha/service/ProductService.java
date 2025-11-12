@@ -18,7 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.example.matcha.entity.Product;
 import com.example.matcha.repository.ProductRepository;
-import com.example.matcha.repository.ReviewRepository;
+import com.example.matcha.repository.ReviewRepository; // ReviewRepository を使用
 
 @Service
 public class ProductService {
@@ -33,7 +33,7 @@ public class ProductService {
     private static final String IMAGE_PATH_PREFIX = "/images/";
 
     private final ProductRepository productRepository;
-    private final ReviewRepository reviewRepository;
+    private final ReviewRepository reviewRepository; // 注入済み
 
     /**
      * コンストラクタインジェクション
@@ -82,6 +82,8 @@ public class ProductService {
 
             // 画像がアップロードされた場合のみ、画像を保存し、パスを更新
             if (image != null && !image.isEmpty()) {
+                // 古い画像の削除処理は、新しい画像が正常に保存された後に実行するのが安全だが、
+                // 今回は旧パスの取得がないため、単純に新画像を保存しパスを更新する
                 String filename = saveImage(image);
                 product.setImagePath(IMAGE_PATH_PREFIX + filename);
             }
@@ -94,6 +96,8 @@ public class ProductService {
 
     /**
      * 商品削除処理（トランザクション管理、レビュー削除、画像ファイル削除を含む）
+     * * @param id 削除する商品のID
+     * @return 削除が成功した場合は true
      */
     @Transactional // サービス層のビジネスロジックとしてトランザクションを管理
     public boolean deleteProduct(Long id) {
@@ -109,6 +113,7 @@ public class ProductService {
         
         try {
             // --- 1. 関連するレビューを全て削除する (外部キー制約の回避) ---
+            // @Transactional の範囲内で実行することで、一連のデータベース操作が保証される
             reviewRepository.deleteByProductId(id);
             logger.info("商品ID: {} に関連するレビューを全て削除しました。", id);
 
@@ -121,9 +126,9 @@ public class ProductService {
             
             return true;
         } catch (Exception e) {
-            logger.error("商品ID: {} の削除処理中にエラーが発生しました。トランザクションはロールバックされます。", id, e);
-            // RuntimeException (または派生クラス) がスローされた場合、ロールバックされる
-            throw new RuntimeException("商品の削除に失敗しました。", e);
+            // RuntimeExceptionを再スローし、@Transactionalによるロールバックをトリガーする
+            logger.error("商品ID: {} の削除処理中にエラーが発生しました。データベース操作はロールバックされます。", id, e);
+            throw new RuntimeException("商品の削除に失敗しました: " + e.getMessage(), e);
         }
     }
 
