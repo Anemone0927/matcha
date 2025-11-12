@@ -1,9 +1,11 @@
 C:\Users\24i1004\matcha\src\main\java\com\example\matcha\controller\ReviewPageController.java
 C:\Users\24i1004\matcha\src\main\java\com\example\matcha\MatchaApplication.java
+C:\Users\24i1004\matcha\src\main\java\com\example\matcha\repository\FavoriteRepository.java
 C:\Users\24i1004\matcha\src\main\java\com\example\matcha\repository\PostRepository.java
 C:\Users\24i1004\matcha\src\main\java\com\example\matcha\repository\ReviewRepository.java
 C:\Users\24i1004\matcha\src\main\java\com\example\matcha\controller\CartController.java
 C:\Users\24i1004\matcha\src\main\java\com\example\matcha\config\WebConfig.java
+C:\Users\24i1004\matcha\src\main\java\com\example\matcha\entity\Favorite.java
 C:\Users\24i1004\matcha\src\main\java\com\example\matcha\repository\CartItemRepository.java
 C:\Users\24i1004\matcha\src\main\java\com\example\matcha\repository\UserRepository.java
 C:\Users\24i1004\matcha\src\main\java\com\example\matcha\service\ProductService.java

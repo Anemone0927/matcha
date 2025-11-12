@@ -13,12 +13,14 @@ com\example\matcha\entity\Product.class
 com\example\matcha\controller\ImageController.class
 com\example\matcha\repository\ReviewRepository.class
 com\example\matcha\repository\UserRepository.class
+com\example\matcha\repository\FavoriteRepository.class
 com\example\matcha\service\CartServiceImpl.class
 com\example\matcha\MatchaApplication.class
 com\example\matcha\dto\ProductEditForm.class
 com\example\matcha\service\ProductService.class
 com\example\matcha\service\PostService.class
 com\example\matcha\service\CartService.class
+com\example\matcha\entity\Favorite.class
 com\example\matcha\entity\User.class
 com\example\matcha\controller\OrderController.class
 com\example\matcha\controller\ProductController.class

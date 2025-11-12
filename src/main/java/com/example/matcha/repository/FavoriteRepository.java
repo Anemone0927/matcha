@@ -5,7 +5,7 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-
+import org.springframework.transaction.annotation.Transactional;
 import com.example.matcha.entity.Favorite;
 import com.example.matcha.entity.Product;
 
@@ -17,4 +17,8 @@ public interface FavoriteRepository extends JpaRepository<Favorite, Long> {
     Optional<Favorite> findByUserIdAndProduct(Long userId, Product product);
 
     void deleteByUserIdAndProductId(Long userId, Long productId);
+
+    @Transactional
+    void deleteByProductId(Long productId);
+    Favorite findByUserIdAndProductId(Long userId, Long productId);
 }
