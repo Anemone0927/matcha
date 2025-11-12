@@ -82,8 +82,6 @@ public class ProductService {
 
             // 画像がアップロードされた場合のみ、画像を保存し、パスを更新
             if (image != null && !image.isEmpty()) {
-                // 古い画像ファイルを削除するロジックをここに追加しても良いが、
-                // 単純化のため今回は新しい画像を保存するのみとする
                 String filename = saveImage(image);
                 product.setImagePath(IMAGE_PATH_PREFIX + filename);
             }
@@ -111,7 +109,7 @@ public class ProductService {
         
         try {
             // --- 1. 関連するレビューを全て削除する (外部キー制約の回避) ---
-            reviewRepository.deleteByProductId(id); 
+            reviewRepository.deleteByProductId(id);
             logger.info("商品ID: {} に関連するレビューを全て削除しました。", id);
 
             // --- 2. データベースのレコードを削除 ---
@@ -124,7 +122,7 @@ public class ProductService {
             return true;
         } catch (Exception e) {
             logger.error("商品ID: {} の削除処理中にエラーが発生しました。トランザクションはロールバックされます。", id, e);
-            // @Transactional のため、RuntimeException (または派生クラス) がスローされた場合、ロールバックされる
+            // RuntimeException (または派生クラス) がスローされた場合、ロールバックされる
             throw new RuntimeException("商品の削除に失敗しました。", e);
         }
     }

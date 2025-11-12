@@ -16,20 +16,16 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
-// org.springframework.transaction.annotation.Transactional は不要になったため削除
 
 import com.example.matcha.entity.Product;
-// ProductRepository, ReviewRepository はサービス層でのみ使用するため削除
-import com.example.matcha.service.ProductService; // 💡 ProductServiceをインポート
+import com.example.matcha.service.ProductService; // ProductServiceをインポート
 
 @Controller
 public class ProductController {
     
     private static final Logger logger = LoggerFactory.getLogger(ProductController.class);
 
-    // uploadDir や IMAGE_PATH_PREFIX の定義はサービス層に移動
-
-    private final ProductService productService; // 💡 サービスを注入
+    private final ProductService productService; // サービスを注入
 
     /**
      * コンストラクタインジェクション (ProductServiceのみを注入)
@@ -43,7 +39,7 @@ public class ProductController {
     @ResponseBody
     public List<Product> getAllProducts() {
         logger.info("APIエンドポイント /api/products が呼び出されました。");
-        // 💡 サービス層に処理を委譲
+        // サービス層に処理を委譲
         return productService.findAllProducts();
     }
 
@@ -69,20 +65,18 @@ public class ProductController {
         @RequestParam MultipartFile image,
         Model model) {
 
-        // 💡 サービス層に処理を委譲
+        // サービス層に処理を委譲
         Product newProduct = productService.createProduct(name, price, image);
         logger.info("新しい商品が登録されました: {}", newProduct.getName());
 
         return "redirect:/products_list";
     }
 
-    // saveImage メソッドはサービス層に移動したため削除
-
-    // 💡 修正箇所: 商品削除（サービス層に処理を委譲）
+    // 商品削除（サービス層に処理を委譲）
     @DeleteMapping("/products/{id}")
     @ResponseBody
     public ResponseEntity<String> deleteProduct(@PathVariable Long id) {
-        // 💡 サービス層のdeleteProductを呼び出す
+        // サービス層のdeleteProductを呼び出す
         boolean success = productService.deleteProduct(id);
 
         if (success) {
@@ -98,7 +92,7 @@ public class ProductController {
     @GetMapping("/products/{id}")
     @ResponseBody
     public ResponseEntity<Product> getProduct(@PathVariable Long id) {
-        // 💡 サービス層に処理を委譲
+        // サービス層に処理を委譲
         return productService.findProductById(id)
             // 商品が存在すれば200 OKとProduct、存在しなければ404 Not Foundを返す
             .map(ResponseEntity::ok)
@@ -108,14 +102,14 @@ public class ProductController {
     // 商品編集フォーム画面表示 (GET /products/edit/{id})
     @GetMapping("/products/edit/{id}")
     public String editProduct(@PathVariable Long id, Model model) {
-        // 💡 サービス層に処理を委譲
+        // サービス層に処理を委譲
         Optional<Product> product = productService.findProductById(id);
         
         if (product.isPresent()) {
             model.addAttribute("product", product.get());
             return "products_edit";
         } else {
-            return "error/404"; 
+            return "error/404";
         }
     }
     
@@ -129,7 +123,7 @@ public class ProductController {
         @RequestParam(value = "image", required = false) MultipartFile image,
         Model model) {
 
-        // 💡 サービス層に処理を委譲
+        // サービス層に処理を委譲
         productService.updateProduct(id, name, price, image);
         logger.info("商品ID: {} の更新リクエストが完了しました。", id);
 

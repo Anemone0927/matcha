@@ -3,7 +3,7 @@ package com.example.matcha.controller;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller; 
+import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model; 
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes; 
@@ -17,14 +17,14 @@ import java.util.Optional;
 /**
  * カート機能のAPI操作とView表示を管理するコントローラー
  */
-@Controller 
+@Controller
 public class CartController {
 
     private static final Logger logger = LoggerFactory.getLogger(CartController.class);
 
     private final CartItemRepository cartItemRepository;
     
-    // 💡 修正: @Autowired からコンストラクタインジェクションに移行
+    // コンストラクタインジェクション
     public CartController(CartItemRepository cartItemRepository) {
         this.cartItemRepository = cartItemRepository;
     }
@@ -38,12 +38,11 @@ public class CartController {
      */
     @GetMapping("/cart_list")
     public String showCartList(Model model) {
-        // Thymeleafで必要なデータをModelに追加
         // 現状はユーザーIDでの絞り込みがないため findAll() を使用
         List<CartItem> cartItems = cartItemRepository.findAll();
         model.addAttribute("cartItems", cartItems);
         
-        // 💡 修正箇所: 合計金額の計算を product.getPrice() を使用するように修正
+        // 合計金額の計算を product.getPrice() を使用するように修正
         double totalPrice = cartItems.stream()
             .mapToDouble(item -> {
                 // 商品が関連付けられていない場合のNullPointerExceptionを避けるガード処理
@@ -100,12 +99,12 @@ public class CartController {
                 redirectAttributes.addFlashAttribute("error", "指定された商品が見つかりませんでした。");
             }
             // 処理後、カート一覧ページにリダイレクト
-            return "redirect:/cart_list"; 
+            return "redirect:/cart_list";
         } catch (Exception e) {
-            // エラーログを出力してデバッグしやすくします
+            // エラーログを出力
             logger.error("カートアイテム削除中にエラーが発生しました。", e);
             redirectAttributes.addFlashAttribute("error", "削除処理中にエラーが発生しました。");
-            return "redirect:/cart_list"; 
+            return "redirect:/cart_list";
         }
     }
 }
