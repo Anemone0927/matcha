@@ -14,12 +14,12 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     /**
      * 指定された商品IDに関連付けられている注文レコードを全て削除します。
-     * Productを削除する際の外部キー制約違反を防ぐために、このメソッドが必要です。
-     *
+     * 外部キー制約を回避するため、ネイティブSQLでテーブル名とカラム名を直接指定します。
      * @param productId 削除対象のProduct ID
      */
     @Modifying
     @Transactional
-    @Query("DELETE FROM Order o WHERE o.product.id = :productId")
+    // 【★修正点: nativeQuery = true を追加し、HQLからネイティブSQLへ変更】
+    @Query(value = "DELETE FROM orders WHERE product_id = :productId", nativeQuery = true)
     void deleteByProductId(@Param("productId") Long productId);
 }
