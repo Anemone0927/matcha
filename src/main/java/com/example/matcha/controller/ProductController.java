@@ -18,14 +18,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.matcha.entity.Product;
-import com.example.matcha.service.ProductService; // ProductServiceをインポート
+import com.example.matcha.service.ProductService; 
 
 @Controller
 public class ProductController {
     
     private static final Logger logger = LoggerFactory.getLogger(ProductController.class);
 
-    private final ProductService productService; // サービスを注入
+    private final ProductService productService; 
 
     /**
      * コンストラクタインジェクション (ProductServiceのみを注入)
@@ -76,15 +76,21 @@ public class ProductController {
     @DeleteMapping("/products/{id}")
     @ResponseBody
     public ResponseEntity<String> deleteProduct(@PathVariable Long id) {
-        // サービス層のdeleteProductを呼び出す
-        boolean success = productService.deleteProduct(id);
+        try {
+            // サービス層のdeleteProductを呼び出す
+            boolean success = productService.deleteProduct(id);
 
-        if (success) {
-            logger.info("商品ID: {} の削除が完了しました。", id);
-            return ResponseEntity.ok("商品ID: " + id + " を削除しました！");
-        } else {
-            logger.warn("商品ID: {} の削除に失敗しました (商品が存在しませんでした)。", id);
-            return ResponseEntity.notFound().body("指定された商品IDが見つかりませんでした。");
+            if (success) {
+                logger.info("商品ID: {} の削除が完了しました。", id);
+                return ResponseEntity.ok("商品ID: " + id + " を削除しました！");
+            } else {
+                logger.warn("商品ID: {} の削除に失敗しました (商品が存在しませんでした)。", id);
+                // 修正: notFound().body() の代わりに status(404).body() を使用
+                return ResponseEntity.status(404).body("指定された商品IDが見つかりませんでした。");
+            }
+        } catch (RuntimeException e) {
+             logger.error("商品ID: {} の削除処理中に予期せぬエラーが発生しました。", id, e);
+             return ResponseEntity.internalServerError().body("削除処理中にエラーが発生しました: " + e.getMessage());
         }
     }
 
