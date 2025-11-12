@@ -2,7 +2,7 @@ package com.example.matcha.controller;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set; // 【★追加】
+import java.util.Set; 
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,13 +13,14 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping; // 【★追加】
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.matcha.entity.Product;
 import com.example.matcha.service.ProductService;
+import com.example.matcha.service.FavoriteService; // 【★追加】
 
 @Controller
 public class ProductController {
@@ -27,12 +28,14 @@ public class ProductController {
     private static final Logger logger = LoggerFactory.getLogger(ProductController.class);
 
     private final ProductService productService;
+    private final FavoriteService favoriteService; // 【★追加: FavoriteServiceフィールド】
 
     /**
-     * コンストラクタインジェクション (ProductServiceのみを注入)
+     * コンストラクタインジェクション (ProductServiceとFavoriteServiceを注入)
      */
-    public ProductController(ProductService productService) {
+    public ProductController(ProductService productService, FavoriteService favoriteService) { // 【★引数にFavoriteServiceを追加】
         this.productService = productService;
+        this.favoriteService = favoriteService; // 【★初期化】
     }
 
     // 商品一覧API (JSONで返す)
@@ -52,8 +55,8 @@ public class ProductController {
         List<Product> products = productService.findAllProducts();
         model.addAttribute("products", products);
 
-        // 2. 【★追加: お気に入り商品IDリストの取得】
-        Set<Long> favoriteProductIds = productService.getFavoriteProductIdsForCurrentUser();
+        // 2. お気に入り商品IDリストの取得 (FavoriteServiceから取得するように修正)
+        Set<Long> favoriteProductIds = favoriteService.getFavoriteProductIdsForCurrentUser(); // 【★修正】
         model.addAttribute("favoriteProductIds", favoriteProductIds);
         
         return "products_list";
@@ -81,8 +84,6 @@ public class ProductController {
     }
 
     // 商品削除（サービス層に処理を委譲）
-    // ※ 既存のDELETEマッピングはそのまま残しつつ、HTMLのPOSTフォームでDELETEをエミュレートすることも考慮し、
-    //    今回はHTML側のフォームに合わせて/products/delete/{id}のPOSTマッピングも持たせている可能性があります。
     @DeleteMapping("/products/{id}")
     @ResponseBody
     public ResponseEntity<String> deleteProduct(@PathVariable Long id) {
@@ -139,40 +140,7 @@ public class ProductController {
         return "redirect:/products_list";
     }
     
-    // --- 【★新規追加: お気に入りAPIエンドポイント】 ---
-
-    /**
-     * 指定された商品をお気に入りに追加します。
-     * @param productId 商品ID
-     * @return 成功ステータス
-     */
-    @PostMapping("/favorites/add/{productId}")
-    public ResponseEntity<Void> addToFavorites(@PathVariable Long productId) {
-        logger.info("お気に入り追加リクエスト: {}", productId);
-        boolean success = productService.addToFavorites(productId);
-        if (success) {
-            return ResponseEntity.ok().build();
-        } else {
-            // 商品が見つからないなどのエラー
-            return ResponseEntity.badRequest().build();
-        }
-    }
-
-    /**
-     * 指定された商品をお気に入りから削除します。
-     * @param productId 商品ID
-     * @return 成功ステータス
-     */
-    @PostMapping("/favorites/remove/{productId}")
-    public ResponseEntity<Void> removeFromFavorites(@PathVariable Long productId) {
-        logger.info("お気に入り削除リクエスト: {}", productId);
-        boolean success = productService.removeFromFavorites(productId);
-        if (success) {
-            return ResponseEntity.ok().build();
-        } else {
-            // 処理が失敗した場合
-            return ResponseEntity.badRequest().build();
-        }
-    }
+    // --- 【★削除】お気に入りAPIエンドポイント ---
+    // FavoriteController.javaに移動したため、このメソッド群はProductControllerから削除します。
     // ------------------------------------------------
 }
