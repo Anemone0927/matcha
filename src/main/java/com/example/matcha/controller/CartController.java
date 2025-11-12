@@ -1,11 +1,12 @@
 package com.example.matcha.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller; 
-import org.springframework.ui.Model; // Modelをインポート
+import org.springframework.stereotype.Controller; 
+import org.springframework.ui.Model; 
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes; // RedirectAttributesをインポート
+import org.springframework.web.servlet.mvc.support.RedirectAttributes; 
 
 import com.example.matcha.entity.CartItem;
 import com.example.matcha.repository.CartItemRepository;
@@ -16,11 +17,17 @@ import java.util.Optional;
 /**
  * カート機能のAPI操作とView表示を管理するコントローラー
  */
-@Controller 
-public class CartController { // @RequestMapping("/api/cart") を削除し、ルーティングを個々のメソッドで管理
+@Controller 
+public class CartController {
 
-    @Autowired
-    private CartItemRepository cartItemRepository;
+    private static final Logger logger = LoggerFactory.getLogger(CartController.class);
+
+    private final CartItemRepository cartItemRepository;
+    
+    // 💡 修正: @Autowired からコンストラクタインジェクションに移行
+    public CartController(CartItemRepository cartItemRepository) {
+        this.cartItemRepository = cartItemRepository;
+    }
     
     // ==========================================
     // 1. View表示エンドポイント
@@ -28,18 +35,27 @@ public class CartController { // @RequestMapping("/api/cart") を削除し、ル
 
     /**
      * カート一覧ページを表示します (GET /cart_list)
-     * cart_list.html からこのエンドポイントが呼ばれることを想定
      */
     @GetMapping("/cart_list")
     public String showCartList(Model model) {
         // Thymeleafで必要なデータをModelに追加
+        // 現状はユーザーIDでの絞り込みがないため findAll() を使用
         List<CartItem> cartItems = cartItemRepository.findAll();
         model.addAttribute("cartItems", cartItems);
         
-        // 合計金額の計算 (仮実装。実際はServiceで計算すべき)
+        // 💡 修正箇所: 合計金額の計算を product.getPrice() を使用するように修正
         double totalPrice = cartItems.stream()
-            .mapToDouble(item -> item.getPrice() * item.getQuantity())
+            .mapToDouble(item -> {
+                // 商品が関連付けられていない場合のNullPointerExceptionを避けるガード処理
+                if (item.getProduct() == null) {
+                    logger.warn("CartItem ID: {} に関連付けられた商品がありません。", item.getId());
+                    return 0.0;
+                }
+                // 商品の価格 * 数量 で合計を計算
+                return (double) item.getProduct().getPrice() * item.getQuantity();
+            })
             .sum();
+            
         model.addAttribute("totalPrice", totalPrice);
         
         return "cart_list"; // cart_list.html をレンダリング
@@ -52,8 +68,8 @@ public class CartController { // @RequestMapping("/api/cart") を削除し、ル
     /**
      * カートに商品を追加します（POST /api/cart）
      */
-    @PostMapping("/api/cart") // フルパスを記載
-    @ResponseBody // JSONレスポンスを返すために必要
+    @PostMapping("/api/cart") 
+    @ResponseBody 
     public ResponseEntity<CartItem> addItem(@RequestBody CartItem item) {
         // カートに商品を追加
         CartItem savedItem = cartItemRepository.save(item);
@@ -63,8 +79,8 @@ public class CartController { // @RequestMapping("/api/cart") を削除し、ル
     /**
      * カートの内容を全て取得します（GET /api/cart）
      */
-    @GetMapping("/api/cart") // フルパスを記載
-    @ResponseBody // JSONレスポンスを返すために必要
+    @GetMapping("/api/cart") 
+    @ResponseBody 
     public List<CartItem> getCartItems() {
         // カートの内容を取得
         return cartItemRepository.findAll();
@@ -72,11 +88,8 @@ public class CartController { // @RequestMapping("/api/cart") を削除し、ル
 
     /**
      * カートから商品を削除します（POST /api/cart/{itemId} でDELETEをシミュレート）
-     * ここが最も重要な修正点です。
-     * @ResponseBody を削除し、リダイレクトを返します。
      */
     @RequestMapping(value = "/api/cart/{itemId}", method = {RequestMethod.DELETE, RequestMethod.POST})
-    // ↑ POSTとDELETEの両方を受け付けるように変更 (HiddenHttpMethodFilterがDELETEとして処理した後もPOSTとして認識されるため)
     public String deleteItem(@PathVariable Long itemId, RedirectAttributes redirectAttributes) {
         try {
             Optional<CartItem> item = cartItemRepository.findById(itemId);
@@ -87,13 +100,12 @@ public class CartController { // @RequestMapping("/api/cart") を削除し、ル
                 redirectAttributes.addFlashAttribute("error", "指定された商品が見つかりませんでした。");
             }
             // 処理後、カート一覧ページにリダイレクト
-            return "redirect:/cart_list"; 
+            return "redirect:/cart_list"; 
         } catch (Exception e) {
             // エラーログを出力してデバッグしやすくします
-            System.err.println("カートアイテム削除中にエラーが発生しました: " + e.getMessage());
-            e.printStackTrace();
+            logger.error("カートアイテム削除中にエラーが発生しました。", e);
             redirectAttributes.addFlashAttribute("error", "削除処理中にエラーが発生しました。");
-            return "redirect:/cart_list"; 
+            return "redirect:/cart_list"; 
         }
     }
 }
