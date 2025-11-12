@@ -42,7 +42,6 @@ public class FavoriteService {
         Product product = productOpt.get();
 
         // 2. 既存のお気に入りを検索
-        // FavoriteRepositoryにfindByUserIdAndProductが存在することを確認
         Optional<Favorite> existingFavorite = favoriteRepository.findByUserIdAndProduct(DEFAULT_USER_ID, product);
 
         if (existingFavorite.isPresent()) {

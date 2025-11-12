@@ -5,6 +5,7 @@ com\example\matcha\config\WebConfig.class
 com\example\matcha\repository\PostRepository.class
 com\example\matcha\controller\ReviewPageController.class
 com\example\matcha\model\CartItemModel.class
+com\example\matcha\controller\FavoriteController.class
 com\example\matcha\controller\HealthController.class
 com\example\matcha\entity\Review.class
 com\example\matcha\controller\UserController.class
@@ -18,6 +19,7 @@ com\example\matcha\service\CartServiceImpl.class
 com\example\matcha\MatchaApplication.class
 com\example\matcha\dto\ProductEditForm.class
 com\example\matcha\service\ProductService.class
+com\example\matcha\service\FavoriteService.class
 com\example\matcha\service\PostService.class
 com\example\matcha\service\CartService.class
 com\example\matcha\entity\Favorite.class

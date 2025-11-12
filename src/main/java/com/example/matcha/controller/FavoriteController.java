@@ -31,7 +31,6 @@ public class FavoriteController {
             boolean isNowFavorite = favoriteService.toggleFavorite(productId);
 
             // 成功時は200 OKと、新しい状態を返す
-            // フロントエンドはこのレスポンスでハートの色を切り替えます
             return ResponseEntity.ok().body(isNowFavorite);
 
         } catch (RuntimeException e) {
@@ -39,7 +38,6 @@ public class FavoriteController {
             System.err.println("Error toggling favorite for product ID " + productId + ": " + e.getMessage());
 
             // 画面に「お気に入り登録中にエラーが発生しました。」と表示されるように500エラーを返す
-            // フロントエンドはこれを受け取りエラーメッセージを表示します
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                                  .body("お気に入り処理中にエラーが発生しました。");
         }
