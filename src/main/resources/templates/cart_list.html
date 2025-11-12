@@ -33,6 +33,7 @@
         }
         header img.home-icon,
         header img.user-icon {
+            /* Thymeleaf環境のため、画像URLはそのまま維持 */
             width: 40px;
             height: 40px;
             border-radius: 50%;
@@ -126,14 +127,14 @@
         }
 
         table {
-            min-width: 400px;
+            min-width: 450px;
             width: 100%;
             border-collapse: collapse;
-            margin: 0; /* 親要素のボーダーを使うためマージンをリセット */
+            margin: 0;
         }
         th, td {
             padding: 12px;
-            border: none; /* 個別のセルボーダーを一旦削除 */
+            border: none;
             border-bottom: 1px solid #ddd; /* 下線のみ残す */
             text-align: left;
         }
@@ -148,8 +149,9 @@
         .cart-item:hover {
             background-color: #f9f9f9;
         }
-        td:nth-child(2) {
-            text-align: center; /* 数量 */
+        /* 単価、数量、小計を中央揃え */
+        td:nth-child(2), td:nth-child(3), td:nth-child(4) {
+            text-align: center;
         }
         td:last-child {
             text-align: center; /* 操作 */
@@ -191,11 +193,11 @@
         .total-area {
             margin-top: 20px;
             padding: 15px;
-            background-color: #fce4ec; /* カート合計エリアを強調 */
+            background-color: #fce4ec; /* カート合計エリアを強調 (薄いピンク) */
             border-radius: 8px;
             font-size: 1.2em;
             font-weight: bold;
-            color: #ff69b4;
+            color: #ff69b4; /* ショッキングピンク */
             display: flex;
             justify-content: space-between;
         }
@@ -232,7 +234,7 @@
     </style>
 </head>
 <body>
-    <!-- ユーザーの要望により元のThymeleaf記述を維持 -->
+    <!-- ヘッダー部分は元のコードをそのまま維持 -->
     <header>
         <div class="left">
             <a th:href="@{/}">
@@ -266,69 +268,45 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <!-- Thymeleafのロジックをプレビュー可能にするため、ダミーのThymeleaf変数とデータを定義 -->
-                        <!-- Thymeleafの記述は元のコードをベースに拡張 (単価と小計を追加) -->
-                        
-                        <!-- ダミーデータ1 -->
-                        <tr class="cart-item" th:with="item=${{id: 1, productName: '推し色ムースケーキ (緑)', quantity: 2, price: 550, subtotal: 1100}}">
-                            <td th:text="${item.productName}">推し色ムースケーキ (緑)</td>
-                            <td th:text="${item.price} + '円'">550円</td>
-                            <td th:text="${item.quantity}">2</td>
-                            <td th:text="${item.subtotal} + '円'">1,100円</td>
+                        <!-- カートアイテムの繰り返し処理 -->
+                        <!-- cartItemsはコントローラから渡されるList<CartItem>を想定 -->
+                        <tr class="cart-item" th:each="item : ${cartItems}">
+                            <!-- 商品名 -->
+                            <td th:text="${item.productName}">ダミー商品名</td>
+                            <!-- 単価 (カンマ区切り、小数点なし) -->
+                            <td th:text="${#numbers.formatDecimal(item.price, 0, 'COMMA', 0, 'POINT')} + '円'">000円</td>
+                            <!-- 数量 -->
+                            <td th:text="${item.quantity}">0</td>
+                            <!-- 小計 = 単価 * 数量 (カンマ区切り、小数点なし) -->
+                            <td th:text="${#numbers.formatDecimal(item.price * item.quantity, 0, 'COMMA', 0, 'POINT')} + '円'">0,000円</td>
                             <td>
-                                <form th:action="@{'/api/cart/' + ${item.id}}" method="post" th:object="${item}" class="delete-form">
+                                <!-- 削除フォーム (item.idでAPIパスを構築) -->
+                                <form th:action="@{'/api/cart/' + ${item.id}}" method="post" class="delete-form">
                                     <input type="hidden" name="_method" value="delete" />
                                     <button type="submit" class="delete-btn">削除</button>
                                 </form>
                             </td>
                         </tr>
 
-                        <!-- ダミーデータ2 -->
-                        <tr class="cart-item" th:with="item=${{id: 2, productName: 'メンカラマカロンセット (桃)', quantity: 1, price: 2300, subtotal: 2300}}">
-                            <td th:text="${item.productName}">メンカラマカロンセット (桃)</td>
-                            <td th:text="${item.price} + '円'">2,300円</td>
-                            <td th:text="${item.quantity}">1</td>
-                            <td th:text="${item.subtotal} + '円'">2,300円</td>
-                            <td>
-                                <form th:action="@{'/api/cart/' + ${item.id}}" method="post" th:object="${item}" class="delete-form">
-                                    <input type="hidden" name="_method" value="delete" />
-                                    <button type="submit" class="delete-btn">削除</button>
-                                </form>
-                            </td>
-                        </tr>
-
-                        <!-- ダミーデータ3 -->
-                        <tr class="cart-item" th:with="item=${{id: 3, productName: 'アクリルスタンド用台座チョコ (青)', quantity: 3, price: 800, subtotal: 2400}}">
-                            <td th:text="${item.productName}">アクリルスタンド用台座チョコ (青)</td>
-                            <td th:text="${item.price} + '円'">800円</td>
-                            <td th:text="${item.quantity}">3</td>
-                            <td th:text="${item.subtotal} + '円'">2,400円</td>
-                            <td>
-                                <form th:action="@{'/api/cart/' + ${item.id}}" method="post" th:object="${item}" class="delete-form">
-                                    <input type="hidden" name="_method" value="delete" />
-                                    <button type="submit" class="delete-btn">削除</button>
-                                </form>
-                            </td>
-                        </tr>
-
-                        <!-- カートが空の場合のメッセージ (元のコードからth:ifを維持) -->
+                        <!-- カートが空の場合のメッセージ -->
                         <tr th:if="${#lists.isEmpty(cartItems)}">
-                            <td colspan="5" style="color: #888; text-align: center;">カートに商品がありません</td>
+                            <td colspan="5" style="color: #888; text-align: center; border-bottom: none;">カートに商品がありません</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
 
-            <!-- 合計金額エリアの追加 (ダミーの合計金額) -->
-            <div class="total-area" th:with="totalPrice=${5800}">
+            <!-- 合計金額エリア -->
+            <!-- totalPriceはコントローラから渡される合計金額を想定 -->
+            <div class="total-area">
                 <span>合計金額（税込）:</span>
-                <span th:text="${totalPrice} + '円'">5,800円</span>
+                <span th:text="${#numbers.formatDecimal(totalPrice, 0, 'COMMA', 0, 'POINT')} + '円'">0,000円</span>
             </div>
 
             <div class="action-area">
-                <!-- hrefはダミー -->
-                <a href="#" class="btn-base">お買い物を続ける</a>
-                <a href="#" class="btn-base btn-primary">注文を確定する</a>
+                <!-- リンク先を商品一覧と注文確認に変更 -->
+                <a th:href="@{/products}" class="btn-base">お買い物を続ける</a>
+                <a th:href="@{/order/confirm}" class="btn-base btn-primary">注文を確定する</a>
             </div>
         </div>
     </main>
