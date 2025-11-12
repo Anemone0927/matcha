@@ -18,29 +18,30 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.example.matcha.entity.Product;
 import com.example.matcha.repository.ProductRepository;
-import com.example.matcha.repository.ReviewRepository; // ReviewRepository を使用
+import com.example.matcha.repository.ReviewRepository;
+import com.example.matcha.repository.CartItemRepository; // CartItemRepository を追加
 
 @Service
 public class ProductService {
 
     private static final Logger logger = LoggerFactory.getLogger(ProductService.class);
     
-    // application.properties (または yml) で設定されたアップロードディレクトリのパス
     @Value("${upload.dir}")
     private String uploadDir;
 
-    // 画像URLのプレフィックス (例: /images/)
     private static final String IMAGE_PATH_PREFIX = "/images/";
 
     private final ProductRepository productRepository;
-    private final ReviewRepository reviewRepository; // 注入済み
+    private final ReviewRepository reviewRepository;
+    private final CartItemRepository cartItemRepository; // CartItemRepository を追加
 
     /**
      * コンストラクタインジェクション
      */
-    public ProductService(ProductRepository productRepository, ReviewRepository reviewRepository) {
+    public ProductService(ProductRepository productRepository, ReviewRepository reviewRepository, CartItemRepository cartItemRepository) {
         this.productRepository = productRepository;
         this.reviewRepository = reviewRepository;
+        this.cartItemRepository = cartItemRepository; // 初期化
     }
 
     // --- Product CRUD Operations ---
@@ -76,27 +77,22 @@ public class ProductService {
         if (optProduct.isPresent()) {
             Product product = optProduct.get();
             
-            // 商品名と価格を更新
             product.setName(name);
             product.setPrice(price);
 
-            // 画像がアップロードされた場合のみ、画像を保存し、パスを更新
             if (image != null && !image.isEmpty()) {
-                // 古い画像の削除処理は、新しい画像が正常に保存された後に実行するのが安全だが、
-                // 今回は旧パスの取得がないため、単純に新画像を保存しパスを更新する
                 String filename = saveImage(image);
                 product.setImagePath(IMAGE_PATH_PREFIX + filename);
             }
             
-            // データベースに保存
             return Optional.of(productRepository.save(product));
         }
         return Optional.empty();
     }
 
     /**
-     * 商品削除処理（トランザクション管理、レビュー削除、画像ファイル削除を含む）
-     * * @param id 削除する商品のID
+     * 商品削除処理（トランザクション管理、関連データ削除、画像ファイル削除を含む）
+     * @param id 削除する商品のID
      * @return 削除が成功した場合は true
      */
     @Transactional // サービス層のビジネスロジックとしてトランザクションを管理
@@ -112,21 +108,23 @@ public class ProductService {
         String imagePath = product.getImagePath();
         
         try {
-            // --- 1. 関連するレビューを全て削除する (外部キー制約の回避) ---
-            // @Transactional の範囲内で実行することで、一連のデータベース操作が保証される
+            // --- 1. 関連する CartItem を全て削除する (外部キー制約の回避 その1) ---
+            cartItemRepository.deleteByProductId(id);
+            logger.info("商品ID: {} に関連するカートアイテムを全て削除しました。", id);
+
+            // --- 2. 関連する Review を全て削除する (外部キー制約の回避 その2) ---
             reviewRepository.deleteByProductId(id);
             logger.info("商品ID: {} に関連するレビューを全て削除しました。", id);
 
-            // --- 2. データベースのレコードを削除 ---
+            // --- 3. データベースのレコードを削除 ---
             productRepository.delete(product);
             logger.info("商品ID: {} がデータベースから削除されました。", id);
 
-            // --- 3. サーバー上の画像ファイルを削除 (DB削除が成功した後で試行) ---
+            // --- 4. サーバー上の画像ファイルを削除 ---
             deleteImageFile(imagePath);
             
             return true;
         } catch (Exception e) {
-            // RuntimeExceptionを再スローし、@Transactionalによるロールバックをトリガーする
             logger.error("商品ID: {} の削除処理中にエラーが発生しました。データベース操作はロールバックされます。", id, e);
             throw new RuntimeException("商品の削除に失敗しました: " + e.getMessage(), e);
         }
@@ -140,22 +138,17 @@ public class ProductService {
      */
     private String saveImage(MultipartFile imageFile) {
         if (imageFile.isEmpty()) {
-            // 画像が必須でない場合はnullを返す、ここでは登録時は必須とする
             throw new RuntimeException("画像ファイルが空です。");
         }
         try {
-            // ファイル名が重複しないようにUUIDを付与
             String originalFilename = imageFile.getOriginalFilename();
-            // nullチェックを追加し、nullの場合はデフォルト名を使用
             String baseFilename = originalFilename != null ? originalFilename : "no_name_file";
             
             String filename = UUID.randomUUID() + "_" + baseFilename;
             Path path = Paths.get(uploadDir, filename);
             
-            // ディレクトリが存在しない場合は作成
             Files.createDirectories(path.getParent());
             
-            // ファイルを保存
             Files.copy(imageFile.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
             return filename;
         } catch (IOException e) {
@@ -180,7 +173,6 @@ public class ProductService {
                     logger.warn("関連画像ファイルが見つかりませんでした: {}", filename);
                 }
             } catch (IOException e) {
-                // ファイル削除に失敗してもDB操作は完了しているので、ログを出すに留める
                 logger.error("画像ファイル {} の削除中にIOエラーが発生しました。", filename, e);
             }
         }
