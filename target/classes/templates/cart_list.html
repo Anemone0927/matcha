@@ -1,169 +1,314 @@
 <!DOCTYPE html>
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8" />
-  <title>カート一覧 | 推し系食べ物通販サイト</title>
-  <style>
-    /* (スタイルシートの定義は省略しません。元のままです。) */
-    body {
-      background-color: #ffd9ef;
-      color: #2f4f2f;
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-    }
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>カート一覧 | 推し系食べ物通販サイト</title>
+    <style>
+        /* --- General Reset & Body Style --- */
+        body {
+            background-color: #ffd9ef; /* 薄いピンク */
+            color: #2f4f2f; /* 濃い緑 */
+            font-family: 'Inter', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
 
-        main {
-            padding: 20px;
-            max-width: 900px;
-            margin: 0 auto;
-        }
+        main {
+            padding: 20px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
 
-        /* --- Header Style --- */
-        header {
-            background-color: #159450;
-            padding: 10px 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.15);
-            margin-bottom: 20px; /* コンテンツとの区切り */
-        }
-        header img.home-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 20px;
-            cursor: pointer;
-        }
-        header h1 {
-            color: white;
-            font-size: 1.8em;
-            margin: 0 0 0 15px;
-            flex-grow: 1;
-        }
-        header .left {
-            display: flex;
-            align-items: center;
-        }
-        header .user-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 20px;
-            cursor: pointer;
-            transition: transform 0.3s;
-        }
-        header .user-icon:hover {
-            transform: scale(1.1);
-        }
+        /* --- Header Style (Original, preserved) --- */
+        header {
+            background-color: #159450; /* 濃い緑 */
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+            margin-bottom: 30px;
+        }
+        header img.home-icon,
+        header img.user-icon {
+            /* Thymeleaf環境のため、画像URLはそのまま維持 */
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        header .user-icon:hover {
+            transform: scale(1.1);
+        }
+        header h1 {
+            color: white;
+            font-size: 1.8em;
+            margin: 0 0 0 15px;
+            flex-grow: 1;
+        }
+        header .left {
+            display: flex;
+            align-items: center;
+        }
 
-        /* --- Button Style --- */
-        a.btn {
-            background-color: #fff;
-            color: #2f4f2f;
-            border: 2px solid #2f4f2f;
-            padding: 10px 20px;
-            margin: 5px;
-            font-size: 1em;
-            border-radius: 10px;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-block;
-            transition: background-color 0.3s, color 0.3s;
-        }
-        a.btn:hover {
-            background-color: #2f4f2f;
-            color: #fff;
-        }
+        /* --- Button & Link Style (Refactored) --- */
+        .btn-base {
+            background-color: #fff;
+            color: #2f4f2f;
+            border: 2px solid #2f4f2f;
+            padding: 10px 20px;
+            margin: 5px;
+            font-size: 1em;
+            border-radius: 10px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s;
+            text-align: center;
+        }
+        .btn-base:hover {
+            background-color: #2f4f2f;
+            color: #fff;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transform: translateY(-2px);
+        }
 
-        /* ====================================
-           2. ページ固有のスタイル (review_list.html)
-           ==================================== */
-    table {
-      width: 80%;
-      margin: 20px auto;
-      border-collapse: collapse;
-    }
-    th, td {
-      border: 1px solid #2f4f2f;
-      padding: 10px;
-      text-align: center;
-    }
-    th {
-      background-color: #b2d8b2;
-    }
-        /* ====================================
-           3. レスポンシブ対応
-           ==================================== */
-        @media screen and (max-width: 480px) {
-            header h1 {
-                font-size: 1.5em;
-            }
-            .review-card {
-                margin: 10px 5px;
-                padding: 15px;
-            }
-            /* その他モバイル調整 */
-            input[type="text"],
-            input[type="number"] {
-                font-size: 14px;
-            }
-            button {
-                font-size: 16px;
-                padding: 10px;
-            }
-        }
-  </style>
+        .btn-primary {
+            background-color: #ff69b4; /* ショッキングピンク */
+            border-color: #ff69b4;
+            color: white;
+            font-weight: bold;
+        }
+        .btn-primary:hover {
+            background-color: #e64e9d;
+            border-color: #e64e9d;
+            color: white;
+        }
+
+        /* --- Cart Container Style --- */
+        .cart-container {
+            text-align: center;
+            color: #2f4f2f;
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .page-title {
+            text-align: center;
+            color: #a1835d; /* 落ち着いた茶色 */
+            margin-top: 0;
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+
+        .cart-section-title {
+            color: #2f4f2f;
+            font-size: 1.5em;
+            margin-bottom: 20px;
+        }
+
+        /* --- Table Style & Responsiveness --- */
+        .responsive-table-wrapper {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            margin-top: 20px;
+            border: 1px solid #2f4f2f; /* テーブル全体を囲むボーダーを追加 */
+            border-radius: 8px;
+        }
+
+        table {
+            min-width: 450px;
+            width: 100%;
+            border-collapse: collapse;
+            margin: 0;
+        }
+        th, td {
+            padding: 12px;
+            border: none;
+            border-bottom: 1px solid #ddd; /* 下線のみ残す */
+            text-align: left;
+        }
+        th {
+            background-color: #b2d8b2;
+            color: #2f4f2f;
+            font-weight: bold;
+        }
+        td {
+            background-color: #fff;
+        }
+        .cart-item:hover {
+            background-color: #f9f9f9;
+        }
+        /* 単価、数量、小計を中央揃え */
+        td:nth-child(2), td:nth-child(3), td:nth-child(4) {
+            text-align: center;
+        }
+        td:last-child {
+            text-align: center; /* 操作 */
+        }
+        /* 最後の行のボーダーを削除 */
+        .cart-item:last-child td {
+            border-bottom: none;
+        }
+
+        /* --- Delete Button Style --- */
+        .delete-form {
+            margin: 0;
+            display: inline-block;
+        }
+
+        .delete-btn {
+            background-color: #dc3545; /* 赤 */
+            color: white;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: background-color 0.3s, transform 0.1s;
+            font-weight: 500;
+        }
+
+        .delete-btn:hover {
+            background-color: #c82333;
+            transform: scale(1.05);
+        }
+
+        .action-area {
+            margin-top: 30px;
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+        }
+        .total-area {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #fce4ec; /* カート合計エリアを強調 (薄いピンク) */
+            border-radius: 8px;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #ff69b4; /* ショッキングピンク */
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* ====================================
+           4. レスポンシブ対応 (Mobile Specific)
+           ==================================== */
+        @media screen and (max-width: 650px) {
+            .cart-container {
+                border-radius: 0;
+                box-shadow: none;
+                padding: 10px 0;
+            }
+        }
+        @media screen and (max-width: 480px) {
+            header h1 {
+                font-size: 1.5em;
+            }
+            .page-title {
+                font-size: 1.8em;
+            }
+            .btn-base {
+                width: 100%;
+                margin: 5px 0;
+            }
+            .action-area {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .total-area {
+                font-size: 1.1em;
+            }
+        }
+    </style>
 </head>
 <body>
-        <header>
-        <div class="left">
-            <a th:href="@{/}">
-                <img src="/images/homebotan.jpg" alt="ホームページへ戻る" class="home-icon" />
-            </a>
-            <h1>OshiGiftBox</h1>
-        </div>
-        <div class="user-links">
-            <a th:href="@{/users/auth_select}">
-                <img src="/images/yuza.jpg" alt="ユーザー登録" class="user-icon" />
-            </a>
-        </div>
-    </header>
-    <main>
-        <h1 style="text-align: center; color: #a1835d; margin-top: 0;">カート一覧</h1>
+    <!-- ヘッダー部分は元のコードをそのまま維持 -->
+    <header>
+        <div class="left">
+            <a th:href="@{/}">
+                <img src="/images/homebotan.jpg" alt="ホームページへ戻る" class="home-icon" />
+            </a>
+            <h1>OshiGiftBox</h1>
+        </div>
+        <div class="user-links">
+            <a th:href="@{/users/auth_select}">
+                <img src="/images/yuza.jpg" alt="ユーザー登録" class="user-icon" />
+            </a>
+        </div>
+    </header>
+    <!-- ヘッダー終了 -->
 
-<div style="text-align: center; color: #2f4f2f; margin-top: 20px; padding: 20px; background-color: #fff; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.15); max-width: 600px; margin-left: auto; margin-right: auto;">
-    <h1 style="color: #2f4f2f; font-size: 1.5em; margin-bottom: 20px;">🛒 カート内容</h1>
+    <main>
+        <h1 class="page-title">カート一覧</h1>
 
-    <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
-        <thead>
-            <tr style="background-color: #f2f2f2;">
-                                <th style="padding: 10px; border: 1px solid #ddd; text-align: left;">商品名</th>
-                <th style="padding: 10px; border: 1px solid #ddd; text-align: left;">数量</th>
-                <th style="padding: 10px; border: 1px solid #ddd; text-align: left;">操作</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr th:each="item : ${cartItems}" style="transition: background-color 0.3s;">
-                                <td th:text="${item.productName}" style="padding: 10px; border: 1px solid #ddd; text-align: left;">商品名</td>
-                <td th:text="${item.quantity}" style="padding: 10px; border: 1px solid #ddd; text-align: center;">数量</td>
-                <td style="padding: 10px; border: 1px solid #ddd; text-align: center;">
-                                        <form th:action="@{'/api/cart/' + ${item.id}}" method="post" th:object="${item}" style="margin: 0;">
-                        <input type="hidden" name="_method" value="delete" />
-                        <button type="submit" 
-                                style="background-color: #dc3545; color: white; padding: 8px 12px; border: none; border-radius: 5px; cursor: pointer; font-size: 0.9em; transition: background-color 0.3s;"
-                                onmouseover="this.style.backgroundColor='#c82333'"
-                                onmouseout="this.style.backgroundColor='#dc3545'">
-                            削除
-                        </button>
-                    </form>
-                </td>
-            </tr>
-            <tr th:if="${#lists.isEmpty(cartItems)}">
-                                <td colspan="3" style="padding: 10px; border: 1px solid #ddd; text-align: center; color: #888;">カートに商品がありません</td>
-            </tr>
-        </tbody>
-    </table>
-</div>
-</main>
+        <div class="cart-container">
+            <h2 class="cart-section-title">🛒 カート内容</h2>
+
+            <div class="responsive-table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>商品名</th>
+                            <th>単価</th>
+                            <th>数量</th>
+                            <th>小計</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- カートアイテムの繰り返し処理 -->
+                        <!-- cartItemsはコントローラから渡されるList<CartItem>を想定 -->
+                        <tr class="cart-item" th:each="item : ${cartItems}">
+                            <!-- 商品名 -->
+                            <td th:text="${item.productName}">ダミー商品名</td>
+                            <!-- 単価 (カンマ区切り、小数点なし) -->
+                            <td th:text="${#numbers.formatDecimal(item.price, 0, 'COMMA', 0, 'POINT')} + '円'">000円</td>
+                            <!-- 数量 -->
+                            <td th:text="${item.quantity}">0</td>
+                            <!-- 小計 = 単価 * 数量 (カンマ区切り、小数点なし) -->
+                            <td th:text="${#numbers.formatDecimal(item.price * item.quantity, 0, 'COMMA', 0, 'POINT')} + '円'">0,000円</td>
+                            <td>
+                                <!-- 削除フォーム (item.idでAPIパスを構築) -->
+                                <form th:action="@{'/api/cart/' + ${item.id}}" method="post" class="delete-form">
+                                    <input type="hidden" name="_method" value="delete" />
+                                    <button type="submit" class="delete-btn">削除</button>
+                                </form>
+                            </td>
+                        </tr>
+
+                        <!-- カートが空の場合のメッセージ -->
+                        <tr th:if="${#lists.isEmpty(cartItems)}">
+                            <td colspan="5" style="color: #888; text-align: center; border-bottom: none;">カートに商品がありません</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 合計金額エリア -->
+            <!-- totalPriceはコントローラから渡される合計金額を想定 -->
+            <div class="total-area">
+                <span>合計金額（税込）:</span>
+                <span th:text="${#numbers.formatDecimal(totalPrice, 0, 'COMMA', 0, 'POINT')} + '円'">0,000円</span>
+            </div>
+
+            <div class="action-area">
+                <!-- リンク先を商品一覧と注文確認に変更 -->
+                <a th:href="@{/products}" class="btn-base">お買い物を続ける</a>
+                <a th:href="@{/order/confirm}" class="btn-base btn-primary">注文を確定する</a>
+            </div>
+        </div>
+    </main>
 </body>
 </html>
