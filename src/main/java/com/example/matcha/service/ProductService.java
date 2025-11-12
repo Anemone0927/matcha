@@ -19,7 +19,8 @@ import org.springframework.web.multipart.MultipartFile;
 import com.example.matcha.entity.Product;
 import com.example.matcha.repository.ProductRepository;
 import com.example.matcha.repository.ReviewRepository;
-import com.example.matcha.repository.CartItemRepository; // CartItemRepository を追加
+import com.example.matcha.repository.CartItemRepository; 
+import com.example.matcha.repository.OrderRepository; // 【★追加: OrderRepositoryのインポート】
 
 @Service
 public class ProductService {
@@ -33,15 +34,21 @@ public class ProductService {
 
     private final ProductRepository productRepository;
     private final ReviewRepository reviewRepository;
-    private final CartItemRepository cartItemRepository; // CartItemRepository を追加
+    private final CartItemRepository cartItemRepository;
+    private final OrderRepository orderRepository; // 【★追加: OrderRepositoryフィールド】
 
     /**
      * コンストラクタインジェクション
      */
-    public ProductService(ProductRepository productRepository, ReviewRepository reviewRepository, CartItemRepository cartItemRepository) {
+    public ProductService(
+        ProductRepository productRepository, 
+        ReviewRepository reviewRepository, 
+        CartItemRepository cartItemRepository,
+        OrderRepository orderRepository) { // 【★修正: OrderRepositoryを引数に追加】
         this.productRepository = productRepository;
         this.reviewRepository = reviewRepository;
-        this.cartItemRepository = cartItemRepository; // 初期化
+        this.cartItemRepository = cartItemRepository;
+        this.orderRepository = orderRepository; // 【★追加: OrderRepository初期化】
     }
 
     // --- Product CRUD Operations ---
@@ -108,19 +115,23 @@ public class ProductService {
         String imagePath = product.getImagePath();
         
         try {
-            // --- 1. 関連する CartItem を全て削除する (外部キー制約の回避 その1) ---
+            // 【★追加: 1. 注文テーブル (orders) の関連レコードを先に削除 (最後の外部キー対策)】
+            orderRepository.deleteByProductId(id);
+            logger.info("商品ID: {} に関連する注文レコードを全て削除しました。", id);
+
+            // --- 2. 関連する CartItem を全て削除する (外部キー制約の回避 その1) ---
             cartItemRepository.deleteByProductId(id);
             logger.info("商品ID: {} に関連するカートアイテムを全て削除しました。", id);
 
-            // --- 2. 関連する Review を全て削除する (外部キー制約の回避 その2) ---
+            // --- 3. 関連する Review を全て削除する (外部キー制約の回避 その2) ---
             reviewRepository.deleteByProductId(id);
             logger.info("商品ID: {} に関連するレビューを全て削除しました。", id);
 
-            // --- 3. データベースのレコードを削除 ---
+            // --- 4. データベースのレコードを削除 ---
             productRepository.delete(product);
             logger.info("商品ID: {} がデータベースから削除されました。", id);
 
-            // --- 4. サーバー上の画像ファイルを削除 ---
+            // --- 5. サーバー上の画像ファイルを削除 ---
             deleteImageFile(imagePath);
             
             return true;
