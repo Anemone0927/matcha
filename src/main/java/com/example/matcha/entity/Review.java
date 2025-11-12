@@ -1,12 +1,15 @@
 package com.example.matcha.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore; // 【追加】JsonIgnoreをインポート
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Table; // Tableアノテーションを追加
+import jakarta.persistence.Table;
+// import java.util.List; // 不要なので削除
 
 /**
  * レビューエンティティ
@@ -23,6 +26,7 @@ public class Review {
     // 多対一 (ManyToOne): 複数のレビューが1つの商品に紐づく
     @ManyToOne
     @JoinColumn(name = "product_id", nullable = false) // 外部キーカラムを "product_id" として設定
+    @JsonIgnore // 【修正】無限再帰を防ぐため、JSONシリアライズ時には親のProductへの参照を無視する
     private Product product;
 
     private String author;
