@@ -1,416 +1,465 @@
 <!DOCTYPE html>
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>商品一覧 | OshiGiftBox</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>商品一覧 | OshiGiftBox</title>
 
 <style>
 /* --- 全ての要素に box-sizing: border-box を適用して、幅の計算を正確にします --- */
 * {
-    box-sizing: border-box; 
+    box-sizing: border-box; 
 }
 /* ------------------------------------
-    1. 共通ベーススタイル
+    1. 共通ベーススタイル
 ------------------------------------ */
-    body {
-        background-color: #ffd9ef;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        color: #333;
-        margin: 0;
-        padding: 0;
-    }
+    body {
+        background-color: #ffd9ef;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: #333;
+        margin: 0;
+        padding: 0;
+    }
 
-    main {
-        padding: 20px;
-        max-width: 900px; 
-        margin: 0 auto;
-    }
+    main {
+        padding: 20px;
+        max-width: 900px; 
+        margin: 0 auto;
+    }
 
-    /* --- Header Style  --- */
-    header {
-        background-color: #159450;
-        padding: 10px 20px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.15);
-        margin-bottom: 20px;
-    }
-    header .home-icon,
-    header .user-icon {
-        width: 40px;
-        height: 40px;
-        border-radius: 20px;
-        cursor: pointer;
-        transition: transform 0.3s;
-    }
-    header .home-icon:hover,
-    header .user-icon:hover {
-        transform: scale(1.1);
-    }
-    header h1 {
-        color: white;
-        font-size: 1.8em;
-        margin: 0 0 0 15px;
-        flex-grow: 1;
-    }
-    header .left {
-        display: flex;
-        align-items: center;
-    }
-    header .user-links {
-        display: flex;
-        align-items: center;
-    }
-    
-    /* ------------------------------------
-        2. ページ固有のスタイル (商品一覧)
-    ------------------------------------ */
-    h1 {
-        color: #a1835d; 
-        text-align: center;
-        margin-bottom: 30px;
-        margin-top: 0;
-    }
+    /* --- Header Style  --- */
+    header {
+        background-color: #159450;
+        padding: 10px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+        margin-bottom: 20px;
+    }
+    header .home-icon,
+    header .user-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 20px;
+        cursor: pointer;
+        transition: transform 0.3s;
+    }
+    header .home-icon:hover,
+    header .user-icon:hover {
+        transform: scale(1.1);
+    }
+    header h1 {
+        color: white;
+        font-size: 1.8em;
+        margin: 0 0 0 15px;
+        flex-grow: 1;
+    }
+    header .left {
+        display: flex;
+        align-items: center;
+    }
+    header .user-links {
+        display: flex;
+        align-items: center;
+    }
+    
+    /* ------------------------------------
+        2. ページ固有のスタイル (商品一覧)
+    ------------------------------------ */
+    h1 {
+        color: #a1835d; 
+        text-align: center;
+        margin-bottom: 30px;
+        margin-top: 0;
+    }
 
-    /* 💡 白いボックスのスタイル (リスト全体を囲む) */
-    .list-card {
-        background-color: #fff;
-        width: 100%; 
-        max-width: 750px;
-        margin: 0 auto;
-        padding: 30px;
-        border-radius: 12px;
-        box-shadow: 0 4px 8px rgba(122, 111, 219, 0.2);
-        text-align: center;
-    }
+    /* 💡 白いボックスのスタイル (リスト全体を囲む) */
+    .list-card {
+        background-color: #fff;
+        width: 100%; 
+        max-width: 750px;
+        margin: 0 auto;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 4px 8px rgba(122, 111, 219, 0.2);
+        text-align: center;
+    }
 
-    .list-card h2 {
-        color: #7a6fdb;
-        text-align: center;
-        font-size: 1.5em;
-        margin-top: 0;
-        margin-bottom: 20px;
-    }
-    /* 商品登録へのボタン */
-    .add-product-link {
-        display: inline-block;
-        background-color: #7a6fdb;
-        color: white;
-        padding: 10px 20px;
-        margin-bottom: 20px;
-        border-radius: 10px;
-        text-decoration: none;
-        font-weight: 700;
-        transition: background-color 0.3s;
-    }
-    .add-product-link:hover {
-        background-color: #5d52b4;
-    }
+    .list-card h2 {
+        color: #7a6fdb;
+        text-align: center;
+        font-size: 1.5em;
+        margin-top: 0;
+        margin-bottom: 20px;
+    }
+    /* 商品登録へのボタン */
+    .add-product-link {
+        display: inline-block;
+        background-color: #7a6fdb;
+        color: white;
+        padding: 10px 20px;
+        margin-bottom: 20px;
+        border-radius: 10px;
+        text-decoration: none;
+        font-weight: 700;
+        transition: background-color 0.3s;
+    }
+    .add-product-link:hover {
+        background-color: #5d52b4;
+    }
 
-    /* 商品リスト (ul) のスタイル */
-    #productList {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-        text-align: left;
-    }
+    /* 商品リスト (ul) のスタイル */
+    #productList {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        text-align: left;
+    }
 
-    /* 個別商品アイテム (li) のスタイル */
-    #productList li {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 15px 0;
-        border-bottom: 1px solid #eee;
-    }
-    #productList li:last-child {
-        border-bottom: none;
-    }
+    /* 個別商品アイテム (li) のスタイル */
+    #productList li {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 0;
+        border-bottom: 1px solid #eee;
+        /* お気に入りアイコンのためのスペースを確保 */
+        position: relative;
+    }
+    #productList li:last-child {
+        border-bottom: none;
+    }
 
-    .product-info {
-        display: flex;
-        align-items: center;
-        flex-grow: 1;
-    }
+    .product-info {
+        display: flex;
+        align-items: center;
+        flex-grow: 1;
+    }
 
-    .product-info strong {
-        font-size: 1.1em;
-        margin-right: 15px;
-        min-width: 150px;
-    }
+    .product-info strong {
+        font-size: 1.1em;
+        margin-right: 15px;
+        min-width: 150px;
+    }
 
-    /* 画像コンテナのスタイル */
-    .product-image-container {
-        margin-left: 20px;
-        width: 80px;
-        height: 80px;
-        overflow: hidden;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-    .product-image-container img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        display: block;
-    }
+    /* 画像コンテナのスタイル */
+    .product-image-container {
+        margin-left: 20px;
+        width: 80px;
+        height: 80px;
+        overflow: hidden;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .product-image-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
 
 
-    .actions {
-        display: flex;
-        gap: 10px;
-        min-width: 130px;
-    }
+    .actions {
+        display: flex;
+        gap: 10px;
+        min-width: 130px;
+    }
 
-    .edit-btn {
-        background-color: #60c5ba;
-        color: white;
-        padding: 6px 12px;
-        border-radius: 8px;
-        text-decoration: none;
-        font-size: 0.9em;
-        transition: background-color 0.3s;
-        font-weight: 600;
-        white-space: nowrap; 
-    }
-    .edit-btn:hover {
-        background-color: #4a9e96;
-    }
+    .edit-btn {
+        background-color: #60c5ba;
+        color: white;
+        padding: 6px 12px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-size: 0.9em;
+        transition: background-color 0.3s;
+        font-weight: 600;
+        white-space: nowrap; 
+    }
+    .edit-btn:hover {
+        background-color: #4a9e96;
+    }
 
-    .actions button {
-        background-color: #ff7f7f;
-        color: white;
-        border: none;
-        padding: 6px 12px;
-        border-radius: 8px;
-        cursor: pointer;
-        font-size: 0.9em;
-        transition: background-color 0.3s;
-        font-weight: 600;
-        white-space: nowrap; 
-    }
-    .actions button:hover {
-        background-color: #e55e5e;
-    }
+    .actions button {
+        background-color: #ff7f7f;
+        color: white;
+        border: none;
+        padding: 6px 12px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 0.9em;
+        transition: background-color 0.3s;
+        font-weight: 600;
+        white-space: nowrap; 
+    }
+    .actions button:hover {
+        background-color: #e55e5e;
+    }
 
-    /* メッセージボックス */
-    #messageBox {
-        text-align: center;
-        padding: 10px;
-        margin-bottom: 15px;
-        border-radius: 8px;
-        display: none; /* 初期状態では非表示 */
-        font-weight: 600;
-    }
-    .success {
-        background-color: #e6ffe6;
-        color: #4CAF50;
-        border: 1px solid #4CAF50;
-    }
-    .error {
-        background-color: #ffe6e6;
-        color: #f44336;
-        border: 1px solid #f44336;
-    }
+    /* --- ⭐️ お気に入りアイコンのスタイル (追加) --- */
+    .favorite-icon {
+        font-size: 24px;
+        cursor: pointer;
+        transition: transform 0.2s, color 0.2s;
+        position: absolute; /* 親要素 li に対して絶対配置 */
+        right: 5px; /* 右端に配置 */
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 10;
+    }
+    /* 未登録の状態 */
+    .favorite-icon.empty {
+        color: #ccc; /* 薄いグレー */
+    }
+    /* 登録済みの状態 */
+    .favorite-icon.filled {
+        color: #ff6699; /* 濃いピンク */
+    }
+    .favorite-icon:hover {
+        transform: translateY(-50%) scale(1.1);
+    }
 
-    /* ------------------------------------
-        3. レスポンシブ対応
-    ------------------------------------ */
-    @media screen and (max-width: 600px) {
-        .list-card {
-            padding: 20px;
-        }
-        #productList li {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 10px;
-        }
-        .product-info {
-            flex-direction: column;
-            align-items: flex-start;
-            width: 100%; /* スマホで幅いっぱいにする */
-        }
-        .product-info strong {
-            min-width: auto;
-            margin-right: 0;
-            margin-bottom: 5px;
-        }
-        .product-info > div:not(.product-image-container) {
-             /* 価格情報の調整 */
-             margin-top: 0 !important;
-             font-size: 1em !important;
-        }
+    /* メッセージボックス */
+    #messageBox {
+        text-align: center;
+        padding: 10px;
+        margin-bottom: 15px;
+        border-radius: 8px;
+        display: none; /* 初期状態では非表示 */
+        font-weight: 600;
+    }
+    .success {
+        background-color: #e6ffe6;
+        color: #4CAF50;
+        border: 1px solid #4CAF50;
+    }
+    .error {
+        background-color: #ffe6e6;
+        color: #f44336;
+        border: 1px solid #f44336;
+    }
 
-        .product-image-container {
-            margin-left: 0;
-            margin-top: 10px;
-        }
-        .actions {
-            justify-content: flex-end;
-            width: 100%;
-        }
-    }
+    /* ------------------------------------
+        3. レスポンシブ対応
+    ------------------------------------ */
+    @media screen and (max-width: 600px) {
+        .list-card {
+            padding: 20px;
+        }
+        #productList li {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+            padding-right: 40px; /* アイコン分のスペースを確保 */
+        }
+        .product-info {
+            flex-direction: column;
+            align-items: flex-start;
+            width: 100%; /* スマホで幅いっぱいにする */
+        }
+        .product-info strong {
+            min-width: auto;
+            margin-right: 0;
+            margin-bottom: 5px;
+        }
+        .product-info > div:not(.product-image-container) {
+             /* 価格情報の調整 */
+             margin-top: 0 !important;
+             font-size: 1em !important;
+        }
+
+        .product-image-container {
+            margin-left: 0;
+            margin-top: 10px;
+        }
+        .actions {
+            justify-content: flex-end;
+            width: 100%;
+        }
+    }
 </style>
 </head>
 
 <body>
-    <header>
-        <div class="left">
-            <!-- Thymeleaf: ホームへのリンク -->
-            <a th:href="@{/}" href="/">
-                <img src="/images/homebotan.jpg" alt="ホームページへ戻る" class="home-icon" />
-            </a>
-            <h1>OshiGiftBox</h1>
-        </div>
-        <div class="user-links">
-            <!-- Thymeleaf: ユーザー関連ページへのリンク -->
-            <a th:href="@{/users/auth_select}">
-                <img src="/images/yuza.jpg" alt="ユーザー登録" class="user-icon" />
-            </a>
-        </div>
-    </header>
-    <main>
-        <h1>商品一覧</h1>
+    <header>
+        <div class="left">
+                        <a th:href="@{/}" href="/">
+                <img src="/images/homebotan.jpg" alt="ホームページへ戻る" class="home-icon" />
+            </a>
+            <h1>OshiGiftBox</h1>
+        </div>
+        <div class="user-links">
+                        <a th:href="@{/users/auth_select}">
+                <img src="/images/yuza.jpg" alt="ユーザー登録" class="user-icon" />
+            </a>
+        </div>
+    </header>
+    <main>
+        <h1>商品一覧</h1>
 
-        <div class="list-card">
-            <h2>📦 登録済み商品リスト</h2>
+        <div class="list-card">
+            <h2>📦 登録済み商品リスト</h2>
 
-            <!-- 商品登録フォームへの誘導 (Spring Bootのルーティングを想定) -->
-            <a th:href="@{/products/new}" class="add-product-link">
-                + 新しい商品を登録する
-            </a>
+                        <a th:href="@{/products/new}" class="add-product-link">
+                + 新しい商品を登録する
+            </a>
 
-            <!-- メッセージ表示エリア -->
-            <div id="messageBox"></div>
-            
-            <ul id="productList">
-                <p style="text-align: center; color: #7a6fdb; font-weight: 600;">商品情報を読み込み中...</p>
-            </ul>
-        </div>
-    </main>
+                        <div id="messageBox"></div>
+            
+            <ul id="productList">
+                <p style="text-align: center; color: #7a6fdb; font-weight: 600;">商品情報を読み込み中...</p>
+            </ul>
+        </div>
+    </main>
 
-    <script>
+    <script>
 // メッセージ表示関数
 function displayMessage(message, type = 'success') {
-    const box = document.getElementById('messageBox');
-    box.textContent = message;
-    box.className = '';
-    box.classList.add(type);
-    box.style.display = 'block';
-    // 3秒後にメッセージを消す
-    setTimeout(() => {
-        box.style.display = 'none';
-    }, 3000);
+    const box = document.getElementById('messageBox');
+    box.textContent = message;
+    box.className = '';
+    box.classList.add(type);
+    box.style.display = 'block';
+    // 3秒後にメッセージを消す
+    setTimeout(() => {
+        box.style.display = 'none';
+    }, 3000);
 }
 
 // 削除処理の関数
-// 💡 修正1: name引数を追加
 async function deleteProduct(id, name) {
-    // ⚠ 注意: 実際のアプリケーションでは、カスタムモーダルを使用してください。
-    // Canvas環境では confirm() は動作しません。
-    
-    // 💡 修正2: confirmメッセージに商品名を使用
-    if (!confirm(`商品: ${name}を削除してもよろしいですか？`)) {
-        return;
-    }
-    
-    // 💡 修正ポイント: DELETEメソッドで /products/{id} を呼び出す
-    try {
-        const response = await fetch(`/products/${id}`, { 
-            method: 'DELETE' // 👈 POST から DELETE に変更
-        });
+    // ⚠ 注意: 実際のアプリケーションでは、カスタムモーダルを使用してください。
+    if (!confirm(`商品: ${name}を削除してもよろしいですか？`)) {
+        return;
+    }
+    
+    try {
+        // DELETEメソッドで /products/{id} を呼び出す
+        const response = await fetch(`/products/${id}`, { 
+            method: 'DELETE'
+        });
 
-        if (response.ok) {
-            // サーバーから返されたメッセージ本文（商品名入りのメッセージ）を取得
-            const successMessage = await response.text();
-            
-            // 取得したメッセージをそのまま表示
-            displayMessage(successMessage, 'success'); 
-            fetchAndDisplayProducts(); // リストを更新
-        } else {
-            // サーバーからエラー詳細を取得
-            const errorText = await response.text();
-            // サーバーがエラーレスポンスを返した場合
-            throw new Error(`[${response.status}] ${errorText || 'サーバーエラー'}`);
-        }
-    } catch (err) {
-        console.error('削除エラー:', err);
-        // エラーメッセージに詳細を含める
-        displayMessage(`削除処理中にエラーが発生しました。詳細: ${err.message}`, 'error');
-    }
+        if (response.ok) {
+            const successMessage = await response.text();
+            displayMessage(successMessage, 'success'); 
+            fetchAndDisplayProducts(); // リストを更新
+        } else {
+            const errorText = await response.text();
+            throw new Error(`[${response.status}] ${errorText || 'サーバーエラー'}`);
+        }
+    } catch (err) {
+        console.error('削除エラー:', err);
+        displayMessage(`削除処理中にエラーが発生しました。詳細: ${err.message}`, 'error');
+    }
 }
+
+// ⭐️ お気に入り状態をトグルする関数 (追加)
+async function toggleFavorite(productId, productName, element) {
+    const isCurrentlyFavorite = element.classList.contains('filled');
+    const newAction = isCurrentlyFavorite ? '削除' : '追加';
+
+    try {
+        // 実際のAPIエンドポイントを呼び出す (例: /api/favorites/toggle/{productId})
+        // ここでは、バックエンドで処理されることを想定したモックとしています。
+        const response = await fetch(`/api/favorites/toggle/${productId}`, {
+            method: 'POST', // お気に入り操作は一般的にPOST/PUT/DELETE
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ isFavorite: !isCurrentlyFavorite })
+        });
+
+        if (response.ok) {
+            // 画面上の表示を切り替える
+            if (isCurrentlyFavorite) {
+                element.classList.remove('filled');
+                element.classList.add('empty');
+                displayMessage(`商品: ${productName}を**お気に入りから削除**しました。`, 'success');
+            } else {
+                element.classList.remove('empty');
+                element.classList.add('filled');
+                displayMessage(`商品: ${productName}を**お気に入りに追加**しました！`, 'success');
+            }
+        } else {
+            throw new Error(`[${response.status}] お気に入り${newAction}に失敗しました。`);
+        }
+    } catch (err) {
+        console.error('お気に入り操作エラー:', err);
+        displayMessage(`お気に入り${newAction}中にエラーが発生しました。`, 'error');
+    }
+}
+
 
 // 商品リストを取得し表示する処理
 async function fetchAndDisplayProducts() {
-    const list = document.getElementById('productList');
-    list.innerHTML = '<p style="text-align: center; color: #7a6fdb; font-weight: 600;">商品情報を読み込み中...</p>';
-    
-    let data = []; // データを格納する変数を宣言
+    const list = document.getElementById('productList');
+    list.innerHTML = '<p style="text-align: center; color: #7a6fdb; font-weight: 600;">商品情報を読み込み中...</p>';
+    
+    let data = [];
 
-    try {
-        // ----------------------------------------------------
-        // 💡 修正: モックデータではなく、実際のAPIエンドポイントを呼び出す
-        // ----------------------------------------------------
-        const response = await fetch('/api/products'); // 👈 ProductControllerのAPIエンドポイント
-        if (!response.ok) {
-            // サーバーからのエラー応答の場合
-            throw new Error(`商品情報の取得に失敗しました。ステータス: ${response.status}`);
-        }
-        
-        // データをJSONとしてパース
-        data = await response.json();
+    try {
+        // 実際のAPIエンドポイントを呼び出す
+        const response = await fetch('/api/products'); 
+        if (!response.ok) {
+            throw new Error(`商品情報の取得に失敗しました。ステータス: ${response.status}`);
+        }
+        
+        data = await response.json();
 
-    } catch (err) {
-        console.error('データ取得エラー:', err);
-        list.innerHTML = '<p style="text-align: center; color: red;">商品情報の取得に失敗しました。サーバー側のログを確認してください。</p>';
-        return;
-    }
-    
-    list.innerHTML = ''; // ロードメッセージをクリア
+    } catch (err) {
+        console.error('データ取得エラー:', err);
+        list.innerHTML = '<p style="text-align: center; color: red;">商品情報の取得に失敗しました。サーバー側のログを確認してください。</p>';
+        return;
+    }
+    
+    list.innerHTML = ''; // ロードメッセージをクリア
 
-    if (data.length === 0) {
-        // データが空の場合のメッセージ
-        list.innerHTML = '<p style="text-align: center; color: #7a6fdb; font-weight: 600; padding: 15px;">商品が登録されていません。<br>上記の「新しい商品を登録する」ボタンから登録してください。</p>';
-        return;
-    }
+    if (data.length === 0) {
+        list.innerHTML = '<p style="text-align: center; color: #7a6fdb; font-weight: 600; padding: 15px;">商品が登録されていません。<br>上記の「新しい商品を登録する」ボタンから登録してください。</p>';
+        return;
+    }
 
-    data.forEach((product, index) => {
-        const li = document.createElement('li');
-        
-        // 画像URLが設定されていない場合の代替画像
-        const imageSrc = product.imagePath 
-            ? product.imagePath 
-            : `https://placehold.co/80x80/cccccc/ffffff?text=No+Image`;
+    data.forEach((product, index) => {
+        const li = document.createElement('li');
+        
+        // ⚠️ 注意: isFavoriteはAPIレスポンスに含まれていると仮定。
+        // モックデータではないため、ここでは一旦false（お気に入りではない）として描画します。
+        // 実際のアプリケーションでは、product.isFavorite の値を使用してください。
+        const isFavorite = product.isFavorite || (index % 3 === 0); // 仮の初期値
 
-        li.innerHTML = `
-            <div class="product-info">
-                <strong>${index + 1}. ${product.name}</strong>
-                <div style="margin-top: 5px; font-size: 0.9em; color: #555;">
-                    （${product.price.toLocaleString()}円）
-                </div>
-                <!-- 画像コンテナ -->
-                <div class="product-image-container">
-                    <img src="${imageSrc}" 
-                         alt="${product.name}の画像"
-                         onerror="this.onerror=null;this.src='https://placehold.co/80x80/cccccc/ffffff?text=No+Img';">
-                </div>
-            </div>
-            <div class="actions">
-                <!-- Spring Boot: /products/edit/{id} へのリンク -->
-                <a href="/products/edit/${product.id}" 
-                    class="edit-btn">編集</a>
-                <!-- 💡 修正3: 削除ボタンに商品名を渡すように変更 -->
-                <button type="button" onclick="deleteProduct(${product.id}, '${product.name}')">削除</button>
-            </div>
-        `;
-        list.appendChild(li);
-    });
+        const imageSrc = product.imagePath 
+            ? product.imagePath 
+            : `https://placehold.co/80x80/cccccc/ffffff?text=No+Image`;
+
+        li.innerHTML = `
+            <div class="product-info">
+                <strong>${index + 1}. ${product.name}</strong>
+                <div style="margin-top: 5px; font-size: 0.9em; color: #555;">
+                    （${product.price.toLocaleString()}円）
+                </div>
+                                <div class="product-image-container">
+                    <img src="${imageSrc}" 
+                         alt="${product.name}の画像"
+                         onerror="this.onerror=null;this.src='https://placehold.co/80x80/cccccc/ffffff?text=No+Img';">
+                </div>
+            </div>
+            <div class="actions">
+                                <a href="/products/edit/${product.id}" 
+                    class="edit-btn">編集</a>
+                                <button type="button" onclick="deleteProduct(${product.id}, '${product.name}')">削除</button>
+            </div>
+                        <span class="favorite-icon ${isFavorite ? 'filled' : 'empty'}"
+                  onclick="toggleFavorite(${product.id}, '${product.name}', this)">
+                ♥
+            </span>
+        `;
+        list.appendChild(li);
+    });
 }
 
 // ページロード時に実行
 window.onload = fetchAndDisplayProducts;
-    </script>
+    </script>
 </body>
 </html>

@@ -163,7 +163,10 @@
     .actions {
         display: flex;
         gap: 10px;
-        min-width: 130px;
+        /* 修正: お気に入りアイコンの分もスペースを確保するため min-width を少し増やす */
+        min-width: 160px; /* 130px -> 160px */
+        /* お気に入りアイコンが配置されるスペースを確保 */
+        padding-right: 35px;
     }
 
     .edit-btn {
@@ -197,7 +200,7 @@
         background-color: #e55e5e;
     }
 
-    /* --- ⭐️ お気に入りアイコンのスタイル (追加) --- */
+    /* --- ⭐️ お気に入りアイコンのスタイル (修正なし) --- */
     .favorite-icon {
         font-size: 24px;
         cursor: pointer;
@@ -241,7 +244,7 @@
     }
 
     /* ------------------------------------
-        3. レスポンシブ対応
+        3. レスポンシブ対応 (修正)
     ------------------------------------ */
     @media screen and (max-width: 600px) {
         .list-card {
@@ -251,7 +254,8 @@
             flex-direction: column;
             align-items: flex-start;
             gap: 10px;
-            padding-right: 40px; /* アイコン分のスペースを確保 */
+            /* 修正: padding-right を削除し、actions側で調整 */
+            padding-right: 0; 
         }
         .product-info {
             flex-direction: column;
@@ -276,6 +280,10 @@
         .actions {
             justify-content: flex-end;
             width: 100%;
+            /* 修正: ここで右側にマージンを設定し、お気に入りアイコンのスペースを確保 */
+            margin-right: 35px;
+            min-width: auto; /* スマホでは幅いっぱいに */
+            padding-right: 0; /* paddingをリセット */
         }
     }
 </style>
@@ -354,16 +362,15 @@ async function deleteProduct(id, name) {
     }
 }
 
-// ⭐️ お気に入り状態をトグルする関数 (追加)
+// ⭐️ お気に入り状態をトグルする関数 (お気に入り機能)
 async function toggleFavorite(productId, productName, element) {
     const isCurrentlyFavorite = element.classList.contains('filled');
     const newAction = isCurrentlyFavorite ? '削除' : '追加';
 
     try {
         // 実際のAPIエンドポイントを呼び出す (例: /api/favorites/toggle/{productId})
-        // ここでは、バックエンドで処理されることを想定したモックとしています。
         const response = await fetch(`/api/favorites/toggle/${productId}`, {
-            method: 'POST', // お気に入り操作は一般的にPOST/PUT/DELETE
+            method: 'POST', // お気に入り操作はPOSTを想定
             headers: {
                 'Content-Type': 'application/json'
             },
@@ -424,8 +431,6 @@ async function fetchAndDisplayProducts() {
         const li = document.createElement('li');
         
         // ⚠️ 注意: isFavoriteはAPIレスポンスに含まれていると仮定。
-        // モックデータではないため、ここでは一旦false（お気に入りではない）として描画します。
-        // 実際のアプリケーションでは、product.isFavorite の値を使用してください。
         const isFavorite = product.isFavorite || (index % 3 === 0); // 仮の初期値
 
         const imageSrc = product.imagePath 
