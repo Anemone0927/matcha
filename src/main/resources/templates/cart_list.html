@@ -13,7 +13,7 @@
         }
 
         /* ------------------------------------
-            1. 共通ベーススタイル
+           1. 共通ベーススタイル
         ------------------------------------ */
         body {
             background-color: #ffd9ef;
@@ -66,13 +66,8 @@
             align-items: center;
         }
 
-        header .user-links {
-            display: flex;
-            align-items: center;
-        }
-
         /* ------------------------------------
-            2. ページ固有のスタイル (カート一覧)
+           2. ページ固有のスタイル (カート一覧)
         ------------------------------------ */
         h1 {
             color: #a1835d;
@@ -151,12 +146,16 @@
 
         .product-info strong {
             font-size: 1.1em;
-            min-width: 150px;
+            /* カートでは品名が長くなる可能性があるため、flex-growで対応 */
+            flex-grow: 1;
+            min-width: 150px; 
         }
 
         .product-price-subtotal {
             min-width: 120px;
             text-align: right;
+            /* 削除ボタンのスペースを考慮して調整 */
+            margin-right: 15px;
         }
 
         /* 画像コンテナのスタイル */
@@ -209,37 +208,16 @@
             font-size: 1em;
         }
 
-        /* アクションボタン（削除・お気に入り）のコンテナ */
+        /* アクションボタン（削除のみ）のコンテナ */
         .item-controls {
             display: flex;
             align-items: center;
-            gap: 15px;
-            min-width: 180px;
+            min-width: 80px; /* 削除ボタンのサイズに合わせる */
             justify-content: flex-end;
-        }
-
-        .favorite-btn {
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 5px;
-            font-size: 1.5em;
-            color: #ccc;
-            transition: color 0.3s, transform 0.1s;
-            min-width: 30px;
             flex-shrink: 0;
         }
-
-        .favorite-btn:hover {
-            color: #ff3366;
-            transform: scale(1.1);
-        }
-
-        .favorite-btn.favorited {
-            color: #ff3366;
-            transform: scale(1.05);
-        }
-
+        
+        /* 削除ボタン */
         .delete-btn {
             background-color: #ff7f7f;
             color: white;
@@ -300,7 +278,7 @@
         }
 
         /* ------------------------------------
-            3. レスポンシブ対応
+           3. レスポンシブ対応 (削除ボタンに合わせて調整)
         ------------------------------------ */
         @media screen and (max-width: 768px) {
             .product-info strong {
@@ -309,6 +287,7 @@
 
             .product-price-subtotal {
                 min-width: 80px;
+                margin-right: 10px; 
             }
 
             .quantity-controls {
@@ -316,8 +295,7 @@
             }
 
             .item-controls {
-                min-width: 150px;
-                gap: 5px;
+                min-width: 60px; /* 削除ボタン分に調整 */
             }
         }
 
@@ -351,25 +329,27 @@
             }
 
             /* 数量と小計とアクションを横並びに */
+            /* item-controlsは削除ボタンのみなので、横幅は小さくて良い */
             .quantity-controls,
-            .product-price-subtotal,
-            .item-controls {
-                /* 3列レイアウトを作成 */
-                width: 33.33%;
+            .product-price-subtotal {
+                /* 2列レイアウトを作成 (残りのスペースはinfoに任せる) */
+                width: 40%;
                 margin: 0;
                 padding: 0;
                 display: flex;
-                justify-content: center;
+                justify-content: flex-start;
                 align-items: center;
             }
-
-            .product-price-subtotal {
-                text-align: center;
+            
+            .item-controls {
+                width: 20%;
+                justify-content: flex-end;
             }
 
-            .item-controls {
+
+            .product-price-subtotal {
+                text-align: right;
                 justify-content: flex-end;
-                gap: 5px;
             }
 
             .delete-btn {
@@ -378,7 +358,7 @@
         }
 
         /* ------------------------------------
-            4. Custom Modal Style
+           4. Custom Modal Style
         ------------------------------------ */
         .modal-overlay {
             position: fixed;
@@ -555,7 +535,7 @@
                 }
             } catch (err) {
                 console.error('数量更新エラー:', err);
-                displayMessage(`数量更新処理中にエラーが発生しました。`, 'error');
+                displayMessage(`数量更新処理中にエラーが発生しました。サーバーとの通信に失敗しました。`, 'error');
             }
         }
 
@@ -573,45 +553,6 @@
             // 数量が0以下になった場合も処理は updateQuantity に任せる
             updateQuantity(id, newQuantity);
         }
-
-
-        // ----------------------------------------------------
-        // お気に入り状態をトグルする関数
-        // ----------------------------------------------------
-        async function toggleFavorite(id, buttonElement) {
-            const isFavorited = buttonElement.classList.contains('favorited');
-            const method = isFavorited ? 'DELETE' : 'POST';
-            const actionText = isFavorited ? 'お気に入り解除' : 'お気に入り登録';
-
-            try {
-                // /api/products を使用し、カートアイテムではなく製品そのものの状態を更新する想定
-                const response = await fetch(`/api/products/${id}/favorite`, {
-                    method: method,
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                });
-
-                if (response.ok) {
-                    buttonElement.classList.toggle('favorited');
-                    const icon = buttonElement.querySelector('i');
-                    if (icon) {
-                        icon.classList.toggle('far', isFavorited);
-                        icon.classList.toggle('fas', !isFavorited);
-                    }
-                    displayMessage(`${actionText}が完了しました。`, 'success');
-                } else if (response.status === 401) {
-                    displayMessage('お気に入り機能はログイン後にご利用いただけます。', 'error');
-                } else {
-                    const errorText = await response.text();
-                    throw new Error(`[${response.status}] ${actionText}に失敗しました: ${errorText}`);
-                }
-            } catch (err) {
-                console.error('お気に入り処理エラー:', err);
-                displayMessage(`${actionText}処理中にエラーが発生しました。`, 'error');
-            }
-        }
-
 
         // 削除確認モーダルを表示
         function showDeleteModal(id, name) {
@@ -667,7 +608,7 @@
                 }
             } catch (err) {
                 console.error('削除エラー:', err);
-                displayMessage(`削除処理中にエラーが発生しました。詳細: ${err.message}`, 'error');
+                displayMessage(`削除処理中にエラーが発生しました。サーバーとの通信に失敗しました。`, 'error');
             }
         }
 
@@ -681,27 +622,25 @@
             list.innerHTML = '<p style="text-align: center; color: #7a6fdb; font-weight: 600;">カート情報を読み込み中...</p>';
             totalContainer.style.display = 'none'; // 合計エリアを一旦非表示
 
-            // モックデータ（本来はサーバーAPIから取得）
             let data = [];
-
-            let grandTotal = 0;
             let subTotal = 0;
             const TAX_RATE = 0.10; // 10%
 
             try {
-                // カートAPIを叩く
+                // サーバーのAPIを叩く
                 const response = await fetch('/api/cart');
                 if (!response.ok) {
                     const errorDetail = await response.text();
-                    throw new Error(`カート情報の取得に失敗しました。ステータス: ${response.status} 詳細: ${errorDetail}`);
+                    throw new Error(`カート情報の取得に失敗しました。詳細: ${errorDetail}`);
                 }
-
+                // サーバーから返されたJSONデータ（アイテムリスト）を想定
                 data = await response.json();
-
             } catch (err) {
                 console.error('データ取得エラー:', err);
-                displayMessage(`カートデータの読み込み中にエラーが発生しました。サーバーが起動しているか、/api/cartエンドポイントが正しく実装されているか確認してください。`, 'error');
-                // エラーが発生した場合も、空のリスト表示に進む
+                displayMessage(`カートデータの読み込み中にエラーが発生しました。サーバーとの接続を確認してください。`, 'error');
+                list.innerHTML = `<p style="text-align: center; color: #f44336; padding: 15px;">エラー: ${err.message}</p>`;
+                document.querySelector('.checkout-btn').style.display = 'none';
+                return;
             }
 
             list.innerHTML = ''; // ロードメッセージをクリア
@@ -716,7 +655,7 @@
             document.querySelector('.checkout-btn').style.display = 'inline-block';
 
             data.forEach((item, index) => {
-                // 小計を計算 (本来はバックエンドで計算・管理されるべき)
+                // 小計を計算
                 const itemSubtotal = item.price * item.quantity;
                 subTotal += itemSubtotal;
 
@@ -727,10 +666,6 @@
                 const imageSrc = item.imagePath ?
                     item.imagePath :
                     `https://placehold.co/60x60/cccccc/ffffff?text=No+Img`;
-
-                // お気に入り状態に基づいてクラスを設定
-                const favoriteClass = item.isFavorited ? 'favorited' : '';
-                const iconClass = item.isFavorited ? 'fas' : 'far';
 
                 li.innerHTML = `
                     <div class="product-info">
@@ -762,13 +697,6 @@
 
                     <div class="item-controls">
                         <button type="button"
-                            class="favorite-btn ${favoriteClass}"
-                            onclick="toggleFavorite(${item.id}, this)"
-                            title="お気に入りに追加/解除">
-                            <i class="${iconClass} fa-heart"></i>
-                        </button>
-
-                        <button type="button"
                             class="delete-btn"
                             onclick="removeCartItem(${item.id}, '${item.name}')">削除</button>
                     </div>
@@ -778,7 +706,7 @@
 
             // 合計金額を更新
             const tax = Math.round(subTotal * TAX_RATE);
-            grandTotal = subTotal + tax;
+            const grandTotal = subTotal + tax;
 
             document.getElementById('subTotal').textContent = subTotal.toLocaleString();
             document.getElementById('grandTotal').textContent = grandTotal.toLocaleString();
@@ -788,7 +716,7 @@
         function proceedToCheckout() {
             // Spring Bootでレジページへのルーティングを想定
             // window.location.href = '/checkout';
-            displayMessage('レジへ進む処理を実行します。（APIコールを想定）', 'success');
+            displayMessage('レジへ進む処理を実行します。（サーバーAPIコールを想定）', 'success');
         }
 
         // ページロード時に実行
@@ -806,148 +734,6 @@
                     hideDeleteModal();
                 }
             });
-        };
-    </script>
-    <script>
-        // ----------------------------------------------------
-        // 【モックAPI定義】
-        // サーバーサイドのAPIの代わりとなり、動作確認を可能にします。
-        // ----------------------------------------------------
-        let mockCartItems = [{
-                id: 101,
-                name: "推し色ペンライト（ピンク）",
-                price: 2500,
-                quantity: 2,
-                imagePath: "https://placehold.co/60x60/ffc0cb/333333?text=Pink+Light",
-                isFavorited: true
-            },
-            {
-                id: 102,
-                name: "アクリルスタンド（推しキャラA）",
-                price: 1800,
-                quantity: 1,
-                imagePath: "https://placehold.co/60x60/7a6fdb/ffffff?text=Acryl+A",
-                isFavorited: false
-            },
-            {
-                id: 103,
-                name: "限定Tシャツ（Lサイズ）",
-                price: 4200,
-                quantity: 1,
-                imagePath: "https://placehold.co/60x60/159450/ffffff?text=Tshirt+L",
-                isFavorited: true
-            },
-            {
-                id: 104,
-                name: "お祝いメッセージカード",
-                price: 300,
-                quantity: 5,
-                imagePath: "",
-                isFavorited: false
-            }
-        ];
-
-        // 組み込みのfetch関数を一時的に上書きしてモックAPIの役割を果たす
-        const originalFetch = window.fetch;
-
-        window.fetch = async function(resource, options = {}) {
-            const url = resource.toString();
-            const method = options.method ? options.method.toUpperCase() : 'GET';
-            const headers = options.headers || {};
-            const body = options.body ? JSON.parse(options.body) : null;
-
-            console.log(`[Mock API] Call: ${method} ${url}`);
-
-            await new Promise(resolve => setTimeout(resolve, 500)); // ネットワーク遅延をシミュレート
-
-            // --- /api/cart: カート情報取得 (GET) ---
-            if (url.endsWith('/api/cart') && method === 'GET') {
-                return {
-                    ok: true,
-                    status: 200,
-                    json: async () => mockCartItems,
-                    text: async () => JSON.stringify(mockCartItems)
-                };
-            }
-
-            // --- /api/cart/{id}: 数量更新 (PUT) ---
-            if (url.startsWith('/api/cart/') && method === 'PUT' && body && body.quantity !== undefined) {
-                const id = parseInt(url.split('/').pop(), 10);
-                const itemIndex = mockCartItems.findIndex(item => item.id === id);
-
-                if (itemIndex === -1) {
-                    return {
-                        ok: false,
-                        status: 404,
-                        text: async () => `カートアイテムID ${id} が見つかりません。`
-                    };
-                }
-
-                if (body.quantity < 1) {
-                    return {
-                        ok: false,
-                        status: 400,
-                        text: async () => "数量は1以上である必要があります。"
-                    };
-                }
-
-                mockCartItems[itemIndex].quantity = parseInt(body.quantity, 10);
-
-                return {
-                    ok: true,
-                    status: 200,
-                    json: async () => mockCartItems[itemIndex],
-                    text: async () => "数量を更新しました。"
-                };
-            }
-
-            // --- /api/cart/{id}: 削除 (DELETE) ---
-            if (url.startsWith('/api/cart/') && method === 'DELETE') {
-                const id = parseInt(url.split('/').pop(), 10);
-                const initialLength = mockCartItems.length;
-
-                mockCartItems = mockCartItems.filter(item => item.id !== id);
-
-                if (mockCartItems.length < initialLength) {
-                    return {
-                        ok: true,
-                        status: 200,
-                        text: async () => `${itemToRemoveName} をカートから取り出しました。`
-                    };
-                } else {
-                    return {
-                        ok: false,
-                        status: 404,
-                        text: async () => `カートアイテムID ${id} が見つかりませんでした。`
-                    };
-                }
-            }
-
-            // --- /api/products/{id}/favorite: お気に入りトグル (POST/DELETE) ---
-            if (url.match(/\/api\/products\/\d+\/favorite/) && (method === 'POST' || method === 'DELETE')) {
-                const id = parseInt(url.split('/')[3], 10);
-                const cartItem = mockCartItems.find(item => item.id === id);
-                const action = method === 'POST' ? '登録' : '解除';
-
-                // モックなので、カート内のアイテムのフラグをトグルする
-                if (cartItem) {
-                    cartItem.isFavorited = method === 'POST'; // POSTならtrue, DELETEならfalse
-                    return {
-                        ok: true,
-                        status: 200,
-                        text: async () => `お気に入り${action}が完了しました。`
-                    };
-                }
-
-                return {
-                    ok: true,
-                    status: 200,
-                    text: async () => `お気に入り${action}が完了しました。（商品ID: ${id}）`
-                };
-            }
-
-            // モックに該当しないAPIコールは、本来のfetchに戻す
-            return originalFetch(resource, options);
         };
     </script>
 </body>
