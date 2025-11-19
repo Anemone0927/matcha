@@ -67,7 +67,6 @@
             font-weight: bold;
         }
 
-        /* 💡 修正: select タグにもスタイルが適用されるように */
         input[type="number"], 
         input[type="text"],
         select {
@@ -76,7 +75,7 @@
             border-radius: 5px;
             font-size: 1em;
             width: 100%;
-            box-sizing: border-box; /* 💡 追加 */
+            box-sizing: border-box; 
         }
         
         button {
@@ -110,7 +109,7 @@
             color: #a1835d; 
             font-size: 1.5em; 
             margin-bottom: 20px;
-            margin-top: 0; /* 💡 追加 */
+            margin-top: 0;
         }
         .form-card form {
             text-align: left;
@@ -118,7 +117,7 @@
         .form-group {
             display: flex; 
             flex-direction: column;
-            gap: 5px; /* 💡 調整 */
+            gap: 5px;
         }
 
     </style>
@@ -143,10 +142,8 @@
         <div class="form-card">
             <h1>🛒 カートに商品を追加</h1>
             
-            <!-- 💡 修正: th:action と method="post" は不要 (JSで処理するため) -->
             <form id="addCartForm">
                 
-                <!-- 💡 修正: 商品IDの input を select (ドロップダウン) に変更 -->
                 <div class="form-group">
                     <label for="productId">商品</label>
                     <select id="productId" name="productId" required>
@@ -173,6 +170,9 @@
         </div>
 
 <script>
+    // 💡 修正: alert() の代わりにカスタムモーダル表示関数を使用 (今回は簡単のためalert()を続投)
+    // ただし、本番環境ではalert()は使用しない方が良い
+    
     document.getElementById('addCartForm').addEventListener('submit', function(e) {
         e.preventDefault();
 
@@ -188,37 +188,55 @@
             return;
         }
 
-        // 💡 修正: 送信するJSONの形式を、CartItemエンティティの構造に合わせる
-        // (productId: 1 ではなく、 product: { id: 1 } というネストしたオブジェクトにする)
+        // ★ 修正点 1: 送信するJSONの形式を、サーバーが期待するフラットな構造に戻す
+        // CartControllerはproductIdとquantityを直接Mapから読み込んでいます。
         const cartItemData = {
-            product: {
-                id: Number(productId)
-            },
+            productId: Number(productId), // フラットな構造
             quantity: Number(quantity)
         };
 
+        console.log('Sending JSON:', cartItemData);
+        
         fetch('/api/cart', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(cartItemData) // 💡 修正: cartItemData を送信
+            body: JSON.stringify(cartItemData)
         })
         .then(res => {
-            if (!res.ok) {
-                // サーバー側でエラーが起きた場合
-                return res.json().then(err => { throw new Error(err.message || '追加失敗'); });
+            // ★ 修正点 2: 応答ステータスコードによって処理を分岐させる
+            // 200 OK (成功) の場合のみJSONをパースする
+            if (res.ok) {
+                return res.json();
             }
-            return res.json();
+            
+            // 400 Bad Request や 500 Internal Server Error など、失敗の場合
+            // サーバーが応答ボディを空で返しているため、res.json()を呼ばず、特定のエラーをスローする
+            if (res.status === 400) {
+                // 400は通常、リクエストデータ（例：存在しない商品ID）の問題
+                throw new Error('リクエストが不正です。選択した商品IDがデータベースに存在しない可能性があります。');
+            }
+            if (res.status === 500) {
+                throw new Error('サーバー内部エラーが発生しました。詳細はコンソールを確認してください。');
+            }
+
+            // その他のエラー (例: 404 Not Found)
+            throw new Error(`不明なエラーが発生しました (ステータス: ${res.status})`);
         })
         .then(data => {
-            // 💡 修正: 成功メッセージを分かりやすく
+            // 成功時の処理
             alert(`「${selectedProductName}」を ${quantity} 点カートに追加しました！`);
             
             // フォームリセット
             this.reset();
+            // カート一覧へ遷移
+            window.location.href = '/cart_list';
         })
         .catch(err => {
+            // エラー時の処理
+            console.error('Fetch Error:', err);
+            // ユーザーにエラー内容をわかりやすく表示
             alert('エラーが発生しました: ' + err.message);
         });
     });
