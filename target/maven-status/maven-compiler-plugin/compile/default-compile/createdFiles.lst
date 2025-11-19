@@ -1,6 +1,7 @@
 com\example\matcha\controller\PostController.class
 com\example\matcha\repository\CartItemRepository.class
 com\example\matcha\repository\OrderRepository.class
+com\example\matcha\dto\CartItemDto.class
 com\example\matcha\config\WebConfig.class
 com\example\matcha\repository\PostRepository.class
 com\example\matcha\controller\ReviewPageController.class
