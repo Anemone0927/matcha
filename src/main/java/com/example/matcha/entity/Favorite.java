@@ -4,41 +4,26 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+// import lombok.Data; // 削除！
 
-/**
- * お気に入り情報を保持するエンティティクラス
- * ユーザーIDと商品IDの組み合わせを保存します。
- * * 注意: 現時点ではユーザー認証をスキップし、ユーザーIDを固定値 (1L) で扱います。
- * 実際には、Spring Securityなどを導入して認証済みのユーザーIDを使用する必要があります。
- */
 @Entity
-@Table(name = "favorites")
+@Table(name = "favorite") // テーブル名: favorite
+// @Data // 削除！
 public class Favorite {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long id; // プライマリキー
 
-    // ユーザーID (今回は簡略化のため固定値を使用)
+    // どのユーザーがお気に入り登録したか
     private Long userId;
 
-    // 商品エンティティへの関連付け
-    @ManyToOne
-    @JoinColumn(name = "product_id")
-    private Product product;
+    // どの商品をお気に入り登録したか
+    private Long productId;
 
-    // コンストラクタ
-    public Favorite() {}
+    // --- 手動でGetter/Setterを追加 (これによりコンパイルエラーを回避) ---
 
-    public Favorite(Long userId, Product product) {
-        this.userId = userId;
-        this.product = product;
-    }
-
-    // ゲッターとセッター
     public Long getId() {
         return id;
     }
@@ -55,11 +40,11 @@ public class Favorite {
         this.userId = userId;
     }
 
-    public Product getProduct() {
-        return product;
+    public Long getProductId() {
+        return productId;
     }
 
-    public void setProduct(Product product) {
-        this.product = product;
+    public void setProductId(Long productId) {
+        this.productId = productId;
     }
 }

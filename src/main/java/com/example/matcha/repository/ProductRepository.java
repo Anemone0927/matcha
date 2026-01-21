@@ -1,23 +1,20 @@
 package com.example.matcha.repository;
 
+import com.example.matcha.entity.Product;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 import java.util.List;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.stereotype.Repository;
-
-import com.example.matcha.entity.Product;
-
+/**
+ * ProductエンティティのCRUD操作とカスタムクエリを提供するリポジトリ。
+ */
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
-    /**
-     * 【🚨 追加・修正点】
-     * 全ての商品を取得する際に、レビュー情報もJOINして一度に取得することで
-     * N+1問題を解消し、データベースへのクエリ回数を削減します。
-     * @return 商品と関連レビューが全て含まれたリスト
-     */
-    @Override
-    @Query("SELECT p FROM Product p LEFT JOIN FETCH p.reviews")
-    List<Product> findAll();
+    // JpaRepositoryを拡張しているため、
+    // findAllById(Iterable<ID> ids) メソッドが自動的に提供されます。
+    // FavoriteControllerが要求している findProductsByIds の実体はこのメソッドを使用します。
+
+    // 例外的なカスタムメソッドが必要な場合に記述
+    // List<Product> findByPriceLessThan(Integer price);
 }

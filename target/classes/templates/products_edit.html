@@ -224,6 +224,17 @@
             <!-- 画像は新しいファイルを送信する場合のみ使用される -->
             <input type="file" id="editImage" name="image" accept="image/*" />
         </label>
+        <div class="mb-3">
+            <label for="category" class="form-label">カテゴリー</label>
+            <select class="form-select" id="category" name="category" required>
+                    <option value="" th:selected="${product.category == '全てのカテゴリ'}">全てのカテゴリ</option>
+                    <option value="PENLIGHT" th:selected="${product.category == 'ペンライト'}">ペンライト</option>
+                    <option value="ACRYLIC_STAND" th:selected="${product.category == 'アクリルスタンド'}">アクリルスタンド</option>
+                    <option value="WEAR" th:selected="${product.category == 'Tシャツ・ウェア'}">Tシャツ・ウェア</option>
+                    <option value="SWEETS" th:selected="${product.category == 'お菓子'}">お菓子</option>
+                    <option value="GOODS" th:selected="${product.category == 'その他グッズ'}">その他グッズ</option>
+            </select>
+        </div>
         
         <div class="button-group">
             <button type="button" id="cancelBtn">キャンセル</button>

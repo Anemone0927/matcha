@@ -216,6 +216,19 @@ input[type="file"], /* fileタイプも統一 */
             <input type="file" id="image" name="image" accept="image/*" required />
         </div>
 
+        <div class="mb-3">
+            <label for="category" class="form-label">カテゴリー</label>
+            <select class="form-select" id="category" name="category" required>
+                <option value="" selected disabled>選択してください</option>
+                <option value="">全てのカテゴリ</option>
+                <option value="PENLIGHT">ペンライト</option>
+                <option value="ACRYLIC_STAND">アクリルスタンド</option>
+                <option value="WEAR">Tシャツ・ウェア</option>
+                <option value="SWEETS">お菓子</option>
+                <option value="GOODS">その他グッズ</option>
+            </select>
+        </div>
+
         <button type="submit">
             商品を登録する
         </button>

@@ -16,7 +16,8 @@ public class User {
     @Column(nullable = false, unique = true)  // メールアドレスはユニーク
     private String email;
 
-    @Column(nullable = false)
+    // 🚨 修正点: データベース上の実際のカラム名 "password_hash" を明示的に指定します
+    @Column(name = "password_hash", nullable = false)
     private String password;
 
     // --- デフォルトコンストラクタ（必須） ---

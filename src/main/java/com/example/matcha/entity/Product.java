@@ -15,55 +15,40 @@ public class Product {
     
     private Integer price;
 
+    private String category; // 【追加】カテゴリ（抹茶、お菓子、茶器など）
+
     @Column(name = "image_path")
     private String imagePath;
 
-    // Productが削除されると、関連するReviewも自動的に削除されます。
+    // 【重要】お気に入り状態を保持。@Transientを付けるとDBのテーブルには作成されません。
+    @Transient
+    private boolean isFavorited;
+
     @OneToMany(mappedBy = "product", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Review> reviews;
 
-    // Constructors
     public Product() {}
 
-    // Getters and Setters
-    public Long getId() {
-        return id;
-    }
+    // --- Getters and Setters ---
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
     
-    public Integer getPrice() {
-        // Integer型なので getPrice() は Integer を返します。
-        return price; 
-    }
+    public Integer getPrice() { return price; }
+    public void setPrice(Integer price) { this.price = price; }
 
-    public void setPrice(Integer price) {
-        this.price = price;
-    }
+    public String getCategory() { return category; } // 【追加】
+    public void setCategory(String category) { this.category = category; } // 【追加】
 
-    public String getImagePath() {
-        return imagePath;
-    }
+    public String getImagePath() { return imagePath; }
+    public void setImagePath(String imagePath) { this.imagePath = imagePath; }
 
-    public void setImagePath(String imagePath) {
-        this.imagePath = imagePath;
-    }
+    public boolean isFavorited() { return isFavorited; } // 【追加】
+    public void setFavorited(boolean favorited) { isFavorited = favorited; } // 【追加】
 
-    public List<Review> getReviews() {
-        return reviews;
-    }
-
-    public void setReviews(List<Review> reviews) {
-        this.reviews = reviews;
-    }
+    public List<Review> getReviews() { return reviews; }
+    public void setReviews(List<Review> reviews) { this.reviews = reviews; }
 }

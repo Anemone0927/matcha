@@ -13,7 +13,7 @@
         }
 
         /* ------------------------------------
-           1. 共通ベーススタイル
+            1. 共通ベーススタイル
         ------------------------------------ */
         body {
             background-color: #ffd9ef;
@@ -67,7 +67,7 @@
         }
 
         /* ------------------------------------
-           2. ページ固有のスタイル (カート一覧)
+            2. ページ固有のスタイル (カート一覧)
         ------------------------------------ */
         h1 {
             color: #a1835d;
@@ -102,7 +102,8 @@
             background-color: #7a6fdb;
             color: white;
             padding: 12px 25px;
-            margin-bottom: 20px;
+            margin-top: 25px; /* 合計金額との間に少しスペースを空ける */
+            margin-bottom: 0; /* list-cardのpaddingでスペースを取るため */
             border-radius: 10px;
             text-decoration: none;
             font-weight: 700;
@@ -278,7 +279,7 @@
         }
 
         /* ------------------------------------
-           3. レスポンシブ対応 (削除ボタンに合わせて調整)
+            3. レスポンシブ対応 (削除ボタンに合わせて調整)
         ------------------------------------ */
         @media screen and (max-width: 768px) {
             .product-info strong {
@@ -358,7 +359,7 @@
         }
 
         /* ------------------------------------
-           4. Custom Modal Style
+            4. Custom Modal Style
         ------------------------------------ */
         .modal-overlay {
             position: fixed;
@@ -452,10 +453,6 @@
         <div class="list-card">
             <h2>🛒 カート内アイテムリスト</h2>
 
-            <button onclick="proceedToCheckout()" class="checkout-btn">
-                レジに進む <i class="fas fa-arrow-circle-right"></i>
-            </button>
-
             <div id="messageBox"></div>
 
             <ul id="productList">
@@ -466,6 +463,11 @@
                 <p>小計（税抜）：<span id="subTotal">0</span>円</p>
                 <p>合計金額（税込）：<span id="grandTotal">0</span>円</p>
             </div>
+            
+            <!-- 修正: 合計金額の下、中央に配置 -->
+            <button onclick="proceedToCheckout()" class="checkout-btn">
+                レジに進む <i class="fas fa-arrow-circle-right"></i>
+            </button>
         </div>
     </main>
 
@@ -645,14 +647,16 @@
 
             list.innerHTML = ''; // ロードメッセージをクリア
 
+            const checkoutButton = document.querySelector('.checkout-btn');
+
             if (data.length === 0) {
                 // データが空の場合のメッセージ
                 list.innerHTML = '<p style="text-align: center; color: #7a6fdb; font-weight: 600; padding: 15px;">カートにアイテムがありません。</p>';
-                document.querySelector('.checkout-btn').style.display = 'none';
+                checkoutButton.style.display = 'none'; // カートが空の場合はボタンを非表示
                 return;
             }
 
-            document.querySelector('.checkout-btn').style.display = 'inline-block';
+            checkoutButton.style.display = 'inline-block'; // アイテムがある場合はボタンを表示
 
             data.forEach((item, index) => {
                 // 小計を計算

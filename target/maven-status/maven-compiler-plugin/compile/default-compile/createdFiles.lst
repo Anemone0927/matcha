@@ -6,6 +6,7 @@ com\example\matcha\config\WebConfig.class
 com\example\matcha\repository\PostRepository.class
 com\example\matcha\controller\ReviewPageController.class
 com\example\matcha\model\CartItemModel.class
+com\example\matcha\service\ReviewService.class
 com\example\matcha\controller\FavoriteController.class
 com\example\matcha\controller\HealthController.class
 com\example\matcha\entity\Review.class

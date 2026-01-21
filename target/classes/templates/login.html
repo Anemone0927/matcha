@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <title>ログイン | OshiGiftBox</title>
-
+    <!--  -->
 <style>
 /* ------------------------------------
     1. 共通ベーススタイル (order_form.html に合わせる)
 ------------------------------------ */
     body {
-        background-color: #ffd9ef; 
+        background-color: #ffd9ef;
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         color: #333;
         margin: 0;
@@ -82,7 +82,7 @@
     2. ページ固有のスタイル (ログインフォーム)
 ------------------------------------ */
     h1 {
-        color: #a1835d; 
+        color: #a1835d;
         text-align: center;
         margin-bottom: 30px;
         margin-top: 0;
@@ -104,7 +104,7 @@
 .login-form {
     display: flex;
     flex-direction: column;
-    gap: 20px; 
+    gap: 20px;
     text-align: left; /* 入力項目を左寄せにする */
 }
 
@@ -161,6 +161,14 @@ input[type="password"] {
     background-color: #5d52b4;
     }
 
+/* エラーメッセージのスタイル */
+.error-message {
+    color: #e03c3c;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
 /* ------------------------------------
     3. レスポンシブ対応
 ------------------------------------ */
@@ -200,18 +208,27 @@ input[type="password"] {
 <div class="form-card">
     <h2>🔑 ユーザーログイン</h2>
     
+    <!-- ログイン失敗時のエラーメッセージを表示 -->
+    <div th:if="${param.error}" class="error-message">
+        メールアドレスまたはパスワードが正しくありません。
+    </div>
+    
+    <!-- th:actionのURLが、SecurityConfigの loginProcessingUrl と一致するように修正 -->
     <form th:action="@{/users/login}" method="post" th:object="${user}" class="login-form">
         
         <div>
             <label for="email">メールアドレス:</label>
-            <input type="email" id="email" th:field="*{email}" required 
-                   placeholder="example@oshigift.jp" />
+            <!-- フォーム認証では、ユーザー名のフィールド名は "username" である必要があります。 -->
+            <!-- Spring Securityの仕様により、メールアドレスとして使っていてもname属性は"username"が必要です -->
+            <input type="email" id="email" name="username" th:field="*{email}" required
+                    placeholder="example@oshigift.jp" />
         </div>
 
         <div>
             <label for="password">パスワード:</label>
-            <input type="password" id="password" th:field="*{password}" required
-                   placeholder="パスワードを入力してください" />
+            <!-- パスワードのフィールド名は "password" である必要があります -->
+            <input type="password" id="password" name="password" th:field="*{password}" required
+                    placeholder="パスワードを入力してください" />
         </div>
 
         <button type="submit">

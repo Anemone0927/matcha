@@ -2,151 +2,215 @@ package com.example.matcha.controller;
 
 import com.example.matcha.entity.User;
 import com.example.matcha.repository.UserRepository;
-import com.example.matcha.dto.ProductEditForm; // 💡 新しいDTOをインポート
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.util.StringUtils;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes; 
+import jakarta.servlet.http.HttpSession; 
 
 import java.util.Optional;
 
 @Controller
 @RequestMapping("/users")
 public class UserController {
+    
+    // ログイン中のユーザーIDを保存するためのセッションキー
+    private static final String SESSION_USER_ID_KEY = "loggedInUserId";
 
     @Autowired
     private UserRepository userRepository;
 
-    // 💡 認証選択ページ（auth_select.html）表示を追加
+    /**
+     * ログインしているユーザーのIDをセッションから取得する共通メソッド
+     */
+    private Long getLoggedInUserId(HttpSession session) {
+        return (Long) session.getAttribute(SESSION_USER_ID_KEY);
+    }
+    
+    /* -----------------------------------------------------
+     * マイページ表示
+     * ----------------------------------------------------- */
+
+    /**
+     * マイページを表示する
+     */
+    @GetMapping("/mypage")
+    public String myPage(Model model, HttpSession session) {
+        Long userId = getLoggedInUserId(session);
+
+        if (userId == null) {
+            return "redirect:/users/login"; 
+        }
+
+        Optional<User> userOpt = userRepository.findById(userId);
+        
+        if (userOpt.isPresent()) {
+            User user = userOpt.get();
+            user.setPassword(null); 
+            model.addAttribute("user", user);
+        } else {
+            session.removeAttribute(SESSION_USER_ID_KEY);
+            return "redirect:/users/login?error=notfound";
+        }
+        
+        return "mypage"; 
+    }
+
+    /* -----------------------------------------------------
+     * 認証（登録・ログイン）関連
+     * ----------------------------------------------------- */
+
+    /**
+     * 認証選択ページ表示
+     */
     @GetMapping("/auth_select")
     public String showAuthSelectPage() {
-        return "auth_select"; // auth_select.htmlを表示
+        return "auth_select";
     }
 
-    // ユーザー登録フォーム表示
+    /**
+     * ユーザー登録フォーム表示
+     */
     @GetMapping("/register")
     public String showRegisterForm(Model model) {
-        model.addAttribute("user", new User());  // 空のUserオブジェクトを渡す
-        return "user_register";  // user_register.htmlを表示（共通レイアウトなし）
+        if (!model.containsAttribute("user")) {
+            model.addAttribute("user", new User());
+        }
+        return "user_register";
     }
 
-    // ユーザー登録処理（フォームからPOST）
+    /**
+     * ユーザー登録処理（フォームからPOST）
+     */
     @PostMapping("/register")
-    public String registerUser(@ModelAttribute User user) {
-        userRepository.save(user);
-        return "redirect:/users/register?success";  // 登録後、同ページにリダイレクト
+    public String registerUser(@ModelAttribute User user, 
+                               RedirectAttributes redirectAttributes,
+                               HttpSession session) { 
+        
+        // メールアドレスの重複チェック
+        if (userRepository.existsByEmail(user.getEmail())) {
+            user.setPassword(null);
+            redirectAttributes.addFlashAttribute("user", user);
+            redirectAttributes.addFlashAttribute("errorMessage", "このメールアドレスは既に使用されています。");
+            return "redirect:/users/register";
+        }
+
+        // 🚨 注意: 実際にはここでパスワードのハッシュ化（BCryptなど）が必要です。
+        User savedUser = userRepository.save(user);
+        
+        // 登録成功後、セッションにユーザーIDを格納
+        session.setAttribute(SESSION_USER_ID_KEY, savedUser.getId());
+        
+        // マイページにリダイレクト
+        return "redirect:/users/mypage";
     }
 
-    // ログインフォーム表示
+    /**
+     * ログインフォーム表示
+     */
     @GetMapping("/login")
     public String showLoginForm(Model model) {
-        // Thymeleafでエラーメッセージなどを表示できるように、空のUserオブジェクトを渡しておきます。
-        model.addAttribute("user", new User()); 
-        return "login"; // login.htmlを表示
+        model.addAttribute("user", new User());
+        return "login";
     }
 
-    // 既存の簡単なログイン処理（JSONリクエスト・レスポンス想定）
+    /**
+     * ログイン処理（HTMLフォームからPOST）
+     * 💡 修正点: @RequestBodyから@ModelAttributeに変更し、リダイレクトベースの処理にする
+     */
     @PostMapping("/login")
-    @ResponseBody
-    public String loginUser(@RequestBody User loginUser) {
+    public String loginUser(@ModelAttribute User loginUser, 
+                            HttpSession session,
+                            RedirectAttributes redirectAttributes) { 
+        
         Optional<User> userOpt = userRepository.findByEmail(loginUser.getEmail());
 
         if (userOpt.isEmpty()) {
-            return "エラー：メールアドレスが見つかりません";
+            redirectAttributes.addFlashAttribute("errorMessage", "メールアドレスが見つかりません。");
+            return "redirect:/users/login";
         }
 
         User user = userOpt.get();
 
-        // パスワードの簡単な比較（ハッシュ化省略）
+        // 🚨 注意: 実際にはここでパスワードのハッシュ化と比較が必要です。
         if (user.getPassword().equals(loginUser.getPassword())) {
-            return "ログイン成功: " + user.getName();
+            // ログイン成功後、セッションにユーザーIDを格納し、マイページへリダイレクト
+            session.setAttribute(SESSION_USER_ID_KEY, user.getId());
+            return "redirect:/users/mypage";
         } else {
-            return "エラー：パスワードが違います";
+            // パスワードエラー
+            redirectAttributes.addFlashAttribute("errorMessage", "パスワードが違います。");
+            return "redirect:/users/login";
         }
     }
     
-    // -----------------------------------------------------
-    // 💡 商品編集画面表示のための仮のメソッド (修正済)
-    // -----------------------------------------------------
-    @GetMapping("/products/{id}/edit")
-    public String showEditProductForm(@PathVariable Long id, Model model) {
-        // 💡 修正: ProductEditForm DTO を使用して、Thymeleafが期待するすべてのフィールドを持つオブジェクトを渡します。
-        ProductEditForm productEditForm = new ProductEditForm();
-        productEditForm.setId(id);
-        
-        // 例: IDが1の場合の初期データ
-        if (id == 1L) {
-            productEditForm.setName("おしゅしセット"); // 商品名
-            productEditForm.setPrice(1500L);          // 価格
-            productEditForm.setImagePath("https://placehold.co/100x100/3675a9/ffffff?text=Product+Image"); // 画像パス
-        } else {
-            productEditForm.setName("テスト商品" + id);
-            productEditForm.setPrice(999L);
-            productEditForm.setImagePath(""); // 画像なし
+    /* -----------------------------------------------------
+     * プロフィール編集関連
+     * ----------------------------------------------------- */
+
+    /**
+     * プロフィール編集フォーム表示
+     */
+    @GetMapping("/profile")
+    public String showProfile(Model model, HttpSession session) { 
+        Long userId = getLoggedInUserId(session);
+
+        if (userId == null) {
+            return "redirect:/users/login"; 
         }
 
-        // 💡 Modelに渡すオブジェクトの名前は "product" のまま維持します。
-        model.addAttribute("product", productEditForm);
-        
-        // ⚠️ 実際には、このクラスは ProductController に分割し、Product エンティティと
-        // ProductService を使うべきです。
-        
-        return "products_edit"; // products_edit.htmlを表示
-    }
-
-    // 💡 プロフィール表示（ユーザー情報編集）
-    @GetMapping("/profile")
-    public String showProfile(Model model) {
-        // 🚨 注意: 本来は認証情報から現在のユーザーIDを取得しますが、ここでは仮にID=1のユーザーを取得します。
-        Optional<User> userOpt = userRepository.findById(1L);
+        Optional<User> userOpt = userRepository.findById(userId);
 
         if (userOpt.isPresent()) {
-            // パスワードをフォームに表示しないため、念のためここでnull化しておきます。（重要）
             User user = userOpt.get();
             user.setPassword(null);
             model.addAttribute("user", user);
         } else {
-            // 仮のデータを作成し、編集画面を表示できるようにする
-            User dummyUser = new User();
-            dummyUser.setId(0L); // IDを仮に設定
-            dummyUser.setName("");
-            dummyUser.setEmail("");
-            model.addAttribute("user", dummyUser);
-            // 本番環境では、ログインページにリダイレクトするなどの処理が必要です。
+            session.removeAttribute(SESSION_USER_ID_KEY);
+            return "redirect:/users/login?error=notfound";
         }
 
-        return "profile"; // profile.htmlを表示
+        return "profile";
     }
 
-    // 💡 プロフィール更新処理 (パスワード維持ロジックを追加)
+    /**
+     * プロフィール更新処理
+     */
     @PostMapping("/profile")
-    public String updateProfile(@ModelAttribute User updatedUser) {
-        // 1. 更新対象のユーザーID（ここでは仮に1L）を使用して、DBから現在の情報を取得
-        Optional<User> existingUserOpt = userRepository.findById(1L); // 🚨 実際のアプリケーションでは、認証情報からユーザーIDを取得してください
+    public String updateProfile(@ModelAttribute User updatedUser, HttpSession session) { 
+        Long userId = getLoggedInUserId(session);
+
+        if (userId == null) {
+            return "redirect:/users/login?error=unauthorized";
+        }
+
+        Optional<User> existingUserOpt = userRepository.findById(userId);
 
         if (existingUserOpt.isEmpty()) {
-            // ユーザーが存在しない場合はエラーまたはログインページにリダイレクト
-            return "redirect:/users/login?error"; 
+            session.removeAttribute(SESSION_USER_ID_KEY);
+            return "redirect:/users/login?error";
         }
 
         User existingUser = existingUserOpt.get();
 
-        // 2. フォームから新しいパスワードが入力されているかチェック
-        // StringUtils.hasText() は、null、空文字列、空白のみの文字列をチェックできます。
-        if (StringUtils.hasText(updatedUser.getPassword())) {
-            // パスワードが入力されている場合、新しいパスワードを設定 (本来はハッシュ化が必要)
-            existingUser.setPassword(updatedUser.getPassword());
-        } 
-        // パスワードが入力されていない場合 (else)、existingUserのパスワードはそのまま維持されます。（← これが重要）
+        if (!existingUser.getId().equals(updatedUser.getId())) {
+             return "redirect:/users/profile?error=security"; 
+        }
 
-        // 3. フォームから渡された他のフィールド（名前、メール）を既存のユーザー情報にコピーして上書き
+        // パスワード更新処理 (入力があった場合のみ)
+        if (StringUtils.hasText(updatedUser.getPassword())) {
+            // 🚨 注意: 実際にはここでパスワードのハッシュ化が必要です。
+            existingUser.setPassword(updatedUser.getPassword());
+        }
+
+        // 名前とメールアドレスの更新
         existingUser.setName(updatedUser.getName());
         existingUser.setEmail(updatedUser.getEmail());
 
-        // 4. 更新されたUserオブジェクトを保存
         userRepository.save(existingUser);
         
-        return "redirect:/users/profile?updated"; // 更新後、プロフィールページにリダイレクト
+        return "redirect:/users/profile?updated";
     }
 }

@@ -6,7 +6,7 @@
 
 <style>
 /* ------------------------------------
-    1. 共通ベーススタイル
+   1. 共通ベーススタイル
 ------------------------------------ */
     body {
         background-color: #ffd9ef; 
@@ -60,7 +60,7 @@
     }
     
 /* ------------------------------------
-    2. ページ固有のスタイル (ユーザー登録)
+   2. ページ固有のスタイル (ユーザー登録)
 ------------------------------------ */
     h1 {
         color: #a1835d; 
@@ -69,28 +69,24 @@
         margin-top: 0;
     }
 
-/* 💡 白いボックス（注文フォームと共通のデザイン） */
 .form-card {
     background-color: #fff;
     width: 100%;
     max-width: 400px;
-    margin: 0 auto; /* 中央寄せ */
+    margin: 0 auto;
     padding: 30px;
     border-radius: 12px;
     box-shadow: 0 4px 8px rgba(122, 111, 219, 0.2);
     text-align: center;
 }
 
-/* フォームのレイアウト */
 .register-form {
     display: flex;
     flex-direction: column;
-    gap: 15px; /* 要素間のスペースを確保 */
+    gap: 15px; 
     text-align: left;
 }
 
-
-/* h2 は .form-card 内のタイトルとして使用 */
 .form-card h2 {
     color: #7a6fdb;
     text-align: center;
@@ -98,14 +94,12 @@
     margin-top: 0;
 }
 
-/* ラベルのスタイル */
 label {
     display: block;
     margin-bottom: 5px;
     font-weight: 600;
 }
 
-/* 入力欄（input）の共通スタイル */
 input[type="text"],
 input[type="email"],
 input[type="password"] { 
@@ -118,7 +112,6 @@ input[type="password"] {
     transition: border-color 0.3s ease;
 }
 
-/* input のフォーカススタイル */
     input[type="text"]:focus,
     input[type="email"]:focus,
     input[type="password"]:focus {
@@ -126,7 +119,6 @@ input[type="password"] {
     outline: none;
     }
 
-/* 送信ボタンのスタイル */
     button {
     width: 100%;
     background-color: #7a6fdb;
@@ -138,15 +130,27 @@ input[type="password"] {
     cursor: pointer;
     transition: background-color 0.3s ease;
     font-weight: 700;
-    margin-top: 15px; /* フォーム要素との間に少しスペースを空ける */
+    margin-top: 15px;
     }
 
     button:hover {
     background-color: #5d52b4;
     }
 
+    /* 💡 エラーメッセージのスタイル */
+    .error-message {
+        color: #e53e3e; /* 赤 */
+        background-color: #fee2e2; /* 薄い赤の背景 */
+        padding: 10px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        font-weight: 600;
+        text-align: center;
+        border: 1px solid #fc8181;
+    }
+
 /* ------------------------------------
-    3. レスポンシブ対応
+   3. レスポンシブ対応
 ------------------------------------ */
     @media screen and (max-width: 480px) {
         header h1 {
@@ -185,10 +189,16 @@ input[type="password"] {
 <div class="form-card">
     <h2>✨ アカウント作成</h2>
     
+    <!-- 💡 エラーメッセージの表示エリアを追記 -->
+    <div th:if="${errorMessage}" class="error-message">
+        <span th:text="${errorMessage}">エラーメッセージが表示されます</span>
+    </div>
+
     <form th:action="@{/users/register}" method="post" th:object="${user}" class="register-form">
         
         <div>
             <label for="name">お名前:</label>
+            <!-- th:field を使うと、リダイレクトで戻ってきたときに前回入力した値が自動で入ります -->
             <input type="text" id="name" th:field="*{name}" required
                    placeholder="例: 白崎加恋" />
         </div>
@@ -201,6 +211,7 @@ input[type="password"] {
 
         <div>
             <label for="password">パスワード:</label>
+            <!-- パスワードフィールドはセキュリティのため、リダイレクトで戻っても値が入りません -->
             <input type="password" id="password" th:field="*{password}" required 
                    placeholder="8文字以上の半角英数字" />
         </div>

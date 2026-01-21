@@ -5,11 +5,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-// import java.util.Set; // 削除
-// import java.util.stream.Collectors; // 削除
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-// import com.example.matcha.entity.Favorite; // 削除
 import com.example.matcha.entity.Product;
 import com.example.matcha.repository.CartItemRepository;
 import com.example.matcha.repository.FavoriteRepository;
@@ -36,24 +36,18 @@ public class ProductService {
 
     private static final String IMAGE_PATH_PREFIX = "/images/";
 
-    // 定数: お気に入りロジックはFavoriteServiceに移動したため削除
-    // private static final Long DEFAULT_USER_ID = 1L; 
-
     private final ProductRepository productRepository;
     private final ReviewRepository reviewRepository;
     private final CartItemRepository cartItemRepository;
     private final OrderRepository orderRepository;
     private final FavoriteRepository favoriteRepository;
 
-    /**
-     * コンストラクタインジェクション
-     */
     public ProductService(
-        ProductRepository productRepository, 
-        ReviewRepository reviewRepository, 
-        CartItemRepository cartItemRepository,
-        OrderRepository orderRepository,
-        FavoriteRepository favoriteRepository) {
+            ProductRepository productRepository, 
+            ReviewRepository reviewRepository, 
+            CartItemRepository cartItemRepository,
+            OrderRepository orderRepository,
+            FavoriteRepository favoriteRepository) {
         this.productRepository = productRepository;
         this.reviewRepository = reviewRepository;
         this.cartItemRepository = cartItemRepository;
@@ -61,150 +55,110 @@ public class ProductService {
         this.favoriteRepository = favoriteRepository;
     }
 
-    // --- Product CRUD Operations ---
+    /**
+     * 【追加】検索・フィルタリング・ソート処理
+     */
+    public List<Product> searchProducts(String keyword, String category, String sort) {
+        List<Product> products = productRepository.findAll();
+
+        return products.stream()
+            // 1. 名前で絞り込み (keyword)
+            .filter(p -> keyword == null || keyword.isEmpty() || 
+                    p.getName().toLowerCase().contains(keyword.toLowerCase()))
+            // 2. カテゴリで絞り込み (category)
+            .filter(p -> category == null || category.isEmpty() || 
+                    category.equals(p.getCategory()))
+            // 3. ソート (sort)
+            .sorted((p1, p2) -> {
+                if ("price_asc".equals(sort)) {
+                    return Integer.compare(p1.getPrice(), p2.getPrice());
+                } else if ("price_desc".equals(sort)) {
+                    return Integer.compare(p2.getPrice(), p1.getPrice());
+                } else {
+                    // デフォルトは新着順 (IDの降順)
+                    return Long.compare(p2.getId(), p1.getId());
+                }
+            })
+            .collect(Collectors.toList());
+    }
 
     public List<Product> findAllProducts() {
         return productRepository.findAll();
     }
 
-    /**
-     * 商品IDから商品エンティティを取得する。
-     * FavoriteServiceから呼び出されるため、このメソッドは維持します。
-     */
     public Optional<Product> findProductById(Long id) {
         return productRepository.findById(id);
     }
 
-    /**
-     * 商品の新規登録処理
-     */
-    public Product createProduct(String name, int price, MultipartFile image) {
-        String filename = saveImage(image);
+    public List<Product> findProductsByIds(List<Long> productIds) {
+        if (productIds == null || productIds.isEmpty()) {
+            return List.of();
+        }
+        Iterable<Product> productsIterable = productRepository.findAllById(productIds);
+        return StreamSupport.stream(productsIterable.spliterator(), false)
+                            .collect(Collectors.toList());
+    }
 
+    /**
+     * 【修正】カテゴリ(category)も保存できるように引数を追加
+     */
+    @Transactional
+    public Product createProduct(String name, int price, String category, MultipartFile image) {
+        String filename = saveImage(image);
         Product product = new Product();
         product.setName(name);
-        product.setPrice(price);
+        product.setPrice(price); 
+        product.setCategory(category); // カテゴリをセット
         product.setImagePath(IMAGE_PATH_PREFIX + filename);
-
         return productRepository.save(product);
     }
-    
-    /**
-     * 商品の更新処理 (画像はオプション)
-     */
-    public Optional<Product> updateProduct(Long id, String name, int price, MultipartFile image) {
-        Optional<Product> optProduct = productRepository.findById(id);
-        
-        if (optProduct.isPresent()) {
-            Product product = optProduct.get();
-            
+
+    @Transactional
+    public Optional<Product> updateProduct(Long id, String name, int price, String category, MultipartFile image) {
+        return productRepository.findById(id).map(product -> {
             product.setName(name);
             product.setPrice(price);
-
+            product.setCategory(category); // カテゴリを更新
             if (image != null && !image.isEmpty()) {
-                // 古い画像を削除するロジックは、必要に応じて追加してください
                 String filename = saveImage(image);
                 product.setImagePath(IMAGE_PATH_PREFIX + filename);
             }
-            
-            return Optional.of(productRepository.save(product));
-        }
-        return Optional.empty();
+            return productRepository.save(product);
+        });
     }
 
-    /**
-     * 商品削除処理（トランザクション管理、関連データ削除、画像ファイル削除を含む）
-     */
     @Transactional
     public boolean deleteProduct(Long id) {
-        Optional<Product> optionalProduct = productRepository.findById(id);
-
-        if (optionalProduct.isEmpty()) {
-            logger.warn("商品ID: {} は存在しないため削除できませんでした。", id);
-            return false;
-        }
-
-        Product product = optionalProduct.get();
-        String imagePath = product.getImagePath();
-        
-        try {
-            // 0. お気に入りテーブル (favorites) の関連レコードを先に削除 (FavoriteServiceからRepositoryを直接使用)
+        return productRepository.findById(id).map(product -> {
             favoriteRepository.deleteByProductId(id);
-            logger.info("商品ID: {} に関連するお気に入りレコードを全て削除しました。", id);
-
-            // 1. 注文テーブル (orders) の関連レコードを先に削除
             orderRepository.deleteByProductId(id);
-            logger.info("商品ID: {} に関連する注文レコードを全て削除しました。", id);
-
-            // 2. 関連する CartItem を全て削除する
             cartItemRepository.deleteByProductId(id);
-            logger.info("商品ID: {} に関連するカートアイテムを全て削除しました。", id);
-
-            // 3. 関連する Review を全て削除する
-            reviewRepository.deleteByProductId(id);
-            logger.info("商品ID: {} に関連するレビューを全て削除しました。", id);
-
-            // 4. データベースのレコードを削除
+            reviewRepository.deleteByProduct_Id(id);
             productRepository.delete(product);
-            logger.info("商品ID: {} がデータベースから削除されました。", id);
-
-            // 5. サーバー上の画像ファイルを削除
-            deleteImageFile(imagePath);
-            
+            deleteImageFile(product.getImagePath());
             return true;
-        } catch (Exception e) {
-            logger.error("商品ID: {} の削除処理中にエラーが発生しました。データベース操作はロールバックされます。", id, e);
-            throw new RuntimeException("商品の削除に失敗しました: " + e.getMessage(), e);
-        }
+        }).orElse(false);
     }
 
-
-    // --- お気に入り関連のサービスロジック (Favorite Logic) はFavoriteServiceに移動しました ---
-
-
-    // --- File Handling Methods ---
-
-    /**
-     * 画像をサーバーに保存し、ファイル名を返すプライベートメソッド
-     */
     private String saveImage(MultipartFile imageFile) {
-        if (imageFile.isEmpty()) {
-            throw new RuntimeException("画像ファイルが空です。");
-        }
+        if (imageFile == null || imageFile.isEmpty()) throw new RuntimeException("画像が空です");
         try {
-            String originalFilename = imageFile.getOriginalFilename();
-            String baseFilename = originalFilename != null ? originalFilename : "no_name_file";
-            
-            String filename = UUID.randomUUID() + "_" + baseFilename;
+            String filename = UUID.randomUUID() + "_" + imageFile.getOriginalFilename();
             Path path = Paths.get(uploadDir, filename);
-            
             Files.createDirectories(path.getParent());
-            
             Files.copy(imageFile.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
             return filename;
         } catch (IOException e) {
-            logger.error("画像の保存に失敗しました", e);
-            throw new RuntimeException("画像の保存に失敗しました", e);
+            throw new RuntimeException("保存失敗", e);
         }
     }
 
-    /**
-     * サーバー上の画像ファイルを削除するプライベートメソッド
-     */
     private void deleteImageFile(String imagePath) {
         if (imagePath != null && imagePath.startsWith(IMAGE_PATH_PREFIX)) {
-            String filename = imagePath.substring(IMAGE_PATH_PREFIX.length());
-            Path filePath = Paths.get(uploadDir, filename);
-            
             try {
-                if (Files.exists(filePath)) {
-                    Files.delete(filePath);
-                    logger.info("関連画像ファイルが削除されました: {}", filename);
-                } else {
-                    logger.warn("関連画像ファイルが見つかりませんでした: {}", filename);
-                }
+                Files.deleteIfExists(Paths.get(uploadDir, imagePath.substring(IMAGE_PATH_PREFIX.length())));
             } catch (IOException e) {
-                logger.error("画像ファイル {} の削除中にIOエラーが発生しました。", filename, e);
+                logger.error("削除エラー", e);
             }
         }
     }

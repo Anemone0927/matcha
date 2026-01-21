@@ -2,7 +2,8 @@ package com.example.matcha.controller;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set; 
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,100 +11,136 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import jakarta.servlet.http.HttpSession;
 
 import com.example.matcha.entity.Product;
 import com.example.matcha.service.ProductService;
-import com.example.matcha.service.FavoriteService; // 【★追加】
+import com.example.matcha.service.FavoriteService;
 
 @Controller
+@RequestMapping
 public class ProductController {
     
     private static final Logger logger = LoggerFactory.getLogger(ProductController.class);
+    private static final String SESSION_USER_ID_KEY = "loggedInUserId";
 
     private final ProductService productService;
-    private final FavoriteService favoriteService; // 【★追加: FavoriteServiceフィールド】
+    private final FavoriteService favoriteService;
+
+    public ProductController(ProductService productService, FavoriteService favoriteService) {
+        this.productService = productService;
+        this.favoriteService = favoriteService;
+    }
+
+    private Long getLoggedInUserId(HttpSession session) {
+        Long userId = (Long) session.getAttribute(SESSION_USER_ID_KEY);
+        return (userId != null) ? userId : 1L; // デバッグ用仮ID
+    }
 
     /**
-     * コンストラクタインジェクション (ProductServiceとFavoriteServiceを注入)
+     * 商品検索API (JSON)
+     * 検索、フィルタ、ソートの結果にお気に入り情報を付与して返します。
      */
-    public ProductController(ProductService productService, FavoriteService favoriteService) { // 【★引数にFavoriteServiceを追加】
-        this.productService = productService;
-        this.favoriteService = favoriteService; // 【★初期化】
-    }
-
-    // 商品一覧API (JSONで返す)
     @GetMapping("/api/products")
     @ResponseBody
-    public List<Product> getAllProducts() {
-        logger.info("APIエンドポイント /api/products が呼び出されました。");
-        return productService.findAllProducts();
+    public List<Product> getProducts(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) String sort,
+            HttpSession session) {
+        
+        logger.info("API検索リクエスト: keyword={}, category={}, sort={}", keyword, category, sort);
+
+        // 1. サービスで検索実行
+        List<Product> products = productService.searchProducts(keyword, category, sort);
+
+        // 2. お気に入り情報を付与
+        Long userId = getLoggedInUserId(session);
+        List<Long> favoriteIds = favoriteService.getFavoriteProductIds(userId);
+        
+        for (Product p : products) {
+            p.setFavorited(favoriteIds.contains(p.getId()));
+        }
+
+        return products;
     }
 
-    // 商品一覧画面表示（Thymeleafでrender）
+    /**
+     * 商品一覧画面 (Thymeleaf)
+     */
     @GetMapping("/products_list")
-    public String showList(Model model) {
-        logger.info("Viewエンドポイント /products_list が呼び出されました。");
-        
-        // 1. 商品リストの取得
+    public String showList(Model model, HttpSession session) {
+        Long userId = getLoggedInUserId(session);
         List<Product> products = productService.findAllProducts();
+        
+        // お気に入りIDのSetを作成
+        Set<Long> favoriteProductIds = favoriteService.getFavoriteProductIds(userId)
+                .stream().collect(Collectors.toSet());
+        
         model.addAttribute("products", products);
-
-        // 2. お気に入り商品IDリストの取得 (FavoriteServiceから取得するように修正)
-        Set<Long> favoriteProductIds = favoriteService.getFavoriteProductIdsForCurrentUser(); // 【★修正】
         model.addAttribute("favoriteProductIds", favoriteProductIds);
         
         return "products_list";
     }
 
-    // 商品追加フォーム画面表示
     @GetMapping("/products/new")
     public String showForm(Model model) {
         model.addAttribute("product", new Product());
         return "products_form";
     }
 
-    // 商品追加処理（画像アップロード含む）
+    /**
+     * 商品登録処理 (カテゴリ対応版)
+     */
     @PostMapping(value = "/products/new", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public String addProduct(
-        @RequestParam String name,
-        @RequestParam int price,
-        @RequestParam MultipartFile image,
-        Model model) {
+            @RequestParam String name,
+            @RequestParam int price,
+            @RequestParam String category, // 【追加】
+            @RequestParam MultipartFile image) {
 
-        Product newProduct = productService.createProduct(name, price, image);
-        logger.info("新しい商品が登録されました: {}", newProduct.getName());
-
+        productService.createProduct(name, price, category, image);
         return "redirect:/products_list";
     }
 
-    // 商品削除（サービス層に処理を委譲）
-    @DeleteMapping("/products/{id}")
+    @DeleteMapping("/api/products/{id}")
     @ResponseBody
     public ResponseEntity<String> deleteProduct(@PathVariable Long id) {
         try {
             boolean success = productService.deleteProduct(id);
-
-            if (success) {
-                logger.info("商品ID: {} の削除が完了しました。", id);
-                return ResponseEntity.ok("商品ID: " + id + " を削除しました！");
-            } else {
-                logger.warn("商品ID: {} の削除に失敗しました (商品が存在しませんでした)。", id);
-                return ResponseEntity.status(404).body("指定された商品IDが見つかりませんでした。");
-            }
-        } catch (RuntimeException e) {
-             logger.error("商品ID: {} の削除処理中に予期せぬエラーが発生しました。", id, e);
-             return ResponseEntity.internalServerError().body("削除処理中にエラーが発生しました: " + e.getMessage());
+            return success ? ResponseEntity.ok("削除完了") : ResponseEntity.status(404).body("未検出");
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("エラー: " + e.getMessage());
         }
     }
 
-    // 商品詳細取得（API的にJSONで返す）
+    @GetMapping("/products/edit/{id}")
+    public String editProduct(@PathVariable Long id, Model model) {
+        return productService.findProductById(id)
+            .map(p -> {
+                model.addAttribute("product", p);
+                return "products_edit";
+            })
+            .orElse("error/404");
+    }
+
+    /**
+     * 商品更新処理 (カテゴリ対応版)
+     */
+    @PostMapping(value = "/products/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public String updateProduct(
+            @PathVariable Long id,
+            @RequestParam("name") String name,
+            @RequestParam("price") int price,
+            @RequestParam("category") String category, // 【追加】
+            @RequestParam(value = "image", required = false) MultipartFile image) {
+
+        productService.updateProduct(id, name, price, category, image);
+        return "redirect:/products_list";
+    }
+
     @GetMapping("/products/{id}")
     @ResponseBody
     public ResponseEntity<Product> getProduct(@PathVariable Long id) {
@@ -111,36 +148,4 @@ public class ProductController {
             .map(ResponseEntity::ok)
             .orElse(ResponseEntity.notFound().build());
     }
-    
-    // 商品編集フォーム画面表示 (GET /products/edit/{id})
-    @GetMapping("/products/edit/{id}")
-    public String editProduct(@PathVariable Long id, Model model) {
-        Optional<Product> product = productService.findProductById(id);
-        
-        if (product.isPresent()) {
-            model.addAttribute("product", product.get());
-            return "products_edit";
-        } else {
-            return "error/404";
-        }
-    }
-    
-    // 商品更新処理 (POST /products/{id})
-    @PostMapping(value = "/products/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public String updateProduct(
-        @PathVariable Long id,
-        @RequestParam("name") String name,
-        @RequestParam("price") int price,
-        @RequestParam(value = "image", required = false) MultipartFile image,
-        Model model) {
-
-        productService.updateProduct(id, name, price, image);
-        logger.info("商品ID: {} の更新リクエストが完了しました。", id);
-
-        return "redirect:/products_list";
-    }
-    
-    // --- 【★削除】お気に入りAPIエンドポイント ---
-    // FavoriteController.javaに移動したため、このメソッド群はProductControllerから削除します。
-    // ------------------------------------------------
 }

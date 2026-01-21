@@ -1,6 +1,6 @@
 package com.example.matcha.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore; // 【追加】JsonIgnoreをインポート
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -9,7 +9,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
-// import java.util.List; // 不要なので削除
 
 /**
  * レビューエンティティ
@@ -26,12 +25,15 @@ public class Review {
     // 多対一 (ManyToOne): 複数のレビューが1つの商品に紐づく
     @ManyToOne
     @JoinColumn(name = "product_id", nullable = false) // 外部キーカラムを "product_id" として設定
-    @JsonIgnore // 【修正】無限再帰を防ぐため、JSONシリアライズ時には親のProductへの参照を無視する
+    @JsonIgnore // 無限再帰を防ぐため、JSONシリアライズ時には親のProductへの参照を無視する
     private Product product;
 
     private String author;
     private String content;
-    private int rating;
+    private String productName;
+    
+    // 評価 (intからIntegerに変更)
+    private Integer rating;
 
     // --- Getter & Setter ---
 
@@ -51,6 +53,32 @@ public class Review {
         this.product = product;
     }
 
+    public String getProductName() {
+            return productName;
+    }
+
+    public void setProductName(String productName) {
+            this.productName = productName;
+    }
+    
+    /**
+     * 【重要: 追加したメソッド】
+     * 外部のコード (ServiceやController) で呼び出されている 
+     * getProductId() の呼び出しに対応するためのカスタムGetter。
+     * 関連するProductエンティティからIDを抽出して返します。
+     * * @return 関連する商品のID (Long)
+     */
+    public Long getProductId() {
+        // productがnullでないことを確認してからIDを返します。
+        return this.product != null ? this.product.getId() : null;
+    }
+    
+    // 【補足】もしどこかで setProductId(Long id) が必要になった場合は、
+    // ここで ProductRepository を使って Product エンティティを取得し、
+    // setProduct(Product product) を呼び出す処理が必要になります。
+    // 今回はコンパイルエラー解消のため getProductId() の追加のみに留めます。
+
+
     public String getAuthor() {
         return author;
     }
@@ -67,11 +95,11 @@ public class Review {
         this.content = content;
     }
 
-    public int getRating() {
+    public Integer getRating() {
         return rating;
     }
 
-    public void setRating(int rating) {
+    public void setRating(Integer rating) {
         this.rating = rating;
     }
 }

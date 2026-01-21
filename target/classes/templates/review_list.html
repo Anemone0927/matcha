@@ -1,23 +1,39 @@
 <!DOCTYPE html>
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <title>レビュー一覧 | 推し系食べ物通販サイト</title>
-  <style>
-        body {
-            /* ホームページと共通の背景色を使用 */
-            background-color: #ffd9ef;
-            color: #2f4f2f;
-            font-family: "Arial", sans-serif;
-            margin: 0;
-            padding: 0; /* ヘッダーを画面端に寄せるため */
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>レビュー一覧 | OshiGiftBox</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* --- 全ての要素に box-sizing: border-box を適用します --- */
+        * {
+            box-sizing: border-box;
         }
+
+        /* ------------------------------------
+           1. 共通ベーススタイル
+        ------------------------------------ */
+        body {
+            background-color: #ffd9ef; /* Light Pink Background */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
         main {
             padding: 20px;
             max-width: 900px;
             margin: 0 auto;
+            flex-grow: 1;
+            width: 100%;
         }
-        
+
+
         /* --- Header Style --- */
         header {
             background-color: #159450;
@@ -26,13 +42,14 @@
             align-items: center;
             justify-content: space-between;
             box-shadow: 0 2px 5px rgba(0,0,0,0.15);
-            margin-bottom: 20px; /* コンテンツとの区切り */
+            margin-bottom: 20px;
         }
         header img.home-icon {
             width: 40px;
             height: 40px;
             border-radius: 20px;
             cursor: pointer;
+            transition: transform 0.3s;
         }
         header h1 {
             color: white;
@@ -51,107 +68,379 @@
             cursor: pointer;
             transition: transform 0.3s;
         }
-        header .user-icon:hover {
+        header .user-icon:hover,
+        header img.home-icon:hover {
             transform: scale(1.1);
         }
 
-        /* --- Button Style --- */
-        a.btn {
-            background-color: #fff;
-            color: #2f4f2f;
-            border: 2px solid #2f4f2f;
-            padding: 10px 20px;
-            margin: 5px;
-            font-size: 1em;
-            border-radius: 10px;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-block;
-            transition: background-color 0.3s, color 0.3s;
-        }
-        a.btn:hover {
-            background-color: #2f4f2f;
-            color: #fff;
+        /* ====================================
+           2. ページ固有のスタイル (レビュー一覧)
+           ==================================== */
+        h1.page-title {
+            color: #a1835d;
+            text-align: center;
+            font-size: 2em;
+            margin-bottom: 30px;
+            margin-top: 0;
+            font-weight: bold;
         }
 
-        /* ====================================
-           2. ページ固有のスタイル (review_list.html)
-           ==================================== */
+        /* レビューカードを中央に寄せるためのコンテナ */
+        .review-list-container {
+            width: 100%;
+        }
+        
+        /* レビューカードのスタイル */
         .review-card {
             background-color: #fff;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            margin: 20px auto;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(122, 111, 219, 0.2);
             max-width: 500px;
+            width: 100%;
+            margin: 0 auto 20px auto;
             padding: 20px;
-            border-left: 5px solid #ffbfdf; /* 推し活っぽいアクセント */
+            border-left: 5px solid #ffbfdf;
+            box-sizing: border-box;
         }
+        
+        /* レビューカード内のレイアウト (削除ボタンのためにflex化) */
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+            border-bottom: 1px dashed #eee;
+            padding-bottom: 5px;
+        }
+
+        .review-title-area {
+            /* flex-growを1に設定することで、削除ボタン以外のスペースを埋める */
+            flex-grow: 1; 
+            padding-right: 10px; /* 削除ボタンとの間に隙間を作る */
+        }
+
+        .product-name {
+            font-weight: bold;
+            color: #7a6fdb;
+            font-size: 1.1em;
+            display: block; /* 商品名を1行にする */
+        }
+        
+        .delete-btn {
+            /* cart_list.htmlの削除ボタンを参考にスタイル調整 */
+            background-color: #ff7f7f; /* 赤系 */
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 8px; /* 角を丸く */
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: background-color 0.3s;
+            font-weight: 600;
+            white-space: nowrap; /* ボタン内のテキストを折り返さない */
+            flex-shrink: 0; /* 縮小させない */
+            height: 30px; /* 高さも揃える */
+            line-height: 1; /* テキストを垂直方向に中央に */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .delete-btn:hover {
+            background-color: #e55e5e;
+        }
+
         .stars {
-            color: gold;
+            color: #ffc107;
             font-size: 1.5em;
+            margin-bottom: 5px;
         }
         .comment {
             margin-top: 10px;
+            line-height: 1.6;
+            white-space: pre-wrap; /* 改行を反映 */
+        }
+        .review-meta {
+            font-size: 0.85em;
+            color: #999;
+            margin-top: 15px;
+            text-align: right;
         }
 
+        /* レビューがない場合のメッセージボックスも.review-cardの幅に合わせる */
+        .no-reviews {
+            text-align: center;
+            color: #555;
+            margin: 50px auto;
+            padding: 30px;
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(122, 111, 219, 0.2);
+            max-width: 500px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .no-reviews .btn {
+            display: inline-block;
+            background-color: #7a6fdb;
+            color: white;
+            padding: 10px 20px;
+            margin-top: 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 700;
+            transition: background-color 0.3s;
+        }
+        .no-reviews .btn:hover {
+            background-color: #5d52b4;
+        }
+        
+        /* ------------------------------------
+           3. Custom Modal Style (cart_list.html準拠)
+        ------------------------------------ */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 25px rgba(122, 111, 219, 0.4);
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+        }
+
+        #modalMessage {
+            font-size: 1.1em;
+            font-weight: 600;
+            margin-bottom: 25px;
+            color: #7a6fdb;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: space-around;
+            gap: 15px;
+        }
+
+        .modal-actions button {
+            flex-grow: 1;
+            padding: 12px 15px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.1s;
+            font-size: 1em;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .confirm-btn {
+            background-color: #ff7f7f;
+            color: white;
+        }
+
+        .confirm-btn:hover {
+            background-color: #e55e5e;
+            transform: translateY(-1px);
+        }
+
+        .cancel-btn {
+            background-color: #f0f0f0;
+            color: #555;
+        }
+
+        .cancel-btn:hover {
+            background-color: #e0e0e0;
+            transform: translateY(-1px);
+        }
+
+
         /* ====================================
-           3. レスポンシブ対応
+           4. レスポンシブ対応 (既存+削除ボタン調整)
            ==================================== */
-        @media screen and (max-width: 480px) {
+        @media screen and (max-width: 600px) {
             header h1 {
                 font-size: 1.5em;
             }
+            h1.page-title {
+                font-size: 1.5em;
+                margin-bottom: 20px;
+            }
             .review-card {
-                margin: 10px 5px;
-                padding: 15px;
+                margin-left: 10px;
+                margin-right: 10px;
+                padding: 15px; /* パディングを少し減らす */
             }
-            /* その他モバイル調整 */
-            input[type="text"],
-            input[type="number"] {
-                font-size: 14px;
+            .no-reviews {
+                margin-left: 10px;
+                margin-right: 10px;
             }
-            button {
-                font-size: 16px;
-                padding: 10px;
+            
+            .delete-btn {
+                padding: 5px 10px; /* ボタンを小さく */
+                font-size: 0.85em;
             }
         }
-  </style>
+    </style>
 </head>
 <body>
-    <!-- 共通ヘッダー -->
     <header>
-        <div class="left">
-            <a th:href="@{/}">
-                <img src="/images/homebotan.jpg" alt="ホームページへ戻る" class="home-icon" />
-            </a>
-            <h1>OshiGiftBox</h1>
-        </div>
-        <div class="user-links">
-            <a th:href="@{/users/auth_select}">
-                <img src="/images/yuza.jpg" alt="ユーザー登録" class="user-icon" />
-            </a>
-        </div>
+    <div class="left">
+        <a th:href="@{/}" href="/">
+            <img src="/images/homebotan.jpg" alt="ホームページへ戻る" class="home-icon" />
+        </a>
+        <h1>OshiGiftBox</h1>
+    </div>
+    <div class="user-links">
+        <a th:href="@{/users/auth_select}">
+            <img src="/images/yuza.jpg" alt="ユーザー登録" class="user-icon" />
+        </a>
+    </div>
     </header>
+    
     <main>
-        <h1 style="text-align: center; color: #a1835d; margin-top: 0;">📦 ユーザーレビュー一覧</h1>
-
-        <!-- レビューリストの表示（Thymeleaf） -->
-        <div th:each="review : ${reviews}" class="review-card">
-            <div class="stars">
-                <!-- 評価スターの表示 -->
-                <span th:utext="${'★'.repeat(review.rating)} + ${'☆'.repeat(5 - review.rating)}"></span>
+        <div class="review-list-container">
+            <h1 class="page-title">📦 ユーザーレビュー一覧</h1>
+            
+            <div th:if="${successMessage}" style="background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; padding: 10px; border-radius: 8px; margin-bottom: 20px; text-align: center; max-width: 500px; margin-left: auto; margin-right: auto;">
+                <span th:text="${successMessage}"></span>
             </div>
-            <div class="comment" th:text="${review.comment}">コメントがここに表示されます</div>
-            <div style="font-size: 0.9em; color: #999; margin-top: 10px;">
-                商品ID: <span th:text="${review.productId}"></span>
-            </div>
-        </div>
 
-        <!-- レビューがない場合のメッセージ -->
-        <div th:if="${#lists.isEmpty(reviews)}" style="text-align: center; color: #555; margin-top: 50px; padding: 30px; background-color: #fff; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-            <p>まだレビューが投稿されていません。</p>
-            <p>最初のレビューを投稿してみませんか？</p>
+            <div th:if="${#lists.isEmpty(reviews)}" class="no-reviews">
+                <p>まだレビューが投稿されていません。</p>
+                <p>最初のレビューを投稿してみませんか？</p>
+                <a th:href="@{/review/form}" class="btn">レビューを投稿する</a> 
+            </div>
+
+            <div th:each="review : ${reviews}" class="review-card" th:id="'review-card-' + ${review.id}">
+                <div class="review-header">
+                    <div class="review-title-area">
+                        <span class="product-name" th:text="${review.productName} ?: '商品名不明'">商品名</span>
+                    </div>
+                    
+                    <button 
+                        type="button"
+                        class="delete-btn" 
+                        th:data-review-id="${review.id}" 
+                        th:data-review-name="${review.productName} ?: 'このレビュー'"
+                        onclick="showDeleteModal(this.getAttribute('data-review-id'), this.getAttribute('data-review-name'))"
+                    >
+                        削除
+                    </button>
+                </div>
+                
+                <div class="stars">
+                    <span th:utext="${'★'.repeat(review.rating)} + ${'☆'.repeat(5 - review.rating)}">★★★★★</span>
+                </div>
+                
+                <div class="comment" th:text="${review.content}">コメントがここに表示されます</div>
+                
+                <div class="review-meta">
+                    投稿者: <span th:text="${review.author} ?: '匿名'"></span>
+                </div>
+            </div>
         </div>
     </main>
+
+    <div id="deleteModal" class="modal-overlay">
+        <div class="modal-content">
+            <p id="modalMessage">このレビューを削除してもよろしいですか？</p>
+            <div class="modal-actions">
+                <button id="modalConfirmBtn" class="confirm-btn">削除する</button>
+                <button id="modalCancelBtn" class="cancel-btn">キャンセル</button>
+            </div>
+        </div>
+    </div>
+    
+    <script th:inline="javascript">
+    /*<![CDATA[*/
+
+    // 削除処理の状態を保持するグローバル変数
+    let reviewToRemoveId = null;
+    let reviewToRemoveName = null;
+
+    // 削除確認モーダルを表示
+    function showDeleteModal(id, name) {
+        reviewToRemoveId = id;
+        reviewToRemoveName = name;
+
+        const modal = document.getElementById('deleteModal');
+        const message = document.getElementById('modalMessage');
+
+        // モーダルメッセージを設定
+        message.innerHTML = `<strong>${name}</strong>のレビューを削除してもよろしいですか？`;
+
+        // モーダルを表示
+        modal.style.display = 'flex';
+    }
+
+    // 削除確認モーダルを非表示
+    function hideDeleteModal() {
+        document.getElementById('deleteModal').style.display = 'none';
+        reviewToRemoveId = null;
+        reviewToRemoveName = null;
+    }
+
+    // モーダルで「削除する」がクリックされたときの実際の削除処理
+    function confirmDelete() {
+        if (reviewToRemoveId === null) return;
+
+        const id = reviewToRemoveId;
+        const name = reviewToRemoveName;
+
+        hideDeleteModal(); // モーダルを閉じる
+
+        // DELETEリクエストを /api/reviews/{reviewId} に送信
+        fetch('/api/reviews/' + id, {
+            method: 'DELETE',
+        })
+        .then(response => {
+            if (response.ok) {
+                // 成功した場合
+                alert(`「${name}」のレビューを削除しました。`);
+                
+                // ページをリロードして一覧を更新
+                window.location.reload(); 
+            } else {
+                // 失敗した場合
+                alert(`レビューの削除に失敗しました。サーバーログを確認してください。ステータス: ${response.status}`);
+            }
+        })
+        .catch(error => {
+            console.error('削除中にエラーが発生しました:', error);
+            alert('通信エラーが発生しました。削除できませんでした。');
+        });
+    }
+
+    // ページロード時の初期設定
+    window.onload = function() {
+        // モーダルボタンにイベントを設定
+        document.getElementById('modalConfirmBtn').onclick = confirmDelete;
+        document.getElementById('modalCancelBtn').onclick = hideDeleteModal;
+
+        // オーバーレイをクリックで閉じられるようにする
+        document.getElementById('deleteModal').addEventListener('click', function(event) {
+            // モーダルコンテンツ自体がクリックされた場合は閉じない
+            if (event.target === this) {
+                hideDeleteModal();
+            }
+        });
+    };
+
+    /*]]>*/
+    </script>
 </body>
 </html>

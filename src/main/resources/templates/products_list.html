@@ -13,7 +13,7 @@
         }
 
         body {
-            background-color: #ffd9ef; /* ピンク系の背景 */
+            background-color: #ffd9ef;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             color: #333;
             margin: 0;
@@ -62,7 +62,6 @@
             margin: 0 auto;
         }
 
-        /* ページタイトル */
         h1 {
             color: #a1835d;
             text-align: center;
@@ -80,23 +79,12 @@
             border-radius: 8px;
             display: none;
             font-weight: 600;
+            z-index: 100;
         }
+        .success { background-color: #e6ffe6; color: #4CAF50; border: 1px solid #4CAF50; }
+        .error { background-color: #ffe6e6; color: #f44336; border: 1px solid #f44336; }
 
-        .success {
-            background-color: #e6ffe6;
-            color: #4CAF50;
-            border: 1px solid #4CAF50;
-        }
-
-        .error {
-            background-color: #ffe6e6;
-            color: #f44336;
-            border: 1px solid #f44336;
-        }
-        
-        /* ------------------------------------
-           1. フィルタリングUIのスタイル
-        ------------------------------------ */
+        /* --- フィルタリングUI --- */
         #filterControls {
             display: flex;
             gap: 20px;
@@ -107,55 +95,18 @@
             align-items: center;
             flex-wrap: wrap; 
         }
-        
-        #filterControls > div {
-            display: flex;
-            align-items: center;
-            flex-grow: 1;
-            min-width: 150px; /* 小さい要素の最小幅 */
-        }
-
-        #filterControls label {
-            font-weight: 600;
-            color: #7a6fdb;
-            margin-right: 5px;
-            white-space: nowrap;
-        }
-
+        #filterControls > div { display: flex; align-items: center; flex-grow: 1; }
+        #filterControls label { font-weight: 600; color: #7a6fdb; margin-right: 5px; white-space: nowrap; }
         #keywordInput, #categorySelect, #sortSelect {
-            padding: 10px;
-            border: 2px solid #ff3366;
-            border-radius: 6px;
-            font-size: 1em;
-            flex-grow: 1; 
-            min-width: 120px;
-            background-color: white;
+            padding: 10px; border: 2px solid #ff3366; border-radius: 6px; font-size: 1em; flex-grow: 1; min-width: 120px;
         }
-        
-        #keywordInput {
-             min-width: 180px;
-        }
-
-
         #filterButton {
-            background-color: #ff3366;
-            color: white;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 700;
-            transition: background-color 0.3s;
-            white-space: nowrap;
+            background-color: #ff3366; color: white; padding: 10px 15px; border: none; border-radius: 6px;
+            cursor: pointer; font-weight: 700; white-space: nowrap; transition: background-color 0.3s;
         }
-        
-        #filterButton:hover {
-            background-color: #cc0033;
-        }
-        
-        /* ------------------------------------
-           2. 商品リスト（グリッド）スタイル
-        ------------------------------------ */
+        #filterButton:hover { background-color: #cc0033; }
+
+        /* --- 商品リスト（グリッド） --- */
         #productList {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -171,8 +122,6 @@
             box-shadow: 0 4px 8px rgba(122, 111, 219, 0.1);
             display: flex;
             flex-direction: column;
-            align-items: center;
-            text-align: center;
             transition: transform 0.2s, box-shadow 0.2s;
         }
 
@@ -182,169 +131,80 @@
         }
 
         .product-image-container {
-            width: 100%;
-            height: 200px;
-            overflow: hidden;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            background-color: #f8f8f8;
+            width: 100%; height: 200px; overflow: hidden; border-radius: 8px;
+            background-color: #f8f8f8; margin-bottom: 10px;
         }
-
-        .product-image-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-        }
+        .product-image-container img { width: 100%; height: 100%; object-fit: cover; }
 
         .product-name {
-            font-size: 1.3em;
-            font-weight: 700;
-            color: #7a6fdb;
-            margin: 10px 0 5px 0;
-            height: 2.6em; 
-            overflow: hidden;
-            text-overflow: ellipsis;
+            font-size: 1.2em; font-weight: 700; color: #7a6fdb; margin: 10px 0;
+            height: 2.6em; overflow: hidden; text-align: center;
         }
 
         .product-price {
-            font-size: 1.6em;
-            font-weight: 800;
-            color: #ff3366;
-            margin: 5px 0 15px 0;
+            font-size: 1.5em; font-weight: 800; color: #ff3366; text-align: center; margin-bottom: 15px;
         }
 
+        /* --- ボタンアクションエリア --- */
         .product-actions {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-            margin-top: auto; 
+            display: flex; flex-direction: column; gap: 10px; margin-top: auto;
         }
 
-        .add-to-cart-btn {
-            flex-grow: 1;
-            background-color: #159450; 
-            color: white;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 1em;
-            transition: background-color 0.3s;
-            margin-right: 10px;
+        .top-actions {
+            display: flex; align-items: center; gap: 10px;
         }
 
-        .add-to-cart-btn:hover {
-            background-color: #0d6e3e;
+        /* 管理用ボタンコンテナ */
+        .admin-controls {
+            display: flex; gap: 8px; border-top: 1px solid #eee; padding-top: 10px;
         }
-        
+
+        /* 各種ボタン共通スタイル */
+        .btn {
+            border: none; border-radius: 8px; cursor: pointer; font-weight: 600;
+            padding: 10px; transition: background-color 0.3s, transform 0.1s;
+            text-decoration: none; text-align: center; font-size: 0.9em;
+        }
+
+        .add-to-cart-btn { background-color: #159450; color: white; flex-grow: 1; display: flex; align-items: center; justify-content: center; gap: 5px; }
+        .add-to-cart-btn:hover { background-color: #0d6e3e; }
+
+        .edit-btn { background-color: #7a6fdb; color: white; flex: 1; display: flex; align-items: center; justify-content: center; gap: 5px; }
+        .edit-btn:hover { background-color: #5d52b4; }
+
+        .delete-btn { background-color: #ff7f7f; color: white; flex: 1; display: flex; align-items: center; justify-content: center; gap: 5px; }
+        .delete-btn:hover { background-color: #e55e5e; }
+
         .favorite-btn {
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 5px;
-            font-size: 1.8em;
-            color: #ccc;
-            transition: color 0.3s, transform 0.1s;
+            background: none; border: none; cursor: pointer; color: #ccc; font-size: 1.8em; padding: 0 5px; transition: color 0.3s, transform 0.1s;
         }
+        .favorite-btn:hover { transform: scale(1.1); }
+        .favorite-btn.favorited { color: #ff3366; }
 
-        .favorite-btn:hover {
-            color: #ff3366;
-            transform: scale(1.1);
+        /* --- モーダルスタイル --- */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); display: none;
+            justify-content: center; align-items: center; z-index: 1000;
         }
-
-        .favorite-btn.favorited {
-            color: #ff3366;
-            transform: scale(1.05);
+        .modal-content {
+            background-color: #fff; padding: 30px; border-radius: 15px;
+            max-width: 400px; width: 90%; text-align: center;
         }
+        .modal-actions { display: flex; gap: 15px; margin-top: 20px; }
+        .modal-actions button { flex: 1; padding: 12px; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; }
+        .confirm-btn { background-color: #ff7f7f; color: white; }
+        .cancel-btn { background-color: #f0f0f0; color: #555; }
 
-        /* ------------------------------------
-           3. レスポンシブ対応
-        ------------------------------------ */
-        @media screen and (max-width: 900px) {
-            #filterControls {
-                /* 2行構成にする */
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 15px;
-            }
-            
-            #filterControls > div:nth-child(1) { /* 検索欄 */
-                grid-column: 1 / 3; /* 2列を占有 */
-            }
-            #filterControls > div:nth-child(2) { /* カテゴリ */
-                grid-column: 1 / 2;
-            }
-            #filterControls > div:nth-child(3) { /* ソート */
-                grid-column: 2 / 3;
-            }
-            #filterButton {
-                grid-column: 1 / 3;
-            }
+        /* --- レスポンシブ --- */
+        @media screen and (max-width: 600px) {
+            .product-card { flex-direction: row; padding: 10px; flex-wrap: wrap; }
+            .product-image-container { width: 100px; height: 100px; margin-right: 15px; margin-bottom: 0; }
+            .product-details { flex: 1; min-width: 150px; }
+            .product-name { height: auto; text-align: left; font-size: 1em; margin: 0 0 5px 0; }
+            .product-price { text-align: left; font-size: 1.2em; margin-bottom: 5px; }
+            .admin-controls { width: 100%; margin-top: 10px; }
         }
-        
-        @media screen and (max-width: 650px) {
-             #productList {
-                grid-template-columns: 1fr; 
-            }
-            
-            #filterControls {
-                /* 縦一列構成にする */
-                display: flex;
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            #filterControls > div {
-                flex-direction: row;
-            }
-
-            .product-card {
-                flex-direction: row;
-                text-align: left;
-                align-items: flex-start;
-            }
-            
-            .product-image-container {
-                width: 100px;
-                height: 100px;
-                flex-shrink: 0;
-                margin-right: 15px;
-                margin-bottom: 0;
-            }
-            
-            .product-details {
-                flex-grow: 1;
-                min-width: 0;
-            }
-
-            .product-name {
-                font-size: 1.1em;
-                margin-top: 0;
-                height: auto;
-                line-height: 1.3;
-                margin-bottom: 5px;
-            }
-
-            .product-price {
-                font-size: 1.4em;
-                margin-bottom: 10px;
-            }
-
-            .product-actions {
-                flex-direction: row;
-                margin-top: 5px;
-                align-items: center;
-            }
-            
-            .add-to-cart-btn {
-                padding: 8px 12px;
-                font-size: 0.9em;
-            }
-        }
-
     </style>
 </head>
 
@@ -368,15 +228,13 @@
 
     <main>
         <h1>🎁 商品一覧</h1>
-        
         <div id="messageBox"></div>
 
-        <div id="filterControls">
+        <section id="filterControls">
             <div>
                 <label for="keywordInput"><i class="fas fa-search"></i> 検索</label>
                 <input type="text" id="keywordInput" placeholder="商品名を入力">
             </div>
-            
             <div>
                 <label for="categorySelect"><i class="fas fa-tags"></i> カテゴリ</label>
                 <select id="categorySelect">
@@ -384,10 +242,10 @@
                     <option value="PENLIGHT">ペンライト</option>
                     <option value="ACRYLIC_STAND">アクリルスタンド</option>
                     <option value="WEAR">Tシャツ・ウェア</option>
+                    <option value="SWEETS">お菓子</option>
                     <option value="GOODS">その他グッズ</option>
                 </select>
             </div>
-            
             <div>
                 <label for="sortSelect"><i class="fas fa-sort-amount-down"></i> ソート</label>
                 <select id="sortSelect">
@@ -396,235 +254,178 @@
                     <option value="price_desc">価格が高い順</option>
                 </select>
             </div>
-            
             <button id="filterButton" onclick="applyFilters()">
-                <i class="fas fa-filter"></i> 絞り込みを適用
+                <i class="fas fa-filter"></i> 適用
             </button>
-        </div>
+        </section>
+
         <ul id="productList">
             <p style="text-align: center; color: #7a6fdb; font-weight: 600;">商品情報を読み込み中...</p>
         </ul>
     </main>
 
-    <script>
-        // フィルタリングの状態を管理するオブジェクト
-        let currentFilters = {
-            keyword: '',
-            category: '',
-            sortKey: 'newest' // 初期値は新着順
-        };
+    <div id="deleteModal" class="modal-overlay">
+        <div class="modal-content">
+            <p id="modalMessage">この商品を削除してもよろしいですか？</p>
+            <div class="modal-actions">
+                <button id="modalConfirmBtn" class="confirm-btn">削除する</button>
+                <button id="modalCancelBtn" class="cancel-btn">キャンセル</button>
+            </div>
+        </div>
+    </div>
 
-        // ----------------------------------------------------
-        // メッセージ表示関数 
-        // ----------------------------------------------------
+    <script>
+        let currentFilters = { keyword: '', category: '', sortKey: 'newest' };
+        let itemToDeleteId = null;
+
+        const FAVORITES_STORAGE_KEY = 'oshiGiftBox_favorites';
+        function getFavorites() {
+            const favoritesJson = localStorage.getItem(FAVORITES_STORAGE_KEY);
+            return favoritesJson ? new Set(JSON.parse(favoritesJson)) : new Set();
+        }
+        function saveFavorites(favoritesSet) {
+            localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(Array.from(favoritesSet)));
+        }
+
         function displayMessage(message, type = 'success') {
             const box = document.getElementById('messageBox');
             box.textContent = message;
-            box.className = '';
-            box.classList.add(type);
+            box.className = type;
             box.style.display = 'block';
-            setTimeout(() => {
-                box.style.display = 'none';
-            }, 3000);
+            setTimeout(() => { box.style.display = 'none'; }, 3000);
         }
 
-        // ----------------------------------------------------
-        // カートに追加する処理 (サーバーAPIコールを想定)
-        // ----------------------------------------------------
-        async function addToCart(id, name) {
-            try {
-                // APIエンドポイント: /api/cart
-                const response = await fetch(`/api/cart`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        productId: id,
-                        quantity: 1
-                    })
-                });
-
-                if (response.ok) {
-                    displayMessage(`「${name}」をカートに追加しました！`, 'success');
-                } else if (response.status === 400) {
-                    const errorText = await response.text();
-                    displayMessage(`カート追加に失敗しました: ${errorText}`, 'error');
-                } else {
-                    const errorText = await response.text();
-                    throw new Error(`[${response.status}] カート追加に失敗しました: ${errorText}`);
-                }
-            } catch (err) {
-                console.error('カート追加エラー:', err);
-                displayMessage(`カート追加処理中にエラーが発生しました。`, 'error');
-            }
-        }
-        
-        // ----------------------------------------------------
-        // お気に入り状態をトグルする関数 (サーバーAPIコールを想定)
-        // ----------------------------------------------------
-        async function toggleFavorite(id, buttonElement) {
-            const isFavorited = buttonElement.classList.contains('favorited');
-            const method = isFavorited ? 'DELETE' : 'POST';
-            const actionText = isFavorited ? 'お気に入り解除' : 'お気に入り登録';
-
-            try {
-                // APIエンドポイント: /api/products/{id}/favorite
-                const response = await fetch(`/api/products/${id}/favorite`, {
-                    method: method,
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                });
-
-                if (response.ok) {
-                    // UIの更新
-                    buttonElement.classList.toggle('favorited');
-                    const icon = buttonElement.querySelector('i');
-                    if (icon) {
-                        icon.classList.toggle('far', isFavorited);
-                        icon.classList.toggle('fas', !isFavorited);
-                    }
-                    displayMessage(`${actionText}が完了しました。`, 'success');
-                } else if (response.status === 401) {
-                    displayMessage('お気に入り機能はログイン後にご利用いただけます。', 'error');
-                } else {
-                    const errorText = await response.text();
-                    throw new Error(`[${response.status}] ${actionText}に失敗しました: ${errorText}`);
-                }
-            } catch (err) {
-                console.error('お気に入り処理エラー:', err);
-                displayMessage(`${actionText}処理中にエラーが発生しました。`, 'error');
-            }
-        }
-        
-        // ----------------------------------------------------
-        // フィルタリングを適用する関数
-        // ----------------------------------------------------
         function applyFilters() {
-            const keyword = document.getElementById('keywordInput').value.trim();
-            const category = document.getElementById('categorySelect').value;
-            const sortKey = document.getElementById('sortSelect').value; 
-            
-            // フィルタリングの状態を更新
-            currentFilters.keyword = keyword;
-            currentFilters.category = category;
-            currentFilters.sortKey = sortKey; 
-
-            // 商品の再取得と表示
+            currentFilters.keyword = document.getElementById('keywordInput').value.trim();
+            currentFilters.category = document.getElementById('categorySelect').value;
+            currentFilters.sortKey = document.getElementById('sortSelect').value;
             fetchAndDisplayProducts();
         }
 
-
-        // ----------------------------------------------------
-        // 商品リストを取得し表示する処理 (クエリパラメータ対応)
-        // ----------------------------------------------------
+        // 商品一覧取得
         async function fetchAndDisplayProducts() {
             const list = document.getElementById('productList');
-            list.innerHTML = '<p style="text-align: center; color: #7a6fdb; font-weight: 600; padding: 15px;">商品情報を読み込み中...</p>';
-            
-            // クエリパラメータの作成
-            const params = new URLSearchParams();
-            if (currentFilters.keyword) {
-                params.append('keyword', currentFilters.keyword);
-            }
-            if (currentFilters.category) {
-                params.append('category', currentFilters.category);
-            }
-            if (currentFilters.sortKey) {
-                params.append('sort', currentFilters.sortKey); 
-            }
-            
-            const queryString = params.toString() ? `?${params.toString()}` : '';
-            const url = `/api/products${queryString}`;
-            
-            console.log(`Fetching products from: ${url}`); // デバッグ用
+            list.innerHTML = '<p style="text-align: center;">読み込み中...</p>';
 
-            let data = [];
-            
+            const params = new URLSearchParams();
+            if (currentFilters.keyword) params.append('keyword', currentFilters.keyword);
+            if (currentFilters.category) params.append('category', currentFilters.category);
+            params.append('sort', currentFilters.sortKey);
+
             try {
-                // APIエンドポイント: /api/products?keyword=...&category=...&sort=...
-                const response = await fetch(url);
-                if (!response.ok) {
-                    const errorDetail = await response.text();
-                    throw new Error(`商品情報の取得に失敗しました。ステータス: ${response.status} 詳細: ${errorDetail}`);
+                const response = await fetch(`/api/products?${params.toString()}`);
+                const data = await response.json();
+                const favorites = getFavorites();
+
+                list.innerHTML = '';
+                if (data.length === 0) {
+                    list.innerHTML = '<p style="text-align: center;">該当する商品が見つかりませんでした。</p>';
+                    return;
                 }
 
-                data = await response.json();
+                data.forEach(item => {
+                    const li = document.createElement('li');
+                    li.className = 'product-card';
+                    
+                    const isItemFavorited = item.isFavorited || favorites.has(item.id);
+                    const imageSrc = item.imagePath && item.imagePath !== 'undefined' ? item.imagePath : `https://placehold.co/300x200?text=No+Image`;
 
-            } catch (err) {
-                console.error('データ取得エラー:', err);
-                displayMessage(`商品データの読み込み中にエラーが発生しました。サーバーが起動しているか、/api/productsエンドポイントが正しく実装されているか確認してください。`, 'error');
-                list.innerHTML = '<p style="text-align: center; color: #f44336; font-weight: 600; padding: 15px;">商品データの取得に失敗しました。</p>';
-                return;
-            }
-
-            list.innerHTML = ''; // ロードメッセージをクリア
-
-            if (data.length === 0) {
-                list.innerHTML = '<p style="text-align: center; color: #7a6fdb; font-weight: 600; padding: 15px;">該当する商品が見つかりませんでした。</p>';
-                return;
-            }
-
-            data.forEach(item => {
-                const li = document.createElement('li');
-                li.classList.add('product-card');
-                li.dataset.productId = item.id; 
-
-                // 画像URLが設定されていない場合の代替画像ロジック
-                const imageSrc = item.imagePath && item.imagePath !== 'undefined' ?
-                    item.imagePath :
-                    `https://placehold.co/300x200/cccccc/ffffff?text=${encodeURIComponent(item.name).substring(0, 10)}`;
-
-                const favoriteClass = item.isFavorited ? 'favorited' : '';
-                const iconClass = item.isFavorited ? 'fas' : 'far'; 
-
-                li.innerHTML = `
-                    <div class="product-image-container">
-                        <img src="${imageSrc}"
-                            alt="${item.name}の画像"
-                            onerror="this.onerror=null;this.src='https://placehold.co/300x200/cccccc/ffffff?text=${encodeURIComponent('No Img')}';">
-                    </div>
-                    <div class="product-details">
-                        <div class="product-name">${item.name}</div>
-                        <div class="product-price">¥${item.price.toLocaleString()}</div>
-                        
-                        <div class="product-actions">
-                            <button type="button"
-                                class="add-to-cart-btn"
-                                onclick="addToCart(${item.id}, '${item.name.replace(/'/g, "\\'")}')">
-                                <i class="fas fa-cart-plus"></i> カートに追加
-                            </button>
-                            <button type="button"
-                                class="favorite-btn ${favoriteClass}"
-                                onclick="toggleFavorite(${item.id}, this)"
-                                title="お気に入りに追加/解除">
-                                <i class="${iconClass} fa-heart"></i>
-                            </button>
+                    li.innerHTML = `
+                        <div class="product-image-container">
+                            <img src="${imageSrc}" alt="${item.name}" onerror="this.src='https://placehold.co/300x200?text=No+Image'">
                         </div>
-                    </div>
-                `;
-                list.appendChild(li);
-            });
+                        <div class="product-details">
+                            <div class="product-name">${item.name}</div>
+                            <div class="product-price">¥${item.price.toLocaleString()}</div>
+                            
+                            <div class="product-actions">
+                                <div class="top-actions">
+                                    <button class="btn add-to-cart-btn" onclick="addToCart(${item.id}, '${item.name}')">
+                                        <i class="fas fa-cart-plus"></i> カート
+                                    </button>
+                                    <button class="favorite-btn ${isItemFavorited ? 'favorited' : ''}" onclick="toggleFavorite(${item.id}, this)">
+                                        <i class="${isItemFavorited ? 'fas' : 'far'} fa-heart"></i>
+                                    </button>
+                                </div>
+                                
+                                <div class="admin-controls">
+                                    <a href="/products/edit/${item.id}" class="btn edit-btn">
+                                        <i class="fas fa-edit"></i> 変更
+                                    </a>
+                                    <button class="btn delete-btn" onclick="openDeleteModal(${item.id}, '${item.name}')">
+                                        <i class="fas fa-trash-alt"></i> 削除
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    list.appendChild(li);
+                });
+            } catch (err) {
+                list.innerHTML = '<p style="text-align: center; color: red;">データの取得に失敗しました。</p>';
+            }
         }
 
-        // ページロード時に実行
-        window.onload = function() {
-            // Enterキーで検索を実行するためのリスナー
-            document.getElementById('keywordInput').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    applyFilters();
+        // カート追加
+        async function addToCart(id, name) {
+            try {
+                const response = await fetch(`/api/cart`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ productId: id, quantity: 1 })
+                });
+                if (response.ok) displayMessage(`「${name}」をカートに追加しました！`);
+                else displayMessage('カート追加に失敗しました', 'error');
+            } catch (err) { displayMessage('エラーが発生しました', 'error'); }
+        }
+
+        // お気に入り
+        async function toggleFavorite(id, btn) {
+            const isFav = btn.classList.contains('favorited');
+            try {
+                const response = await fetch(`/favorite/add/${id}`, { method: 'POST' });
+                if (response.ok) {
+                    btn.classList.toggle('favorited');
+                    const icon = btn.querySelector('i');
+                    icon.className = btn.classList.contains('favorited') ? 'fas fa-heart' : 'far fa-heart';
+                    
+                    const favs = getFavorites();
+                    isFav ? favs.delete(id) : favs.add(id);
+                    saveFavorites(favs);
                 }
-            });
+            } catch (err) { displayMessage('お気に入り処理に失敗しました', 'error'); }
+        }
 
-            // カテゴリ選択が変更されたら自動で検索を実行
-            document.getElementById('categorySelect').addEventListener('change', applyFilters);
-            
-            // ソート選択が変更されたら自動で検索を実行
-            document.getElementById('sortSelect').addEventListener('change', applyFilters);
+        // 削除モーダル制御
+        function openDeleteModal(id, name) {
+            itemToDeleteId = id;
+            document.getElementById('modalMessage').textContent = `「${name}」を削除してもよろしいですか？`;
+            document.getElementById('deleteModal').style.display = 'flex';
+        }
 
-            // 初期表示
+        document.getElementById('modalCancelBtn').onclick = () => {
+            document.getElementById('deleteModal').style.display = 'none';
+        };
+
+        document.getElementById('modalConfirmBtn').onclick = async () => {
+            if (!itemToDeleteId) return;
+            try {
+                const response = await fetch(`/api/products/${itemToDeleteId}`, { method: 'DELETE' });
+                if (response.ok) {
+                    displayMessage('商品を削除しました');
+                    fetchAndDisplayProducts();
+                } else {
+                    displayMessage('削除に失敗しました', 'error');
+                }
+            } catch (err) { displayMessage('エラーが発生しました', 'error'); }
+            document.getElementById('deleteModal').style.display = 'none';
+        };
+
+        window.onload = () => {
             fetchAndDisplayProducts();
+            document.getElementById('keywordInput').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') applyFilters();
+            });
         };
     </script>
 </body>

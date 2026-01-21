@@ -58,6 +58,7 @@
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
+                        <scope>runtime</scope>
 		</dependency>
 
 		<!-- Web API を使うために必要 -->
@@ -68,8 +69,19 @@
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-validation</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+    			<groupId>org.projectlombok</groupId>
+    			<artifactId>lombok</artifactId>
+    			<optional>true</optional>
 		</dependency>
 	</dependencies>
 
@@ -78,7 +90,14 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-				<version>3.2.5</version>
+				<configuration>
+					<excludes>
+            					<exclusion>
+							<groupId>org.projectlombok</groupId>
+							<artifactId>lombok</artifactId>
+            					</exclusion>
+					</excludes>
+				</configuration>
 			</plugin>
 
 			<plugin>
