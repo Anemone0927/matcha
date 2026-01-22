@@ -278,17 +278,17 @@
 
     <!-- 特徴紹介 -->
     <div class="features">
-        <div class="feature-card">
+        <a th:href="@{/favorite}" class="feature-card">
             <i class="fas fa-heart"></i>
             <h3>お気に入り管理</h3>
             <p>気になる推しグッズをリスト化して、いつでも見返せます。</p>
         </div>
-        <div class="feature-card">
+        <a th:href="@{/order/form}" class="feature-card">
             <i class="fas fa-shopping-cart"></i>
             <h3>注文シュミレート</h3>
             <p>注文フォームからギフトの購入イメージを簡単に作成できます。</p>
         </div>
-        <div class="feature-card">
+        <a th:href="@{/reviews/list}" class="feature-card">
             <i class="fas fa-star"></i>
             <h3>レビュー共有</h3>
             <p>実際に手に取った感想を記録・確認することができます。</p>

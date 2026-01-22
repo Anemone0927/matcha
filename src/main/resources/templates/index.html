@@ -140,13 +140,24 @@
             text-align: center;
             box-shadow: 0 8px 15px rgba(0,0,0,0.05);
             border: 2px solid #ffc280;
-            transition: transform 0.3s;
+            transition: all 0.3s;
+            text-decoration: none; /* リンクの下線を消す */
+            display: block; /* カード全体をリンクにする */
+            color: inherit;
         }
-        .feature-card:hover { transform: translateY(-5px); }
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(255, 194, 128, 0.4);
+            border-color: #159450;
+        }
         .feature-card i {
             font-size: 2.5em;
             color: #159450;
             margin-bottom: 15px;
+            transition: transform 0.3s;
+        }
+        .feature-card:hover i {
+            transform: scale(1.2);
         }
         .feature-card h3 {
             font-size: 1.2em;
