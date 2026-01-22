@@ -1,217 +1,319 @@
 <!DOCTYPE html>
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <title>ホーム | 推し系食べ物通販サイト</title>
-<style>
-    body {
-      background-color: #ffd9ef;
-      color: #2f4f2f;
-      font-family: "Arial", sans-serif;
-      margin: 0;
-      padding: 0;
-    }
-  main {
-    padding: 20px;
-    max-width: 900px;
-    margin: 0 auto;
-  }
-      header {
-        background-color: #159450;
-        padding: 10px 20px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.15);
-      }
-      header img.home-icon,
-      header img.user-icon {
-        width: 40px;
-        height: 40px;
-        border-radius: 20px;
-        cursor: pointer;
-        transition: transform 0.3s;
-      }
-      header img.user-icon:hover {
-        transform: scale(1.1);
-      }
-      header h1 {
-        color: white;
-        font-size: 1.8em;
-        margin: 0 0 0 15px;
-        flex-grow: 1;
-      }
-      header .left {
-        display: flex;
-        align-items: center;
-      }
-      header .user-links {}
-      
-/* ---------------------------------------------------- */
-/* 💡 更新されたボタンの共通スタイルとカラーバリエーション */
-/* ---------------------------------------------------- */
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ホーム | OshiGiftBox</title>
+    <!-- アイコンフォント読み込み -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #ffd9ef;
+            color: #2f4f2f;
+            font-family: "Arial", "Hiragino Kaku Gothic ProN", sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
 
-    /* 共通ベーススタイル */
-    a.btn {
-        color: #6e5230; /* テキストは統一 */
-        padding: 12px 25px; /* パディングを少し増やして押しやすく */
-        margin: 8px;
-        font-size: 1.05em;
-        border-radius: 10px;
-        cursor: pointer;
-        text-decoration: none;
-        display: inline-block;
-        font-weight: bold; /* フォントを太く */
-        /* 立体感を出すために影を設定 */
-        box-shadow: 0 4px 0 rgba(0, 0, 0, 0.2); 
-        border: none; /* ボーダーを削除して立体感を影に任せる */
-        transition: transform 0.15s, box-shadow 0.15s;
-    }
+        /* ヘッダー */
+        header {
+            background-color: #159450;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        header .left {
+            display: flex;
+            align-items: center;
+        }
+        header h1 {
+            color: white;
+            font-size: 1.5em;
+            margin: 0 0 0 15px;
+        }
+        header img.home-icon,
+        header img.user-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.3s;
+            border: 2px solid white;
+        }
+        header img.user-icon:hover { transform: scale(1.1); }
 
-    /* クリック時のアニメーション（共通） */
-    a.btn:hover {
-        transform: translateY(1px); /* 少し沈む */
-        box-shadow: 0 3px 0 rgba(0, 0, 0, 0.2); 
-    }
-    a.btn:active {
-        transform: translateY(4px); /* 大きく沈む */
-        box-shadow: 0 0 0 rgba(0, 0, 0, 0.2); /* 影をなくす */
-    }
+        /* ヒーロー（紹介）セクション */
+        .hero {
+            background: linear-gradient(135deg, #a3b18a 0%, #588157 100%);
+            color: white;
+            padding: 80px 20px 100px; /* 下に余白を広げた */
+            text-align: center;
+            border-bottom: 10px solid #159450;
+            position: relative;
+        }
+        .hero h2 {
+            font-size: 2.2em;
+            margin-bottom: 15px;
+            text-shadow: 1px 1px 4px rgba(0,0,0,0.3);
+        }
+        .hero p {
+            font-size: 1.1em;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto 35px;
+            line-height: 1.6;
+        }
 
-    /* カラーバリエーション (btn1〜btn7を適用) */
-    /* background-color と box-shadow の色をペアで設定し、統一感を保ちます */
+        /* 【追加】ヒーローセクション内のメインアクションボタン */
+        .hero-search-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background-color: white;
+            color: #159450;
+            padding: 18px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: black;
+            font-size: 1.2em;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 3px solid transparent;
+        }
+        .hero-search-btn:hover {
+            transform: translateY(-5px) scale(1.05);
+            background-color: #f0fdf4;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+        }
+        .hero-search-btn i {
+            font-size: 1.3em;
+        }
 
-    .btn-1 { /* 商品一覧: ピンク系 */
-        background-color: #ff8ac6;
-        box-shadow: 0 4px 0 #d96aa6;
-    }
-    .btn-1:hover {
-        background-color: #e26baa;
-        box-shadow: 0 3px 0 #c25b90;
-        color: #fff;
-    }
+        /* メイン画像フレーム */
+        .image-frame-container {
+            max-width: 650px;
+            margin: -60px auto 40px; /* ボタンのために少し下げた */
+            padding: 0 20px;
+            position: relative;
+            z-index: 10;
+        }
+        .image-frame-outer {
+            border-radius: 25px;
+            background: linear-gradient(135deg, #e6c8a3, #a1835d);
+            padding: 12px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        }
+        .image-frame-inner {
+            border: 6px solid white;
+            border-radius: 18px;
+            overflow: hidden;
+            background: white;
+        }
+        .main-img {
+            width: 100%;
+            display: block;
+            transition: 0.5s;
+        }
+        .main-img:hover { transform: scale(1.02); }
 
-    .btn-2 { /* 商品登録: オレンジ系 */
-        background-color: #ffc280;
-        box-shadow: 0 4px 0 #d99f66;
-    }
-    .btn-2:hover {
-        background-color: #e2a66e;
-        box-shadow: 0 3px 0 #c28c5e;
-        color: #fff;
-    }
+        /* 特徴セクション */
+        .features {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            padding: 40px 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .feature-card {
+            background: white;
+            padding: 25px 20px;
+            border-radius: 20px;
+            width: 260px;
+            text-align: center;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.05);
+            border: 2px solid #ffc280;
+            transition: transform 0.3s;
+        }
+        .feature-card:hover { transform: translateY(-5px); }
+        .feature-card i {
+            font-size: 2.5em;
+            color: #159450;
+            margin-bottom: 15px;
+        }
+        .feature-card h3 {
+            font-size: 1.2em;
+            margin-bottom: 12px;
+            color: #588157;
+        }
+        .feature-card p {
+            font-size: 0.9em;
+            color: #666;
+            line-height: 1.6;
+        }
 
-    .btn-3 { /* 注文フォーム: 黄色系 */
-        background-color: #ffe066;
-        box-shadow: 0 4px 0 #d9b956;
-    }
-    .btn-3:hover {
-        background-color: #e2c25b;
-        box-shadow: 0 3px 0 #c2a14c;
-        color: #fff;
-    }
-    
-    .btn-4 { /* カートに追加: 緑系 */
-        background-color: #98edb7;
-        box-shadow: 0 4px 0 #7dd39d;
-    }
-    .btn-4:hover {
-        background-color: #79d39e;
-        box-shadow: 0 3px 0 #68b285;
-        color: #fff;
-    }
+        /* メインボタンエリア */
+        .menu-container {
+            text-align: center;
+            padding: 60px 20px 80px;
+            background-color: rgba(255, 255, 255, 0.4);
+            border-radius: 60px 60px 0 0;
+            margin-top: 40px;
+        }
+        .menu-title {
+            font-size: 1.8em;
+            margin-bottom: 40px;
+            position: relative;
+            display: inline-block;
+            font-weight: black;
+        }
+        .menu-title::after {
+            content: "";
+            display: block;
+            width: 60%;
+            height: 5px;
+            background: #159450;
+            margin: 10px auto 0;
+            border-radius: 10px;
+        }
 
-    .btn-5 { /* カート一覧: 青系 */
-        background-color: #909ff5;
-        box-shadow: 0 4px 0 #7483d9;
-    }
-    .btn-5:hover {
-        background-color: #7687e2;
-        box-shadow: 0 3px 0 #6170c2;
-        color: #fff;
-    }
-    
-    .btn-6 { /* レビュー投稿: 紫系 */
-        background-color: #c598ed;
-        box-shadow: 0 4px 0 #a476d9;
-    }
-    .btn-6:hover {
-        background-color: #ae79e2;
-        box-shadow: 0 3px 0 #9267c2;
-        color: #fff;
-    }
+        /* ボタン共通スタイル */
+        a.btn {
+            color: #6e5230;
+            padding: 16px 30px;
+            margin: 12px;
+            font-size: 1.1em;
+            border-radius: 15px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            font-weight: bold;
+            box-shadow: 0 6px 0 rgba(0, 0, 0, 0.15);
+            transition: all 0.2s;
+            border: none;
+            min-width: 160px;
+        }
+        a.btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 0 rgba(0, 0, 0, 0.15);
+            color: #fff;
+        }
+        a.btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 0 0 transparent;
+        }
 
-    .btn-7 { /* レビュー一覧: 濃い紫系 */
-        background-color: #ba87ed;
-        box-shadow: 0 4px 0 #9f66d9;
-    }
-    .btn-7:hover {
-        background-color: #a46be2;
-        box-shadow: 0 3px 0 #8959c2;
-        color: #fff;
-    }
+        /* カラーバリエーション */
+        .btn-1 { background-color: #ff8ac6; box-shadow: 0 6px 0 #d96aa6; }
+        .btn-2 { background-color: #ffc280; box-shadow: 0 6px 0 #d99f66; }
+        .btn-3 { background-color: #ffe066; box-shadow: 0 6px 0 #d9b956; }
+        .btn-4 { background-color: #98edb7; box-shadow: 0 6px 0 #7dd39d; }
+        .btn-5 { background-color: #909ff5; box-shadow: 0 6px 0 #7483d9; }
+        .btn-6 { background-color: #c598ed; box-shadow: 0 6px 0 #a476d9; }
+        .btn-7 { background-color: #ba87ed; box-shadow: 0 6px 0 #9f66d9; }
 
-  #result {
-    margin-top: 20px;
-    text-align: center;
-    font-weight: 600;
-    color: #5a4dbd;
-  }
+        /* フッター */
+        footer {
+            background-color: #159450;
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+            font-size: 0.9em;
+        }
 
-  /* ▼ここから追加！ */
-  @media screen and (max-width: 480px) {
-    form {
-      padding: 15px;
-    }
-
-    input[type="text"],
-    input[type="number"] {
-      font-size: 14px;
-    }
-
-    button {
-      font-size: 16px;
-      padding: 10px;
-    }
-}
-</style>
+        @media screen and (max-width: 480px) {
+            header h1 { font-size: 1.2em; }
+            .hero h2 { font-size: 1.6em; }
+            .hero p { font-size: 0.95em; }
+            .hero-search-btn { font-size: 1em; padding: 15px 30px; }
+            a.btn { width: 85%; }
+            .image-frame-container { margin-top: -50px; }
+        }
+    </style>
 </head>
 <body>
-  <header>
-    <div class="left">
-      <a th:href="@{/}">
-        <!-- srcとth:srcを併用: パス解決の確実性を高める -->
-        <img src="/images/homebotan.jpg" th:src="@{/images/homebotan.jpg}" alt="ホーム" class="home-icon" />
-      </a>
-      <h1>OshiGiftBox</h1>
-    </div>
-    <div class="user-links">
-      <a th:href="@{/users/auth_select}">
-        <!-- srcとth:srcを併用: パス解決の確実性を高める -->
-        <img src="/images/yuza.jpg" th:src="@{/images/yuza.jpg}" alt="ユーザー情報" class="user-icon" />
-      </a>
-    </div>
-  </header>
 
-
-    <!-- ホームページの内容ここに -->
-    <div style="text-align:center; margin-top: 40px;">
-      <div style="max-width:600px; margin: auto;">
-        <div style="border-radius: 20px; background: linear-gradient(135deg, #e6c8a3, #a1835d); padding: 10px;">
-          <div style="border: 7px solid white; border-radius: 15px; box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); overflow: hidden;">
-            <!-- srcとth:srcを併用: パス解決の確実性を高める -->
-            <img src="/images/main.png" th:src="@{/images/main.png}" alt="ホーム画像" style="width: 100%; border-radius: 5px;">
-          </div>
+    <!-- ヘッダー -->
+    <header>
+        <div class="left">
+            <a th:href="@{/}">
+                <img src="/images/homebotan.jpg" th:src="@{/images/homebotan.jpg}" alt="ホーム" class="home-icon" />
+            </a>
+            <h1>OshiGiftBox</h1>
         </div>
-      </div>
-      <div style="margin-top: 20px;">
-        <a class="btn btn-1" th:href="@{/products_list}">商品一覧</a>
-        <a class="btn btn-2" th:href="@{/products/new}">商品登録</a>
-        <a class="btn btn-3" th:href="@{/order/form}">注文フォーム</a>
-        <a class="btn btn-4" th:href="@{/cart/add}">カートに追加</a>
-        <a class="btn btn-5" th:href="@{/cart_list}">カート一覧</a>
-        <a class="btn btn-6" th:href="@{/review/form}">レビュー投稿</a>
-        <a class="btn btn-7" th:href="@{/reviews/list}">レビュー一覧</a>
-      </div>
+        <div class="user-links">
+            <a th:href="@{/users/auth_select}">
+                <img src="/images/yuza.jpg" th:src="@{/images/yuza.jpg}" alt="ユーザー情報" class="user-icon" />
+            </a>
+        </div>
+    </header>
+
+    <!-- ヒーローセクション（商品を探すボタンを追加） -->
+    <div class="hero">
+        <h2>推しへのギフト、もっとスマートに管理。</h2>
+        <p>OshiGiftBoxは、あなたの推し活をスマートにサポートする<br>専用お気に入り管理サイトです。</p>
+        
+        <!-- 【追加】目を引くメイン検索ボタン -->
+        <a th:href="@{/products_list}" class="hero-search-btn">
+            <i class="fas fa-search"></i>
+            <span>今すぐ商品を探してみる</span>
+        </a>
     </div>
+
+    <!-- メイン画像フレーム -->
+    <div class="image-frame-container">
+        <div class="image-frame-outer">
+            <div class="image-frame-inner">
+                <img src="/images/main.png" th:src="@{/images/main.png}" alt="ホーム画像" class="main-img">
+            </div>
+        </div>
+    </div>
+
+    <!-- 特徴紹介 -->
+    <div class="features">
+        <div class="feature-card">
+            <i class="fas fa-heart"></i>
+            <h3>お気に入り管理</h3>
+            <p>気になる推しグッズをリスト化して、いつでも見返せます。</p>
+        </div>
+        <div class="feature-card">
+            <i class="fas fa-shopping-cart"></i>
+            <h3>注文シュミレート</h3>
+            <p>注文フォームからギフトの購入イメージを簡単に作成できます。</p>
+        </div>
+        <div class="feature-card">
+            <i class="fas fa-star"></i>
+            <h3>レビュー共有</h3>
+            <p>実際に手に取った感想を記録・確認することができます。</p>
+        </div>
+    </div>
+
+    <!-- ボタンメニュー -->
+    <div class="menu-container">
+        <h2 class="menu-title">サービスメニュー</h2>
+        <div class="menu-buttons">
+            <a class="btn btn-1" th:href="@{/products_list}"><i class="fas fa-list"></i> 商品一覧</a>
+            <a class="btn btn-2" th:href="@{/products/new}"><i class="fas fa-plus-circle"></i> 商品登録</a>
+            <a class="btn btn-3" th:href="@{/order/form}"><i class="fas fa-clipboard-list"></i> 注文フォーム</a>
+            <a class="btn btn-4" th:href="@{/cart/add}"><i class="fas fa-cart-plus"></i> カート追加</a>
+            <a class="btn btn-5" th:href="@{/cart_list}"><i class="fas fa-shopping-basket"></i> カート一覧</a>
+            <a class="btn btn-6" th:href="@{/review/form}"><i class="fas fa-pen"></i> レビュー投稿</a>
+            <a class="btn btn-7" th:href="@{/reviews/list}"><i class="fas fa-comments"></i> レビュー一覧</a>
+        </div>
+    </div>
+
+    <!-- フッター -->
+    <footer>
+        <p>&copy; 2026 OshiGiftBox Project. All rights reserved.</p>
+        <p style="font-size: 0.8em; opacity: 0.7; margin-top: 8px;">Created for Academic Assessment</p>
+    </footer>
+
 </body>
 </html>

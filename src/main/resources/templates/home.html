@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OshiGiftBox | 推し活を彩るギフト管理</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .matcha-gradient { background: linear-gradient(135deg, #a3b18a 0%, #588157 100%); }
+        .soft-pink { background-color: #ffd9ef; }
+        .glass { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px); }
+    </style>
+</head>
+<body class="soft-pink text-gray-800">
+
+    <!-- 1. ナビゲーション（ホームページ用） -->
+    <nav class="glass sticky top-0 z-50 p-4 shadow-sm flex justify-between items-center">
+        <div class="flex items-center gap-2">
+            <span class="text-2xl">🍵</span>
+            <span class="text-xl font-bold text-green-800">OshiGiftBox</span>
+        </div>
+        <div class="hidden md:flex gap-6 text-sm font-bold text-gray-600">
+            <a href="#about" class="hover:text-green-700">サイトについて</a>
+            <a href="#features" class="hover:text-green-700">機能紹介</a>
+            <a href="#news" class="hover:text-green-700">お知らせ</a>
+        </div>
+        <div>
+            <a href="/login" class="matcha-gradient text-white px-6 py-2 rounded-full font-bold shadow-md hover:opacity-90 transition">アプリを始める</a>
+        </div>
+    </nav>
+
+    <!-- 2. ヒーローセクション（ホームページの顔） -->
+    <header class="matcha-gradient text-white pt-20 pb-32 px-6 text-center">
+        <h1 class="text-4xl md:text-6xl font-black mb-6 leading-tight">推しのためのギフトを、<br>もっと特別に。</h1>
+        <p class="text-lg md:text-xl opacity-90 mb-10 max-w-2xl mx-auto">
+            OshiGiftBoxは、あなたの「推し活」を整理し、ギフト選びを楽しくサポートする専用プラットフォームです。
+        </p>
+        <div class="flex flex-col md:flex-row justify-center gap-4">
+            <a href="/products_list" class="bg-white text-green-800 px-10 py-4 rounded-xl font-bold text-lg shadow-xl hover:bg-gray-100 transition">
+                <i class="fas fa-search mr-2"></i> 商品を探してみる
+            </a>
+        </div>
+    </header>
+
+    <!-- 3. アプリのプレビュー（ホームページの充実感アップ） -->
+    <section id="about" class="max-w-5xl mx-auto -mt-20 px-6">
+        <div class="bg-white rounded-3xl shadow-2xl overflow-hidden border-8 border-white">
+            <div class="bg-gray-800 p-2 flex gap-1.5">
+                <div class="w-3 h-3 bg-red-400 rounded-full"></div>
+                <div class="w-3 h-3 bg-yellow-400 rounded-full"></div>
+                <div class="w-3 h-3 bg-green-400 rounded-full"></div>
+            </div>
+            <img src="/images/main.png" alt="アプリ画面" class="w-full h-auto">
+        </div>
+    </section>
+
+    <!-- 4. 機能説明（Webアプリの充実をアピール） -->
+    <section id="features" class="py-24 px-6 max-w-6xl mx-auto">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl font-bold text-green-900">充実した4つの機能</h2>
+            <div class="w-20 h-1.5 matcha-gradient mx-auto mt-4 rounded-full"></div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div class="bg-white p-8 rounded-2xl shadow-lg border-b-4 border-pink-400">
+                <i class="fas fa-list text-3xl text-pink-500 mb-4"></i>
+                <h3 class="font-bold text-lg mb-2">商品リスト</h3>
+                <p class="text-sm text-gray-600">全商品を一覧で確認。一目で推しアイテムが見つかります。</p>
+            </div>
+            <div class="bg-white p-8 rounded-2xl shadow-lg border-b-4 border-green-400">
+                <i class="fas fa-shopping-cart text-3xl text-green-500 mb-4"></i>
+                <h3 class="font-bold text-lg mb-2">注文管理</h3>
+                <p class="text-sm text-gray-600">カート機能を使い、ギフトの合計金額や内容をシミュレーション。</p>
+            </div>
+            <div class="bg-white p-8 rounded-2xl shadow-lg border-b-4 border-yellow-400">
+                <i class="fas fa-star text-3xl text-yellow-500 mb-4"></i>
+                <h3 class="font-bold text-lg mb-2">レビュー投稿</h3>
+                <p class="text-sm text-gray-600">購入した感想や推しへの想いをレビューとして残せます。</p>
+            </div>
+            <div class="bg-white p-8 rounded-2xl shadow-lg border-b-4 border-blue-400">
+                <i class="fas fa-user-circle text-3xl text-blue-500 mb-4"></i>
+                <h3 class="font-bold text-lg mb-2">会員機能</h3>
+                <p class="text-sm text-gray-600">自分専用のアカウントで、データを安全に保持します。</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 5. フッター -->
+    <footer class="bg-gray-900 text-white py-12 px-6 text-center">
+        <div class="mb-6">
+            <span class="text-2xl font-bold">🍵 OshiGiftBox</span>
+            <p class="text-gray-400 mt-2">あなたの推し活に、最高のギフトを。</p>
+        </div>
+        <div class="text-xs text-gray-500 border-t border-gray-800 pt-8">
+            &copy; 2026 OshiGiftBox Project. All rights reserved.
+        </div>
+    </footer>
+
+</body>
+</html>

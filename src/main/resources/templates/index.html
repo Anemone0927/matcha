@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ホーム | OshiGiftBox </title>
+    <title>ホーム | OshiGiftBox</title>
     <!-- アイコンフォント読み込み -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -52,33 +52,62 @@
         .hero {
             background: linear-gradient(135deg, #a3b18a 0%, #588157 100%);
             color: white;
-            padding: 60px 20px;
+            padding: 80px 20px 100px; /* 下に余白を広げた */
             text-align: center;
             border-bottom: 10px solid #159450;
+            position: relative;
         }
         .hero h2 {
-            font-size: 2em;
-            margin-bottom: 10px;
+            font-size: 2.2em;
+            margin-bottom: 15px;
             text-shadow: 1px 1px 4px rgba(0,0,0,0.3);
         }
         .hero p {
-            font-size: 1em;
+            font-size: 1.1em;
             opacity: 0.9;
             max-width: 600px;
-            margin: 0 auto 30px;
+            margin: 0 auto 35px;
+            line-height: 1.6;
+        }
+
+        /* 【追加】ヒーローセクション内のメインアクションボタン */
+        .hero-search-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background-color: white;
+            color: #159450;
+            padding: 18px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: black;
+            font-size: 1.2em;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 3px solid transparent;
+        }
+        .hero-search-btn:hover {
+            transform: translateY(-5px) scale(1.05);
+            background-color: #f0fdf4;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+        }
+        .hero-search-btn i {
+            font-size: 1.3em;
         }
 
         /* メイン画像フレーム */
         .image-frame-container {
             max-width: 650px;
-            margin: -40px auto 40px;
+            margin: -60px auto 40px; /* ボタンのために少し下げた */
             padding: 0 20px;
+            position: relative;
+            z-index: 10;
         }
         .image-frame-outer {
             border-radius: 25px;
             background: linear-gradient(135deg, #e6c8a3, #a1835d);
             padding: 12px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
         }
         .image-frame-inner {
             border: 6px solid white;
@@ -93,7 +122,7 @@
         }
         .main-img:hover { transform: scale(1.02); }
 
-        /* 特徴セクション（充実化ポイント） */
+        /* 特徴セクション */
         .features {
             display: flex;
             flex-wrap: wrap;
@@ -105,71 +134,76 @@
         }
         .feature-card {
             background: white;
-            padding: 20px;
-            border-radius: 15px;
-            width: 250px;
+            padding: 25px 20px;
+            border-radius: 20px;
+            width: 260px;
             text-align: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.05);
             border: 2px solid #ffc280;
+            transition: transform 0.3s;
         }
+        .feature-card:hover { transform: translateY(-5px); }
         .feature-card i {
-            font-size: 2em;
+            font-size: 2.5em;
             color: #159450;
             margin-bottom: 15px;
         }
         .feature-card h3 {
-            font-size: 1.1em;
-            margin-bottom: 10px;
+            font-size: 1.2em;
+            margin-bottom: 12px;
             color: #588157;
         }
         .feature-card p {
-            font-size: 0.85em;
+            font-size: 0.9em;
             color: #666;
-            line-height: 1.5;
+            line-height: 1.6;
         }
 
         /* メインボタンエリア */
         .menu-container {
             text-align: center;
-            padding: 40px 20px 80px;
+            padding: 60px 20px 80px;
             background-color: rgba(255, 255, 255, 0.4);
-            border-radius: 50px 50px 0 0;
+            border-radius: 60px 60px 0 0;
+            margin-top: 40px;
         }
         .menu-title {
-            font-size: 1.5em;
-            margin-bottom: 30px;
+            font-size: 1.8em;
+            margin-bottom: 40px;
             position: relative;
             display: inline-block;
+            font-weight: black;
         }
         .menu-title::after {
             content: "";
             display: block;
             width: 60%;
-            height: 4px;
+            height: 5px;
             background: #159450;
-            margin: 8px auto 0;
-            border-radius: 2px;
+            margin: 10px auto 0;
+            border-radius: 10px;
         }
 
         /* ボタン共通スタイル */
         a.btn {
             color: #6e5230;
-            padding: 14px 28px;
-            margin: 10px;
-            font-size: 1.05em;
-            border-radius: 12px;
+            padding: 16px 30px;
+            margin: 12px;
+            font-size: 1.1em;
+            border-radius: 15px;
             cursor: pointer;
             text-decoration: none;
             display: inline-block;
             font-weight: bold;
-            box-shadow: 0 5px 0 rgba(0, 0, 0, 0.15);
+            box-shadow: 0 6px 0 rgba(0, 0, 0, 0.15);
             transition: all 0.2s;
             border: none;
-            min-width: 140px;
+            min-width: 160px;
         }
         a.btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 7px 0 rgba(0, 0, 0, 0.15);
+            box-shadow: 0 8px 0 rgba(0, 0, 0, 0.15);
+            color: #fff;
         }
         a.btn:active {
             transform: translateY(4px);
@@ -177,34 +211,36 @@
         }
 
         /* カラーバリエーション */
-        .btn-1 { background-color: #ff8ac6; box-shadow: 0 5px 0 #d96aa6; }
-        .btn-2 { background-color: #ffc280; box-shadow: 0 5px 0 #d99f66; }
-        .btn-3 { background-color: #ffe066; box-shadow: 0 5px 0 #d9b956; }
-        .btn-4 { background-color: #98edb7; box-shadow: 0 5px 0 #7dd39d; }
-        .btn-5 { background-color: #909ff5; box-shadow: 0 5px 0 #7483d9; }
-        .btn-6 { background-color: #c598ed; box-shadow: 0 5px 0 #a476d9; }
-        .btn-7 { background-color: #ba87ed; box-shadow: 0 5px 0 #9f66d9; }
-
-        .btn:hover { color: #fff !important; }
+        .btn-1 { background-color: #ff8ac6; box-shadow: 0 6px 0 #d96aa6; }
+        .btn-2 { background-color: #ffc280; box-shadow: 0 6px 0 #d99f66; }
+        .btn-3 { background-color: #ffe066; box-shadow: 0 6px 0 #d9b956; }
+        .btn-4 { background-color: #98edb7; box-shadow: 0 6px 0 #7dd39d; }
+        .btn-5 { background-color: #909ff5; box-shadow: 0 6px 0 #7483d9; }
+        .btn-6 { background-color: #c598ed; box-shadow: 0 6px 0 #a476d9; }
+        .btn-7 { background-color: #ba87ed; box-shadow: 0 6px 0 #9f66d9; }
 
         /* フッター */
         footer {
             background-color: #159450;
             color: white;
-            padding: 30px 20px;
+            padding: 40px 20px;
             text-align: center;
             font-size: 0.9em;
         }
 
         @media screen and (max-width: 480px) {
             header h1 { font-size: 1.2em; }
-            .hero h2 { font-size: 1.5em; }
-            a.btn { width: 80%; }
+            .hero h2 { font-size: 1.6em; }
+            .hero p { font-size: 0.95em; }
+            .hero-search-btn { font-size: 1em; padding: 15px 30px; }
+            a.btn { width: 85%; }
+            .image-frame-container { margin-top: -50px; }
         }
     </style>
 </head>
 <body>
 
+    <!-- ヘッダー -->
     <header>
         <div class="left">
             <a th:href="@{/}">
@@ -219,13 +255,19 @@
         </div>
     </header>
 
-    <!-- ヒーローセクション（充実化ポイント：LP風紹介） -->
+    <!-- ヒーローセクション（商品を探すボタンを追加） -->
     <div class="hero">
-        <h2>推しを愛でる、ギフトを贈る。</h2>
+        <h2>推しへのギフト、もっとスマートに管理。</h2>
         <p>OshiGiftBoxは、あなたの推し活をスマートにサポートする<br>専用お気に入り管理サイトです。</p>
+        
+        <!-- 【追加】目を引くメイン検索ボタン -->
+        <a th:href="@{/products_list}" class="hero-search-btn">
+            <i class="fas fa-search"></i>
+            <span>今すぐ商品を探してみる</span>
+        </a>
     </div>
 
-    <!-- メイン画像 -->
+    <!-- メイン画像フレーム -->
     <div class="image-frame-container">
         <div class="image-frame-outer">
             <div class="image-frame-inner">
@@ -234,7 +276,7 @@
         </div>
     </div>
 
-    <!-- 特徴紹介（充実化ポイント：機能説明） -->
+    <!-- 特徴紹介 -->
     <div class="features">
         <div class="feature-card">
             <i class="fas fa-heart"></i>
@@ -267,9 +309,10 @@
         </div>
     </div>
 
+    <!-- フッター -->
     <footer>
         <p>&copy; 2026 OshiGiftBox Project. All rights reserved.</p>
-        <p style="font-size: 0.8em; opacity: 0.7; margin-top: 5px;">Created for Academic Assessment</p>
+        <p style="font-size: 0.8em; opacity: 0.7; margin-top: 8px;">Created for Academic Assessment</p>
     </footer>
 
 </body>
