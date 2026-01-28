@@ -28,77 +28,41 @@
             top: 0;
             z-index: 1000;
         }
-        header .left {
-            display: flex;
-            align-items: center;
-        }
-        header h1 {
-            color: white;
-            font-size: 1.5em;
-            margin: 0 0 0 15px;
-        }
+        header .left { display: flex; align-items: center; }
+        header h1 { color: white; font-size: 1.5em; margin: 0 0 0 15px; }
         header img.home-icon,
         header img.user-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            cursor: pointer;
-            transition: transform 0.3s;
-            border: 2px solid white;
+            width: 40px; height: 40px; border-radius: 50%;
+            cursor: pointer; transition: transform 0.3s; border: 2px solid white;
         }
         header img.user-icon:hover { transform: scale(1.1); }
 
-        /* ヒーロー（紹介）セクション */
+        /* ヒーローセクション */
         .hero {
             background: linear-gradient(135deg, #a3b18a 0%, #588157 100%);
             color: white;
-            padding: 80px 20px 100px; /* 下に余白を広げた */
+            padding: 80px 20px 100px;
             text-align: center;
             border-bottom: 10px solid #159450;
             position: relative;
         }
-        .hero h2 {
-            font-size: 2.2em;
-            margin-bottom: 15px;
-            text-shadow: 1px 1px 4px rgba(0,0,0,0.3);
-        }
-        .hero p {
-            font-size: 1.1em;
-            opacity: 0.9;
-            max-width: 600px;
-            margin: 0 auto 35px;
-            line-height: 1.6;
-        }
+        .hero h2 { font-size: 2.2em; margin-bottom: 15px; text-shadow: 1px 1px 4px rgba(0,0,0,0.3); }
+        .hero p { font-size: 1.1em; opacity: 0.9; max-width: 600px; margin: 0 auto 35px; line-height: 1.6; }
 
-        /* 【追加】ヒーローセクション内のメインアクションボタン */
         .hero-search-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 12px;
-            background-color: white;
-            color: #159450;
-            padding: 18px 40px;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: black;
-            font-size: 1.2em;
+            display: inline-flex; align-items: center; gap: 12px;
+            background-color: white; color: #159450;
+            padding: 18px 40px; border-radius: 50px;
+            text-decoration: none; font-weight: bold; font-size: 1.2em;
             box-shadow: 0 10px 20px rgba(0,0,0,0.2);
             transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            border: 3px solid transparent;
         }
-        .hero-search-btn:hover {
-            transform: translateY(-5px) scale(1.05);
-            background-color: #f0fdf4;
-            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
-        }
-        .hero-search-btn i {
-            font-size: 1.3em;
-        }
+        .hero-search-btn:hover { transform: translateY(-5px) scale(1.05); background-color: #f0fdf4; }
 
         /* メイン画像フレーム */
         .image-frame-container {
             max-width: 650px;
-            margin: -60px auto 40px; /* ボタンのために少し下げた */
+            margin: -60px auto 40px;
             padding: 0 20px;
             position: relative;
             z-index: 10;
@@ -109,68 +73,41 @@
             padding: 12px;
             box-shadow: 0 15px 35px rgba(0,0,0,0.2);
         }
-        .image-frame-inner {
-            border: 6px solid white;
-            border-radius: 18px;
-            overflow: hidden;
-            background: white;
-        }
-        .main-img {
-            width: 100%;
-            display: block;
-            transition: 0.5s;
-        }
-        .main-img:hover { transform: scale(1.02); }
+        .image-frame-inner { border: 6px solid white; border-radius: 18px; overflow: hidden; background: white; }
+        .main-img { width: 100%; display: block; transition: 0.5s; }
 
-        /* 特徴セクション */
-        .features {
+        /* 【指摘反映】かんたんガイド（マニュアル視覚化） */
+        .manual-section {
+            max-width: 1000px;
+            margin: 60px auto;
+            padding: 0 20px;
+            text-align: center;
+        }
+        .manual-title { font-size: 1.6em; margin-bottom: 30px; color: #159450; }
+        .steps {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
             gap: 20px;
-            padding: 40px 20px;
-            max-width: 1000px;
-            margin: 0 auto;
         }
-        .feature-card {
+        .step-card {
             background: white;
-            padding: 25px 20px;
-            border-radius: 20px;
-            width: 260px;
-            text-align: center;
-            box-shadow: 0 8px 15px rgba(0,0,0,0.05);
-            border: 2px solid #ffc280;
-            transition: all 0.3s;
-            text-decoration: none; /* リンクの下線を消す */
-            display: block; /* カード全体をリンクにする */
-            color: inherit;
+            padding: 20px;
+            border-radius: 15px;
+            width: 280px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
         }
-        .feature-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 30px rgba(255, 194, 128, 0.4);
-            border-color: #159450;
+        .step-num {
+            background: #159450; color: white; width: 30px; height: 30px;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 15px; font-weight: bold;
         }
-        .feature-card i {
-            font-size: 2.5em;
-            color: #159450;
-            margin-bottom: 15px;
-            transition: transform 0.3s;
-        }
-        .feature-card:hover i {
-            transform: scale(1.2);
-        }
-        .feature-card h3 {
-            font-size: 1.2em;
-            margin-bottom: 12px;
-            color: #588157;
-        }
-        .feature-card p {
-            font-size: 0.9em;
-            color: #666;
-            line-height: 1.6;
+        .step-card img {
+            width: 100%; border-radius: 10px; margin-bottom: 15px;
+            border: 1px solid #eee;
         }
 
-        /* メインボタンエリア */
+        /* 【指摘反映】機能の分離デザイン */
         .menu-container {
             text-align: center;
             padding: 60px 20px 80px;
@@ -178,80 +115,57 @@
             border-radius: 60px 60px 0 0;
             margin-top: 40px;
         }
-        .menu-title {
-            font-size: 1.8em;
-            margin-bottom: 40px;
-            position: relative;
+        .section-label {
             display: inline-block;
-            font-weight: black;
+            background: #159450; color: white;
+            padding: 5px 20px; border-radius: 20px;
+            font-size: 0.9em; margin-bottom: 10px;
         }
-        .menu-title::after {
-            content: "";
-            display: block;
-            width: 60%;
-            height: 5px;
-            background: #159450;
-            margin: 10px auto 0;
-            border-radius: 10px;
-        }
+        .menu-title { font-size: 1.8em; margin-bottom: 40px; font-weight: bold; }
 
-        /* ボタン共通スタイル */
+        /* ボタン共通 */
+        .menu-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; margin-bottom: 50px; }
         a.btn {
-            color: #6e5230;
-            padding: 16px 30px;
-            margin: 12px;
-            font-size: 1.1em;
-            border-radius: 15px;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-block;
-            font-weight: bold;
-            box-shadow: 0 6px 0 rgba(0, 0, 0, 0.15);
-            transition: all 0.2s;
-            border: none;
-            min-width: 160px;
+            color: #6e5230; padding: 16px 30px;
+            font-size: 1.1em; border-radius: 15px;
+            text-decoration: none; display: inline-block; font-weight: bold;
+            box-shadow: 0 6px 0 rgba(0, 0, 0, 0.15); transition: all 0.2s;
+            min-width: 180px;
         }
-        a.btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 0 rgba(0, 0, 0, 0.15);
-            color: #fff;
-        }
-        a.btn:active {
-            transform: translateY(4px);
-            box-shadow: 0 0 0 transparent;
-        }
+        a.btn:hover { transform: translateY(-2px); color: #fff; }
+        a.btn:active { transform: translateY(4px); box-shadow: 0 0 0 transparent; }
 
-        /* カラーバリエーション */
-        .btn-1 { background-color: #ff8ac6; box-shadow: 0 6px 0 #d96aa6; }
-        .btn-2 { background-color: #ffc280; box-shadow: 0 6px 0 #d99f66; }
-        .btn-3 { background-color: #ffe066; box-shadow: 0 6px 0 #d9b956; }
-        .btn-4 { background-color: #98edb7; box-shadow: 0 6px 0 #7dd39d; }
-        .btn-5 { background-color: #909ff5; box-shadow: 0 6px 0 #7483d9; }
-        .btn-6 { background-color: #c598ed; box-shadow: 0 6px 0 #a476d9; }
-        .btn-7 { background-color: #ba87ed; box-shadow: 0 6px 0 #9f66d9; }
+        .btn-user { background-color: #ff8ac6; box-shadow: 0 6px 0 #d96aa6; }
+        .btn-user-alt { background-color: #ffc280; box-shadow: 0 6px 0 #d99f66; }
+        .btn-admin { background-color: #909ff5; box-shadow: 0 6px 0 #7483d9; }
+
+        /* 管理者セクションの背景を少し変える */
+        .admin-area {
+            background: rgba(21, 148, 80, 0.05);
+            padding: 30px; border-radius: 30px;
+            border: 2px dashed #159450;
+            max-width: 800px; margin: 0 auto;
+        }
 
         /* フッター */
         footer {
-            background-color: #159450;
-            color: white;
-            padding: 40px 20px;
-            text-align: center;
-            font-size: 0.9em;
+            background-color: #159450; color: white;
+            padding: 40px 20px; text-align: center; font-size: 0.9em;
+        }
+        .disclaimer {
+            font-size: 0.8em; opacity: 0.8; max-width: 700px;
+            margin: 15px auto 0; line-height: 1.5;
+            border-top: 1px solid rgba(255,255,255,0.2); padding-top: 15px;
         }
 
         @media screen and (max-width: 480px) {
-            header h1 { font-size: 1.2em; }
             .hero h2 { font-size: 1.6em; }
-            .hero p { font-size: 0.95em; }
-            .hero-search-btn { font-size: 1em; padding: 15px 30px; }
             a.btn { width: 85%; }
-            .image-frame-container { margin-top: -50px; }
         }
     </style>
 </head>
 <body>
 
-    <!-- ヘッダー -->
     <header>
         <div class="left">
             <a th:href="@{/}">
@@ -266,19 +180,15 @@
         </div>
     </header>
 
-    <!-- ヒーローセクション（商品を探すボタンを追加） -->
     <div class="hero">
         <h2>推しへのギフト、もっとスマートに管理。</h2>
         <p>OshiGiftBoxは、あなたの推し活をスマートにサポートする<br>専用お気に入り管理サイトです。</p>
-        
-        <!-- 【追加】目を引くメイン検索ボタン -->
         <a th:href="@{/products_list}" class="hero-search-btn">
             <i class="fas fa-search"></i>
             <span>今すぐ商品を探してみる</span>
         </a>
     </div>
 
-    <!-- メイン画像フレーム -->
     <div class="image-frame-container">
         <div class="image-frame-outer">
             <div class="image-frame-inner">
@@ -287,43 +197,61 @@
         </div>
     </div>
 
-    <!-- 特徴紹介 -->
-    <div class="features">
-        <a th:href="@{/favorite}" class="feature-card">
-            <i class="fas fa-heart"></i>
-            <h3>お気に入り管理</h3>
-            <p>気になる推しグッズをリスト化して、いつでも見返せます。</p>
+    <!-- 指摘反映：視覚的マニュアル -->
+    <section class="manual-section">
+        <h3 class="manual-title"><i class="fas fa-info-circle"></i> 使いかたガイド</h3>
+        <div class="steps">
+            <div class="step-card">
+                <div class="step-num">1</div>
+                <img src="/images/step1.png" th:src="@{/images/step1.png}" alt="検索画面のキャプチャ" onerror="this.src='https://via.placeholder.com/240x140?text=Manual+Image1'">
+                <p><strong>商品を探す</strong><br>一覧から推しにぴったりのギフトを検索！</p>
+            </div>
+            <div class="step-card">
+                <div class="step-num">2</div>
+                <img src="/images/step2.png" th:src="@{/images/step2.png}" alt="登録画面のキャプチャ" onerror="this.src='https://via.placeholder.com/240x140?text=Manual+Image2'">
+                <p><strong>カートに追加</strong><br>予算に合わせて商品をシミュレート。</p>
+            </div>
+            <div class="step-card">
+                <div class="step-num">3</div>
+                <img src="/images/step3.png" th:src="@{/images/step3.png}" alt="レビュー画面のキャプチャ" onerror="this.src='https://via.placeholder.com/240x140?text=Manual+Image3'">
+                <p><strong>感想を共有</strong><br>届いたギフトのレビューを投稿しよう！</p>
+            </div>
         </div>
-        <a th:href="@{/order/form}" class="feature-card">
-            <i class="fas fa-shopping-cart"></i>
-            <h3>注文シュミレート</h3>
-            <p>注文フォームからギフトの購入イメージを簡単に作成できます。</p>
-        </div>
-        <a th:href="@{/reviews/list}" class="feature-card">
-            <i class="fas fa-star"></i>
-            <h3>レビュー共有</h3>
-            <p>実際に手に取った感想を記録・確認することができます。</p>
-        </div>
-    </div>
+    </section>
 
-    <!-- ボタンメニュー -->
+    <!-- 指摘反映：機能の分離（一般向けと管理者向けを分ける） -->
     <div class="menu-container">
-        <h2 class="menu-title">サービスメニュー</h2>
-        <div class="menu-buttons">
-            <a class="btn btn-1" th:href="@{/products_list}"><i class="fas fa-list"></i> 商品一覧</a>
-            <a class="btn btn-2" th:href="@{/products/new}"><i class="fas fa-plus-circle"></i> 商品登録</a>
-            <a class="btn btn-3" th:href="@{/order/form}"><i class="fas fa-clipboard-list"></i> 注文フォーム</a>
-            <a class="btn btn-4" th:href="@{/cart/add}"><i class="fas fa-cart-plus"></i> カート追加</a>
-            <a class="btn btn-5" th:href="@{/cart_list}"><i class="fas fa-shopping-basket"></i> カート一覧</a>
-            <a class="btn btn-6" th:href="@{/review/form}"><i class="fas fa-pen"></i> レビュー投稿</a>
-            <a class="btn btn-7" th:href="@{/reviews/list}"><i class="fas fa-comments"></i> レビュー一覧</a>
+        
+        <div class="user-area">
+            <span class="section-label">USER MENU</span>
+            <h2 class="menu-title">推し活を楽しむ</h2>
+            <div class="menu-buttons">
+                <a class="btn btn-user" th:href="@{/products_list}"><i class="fas fa-list"></i> 商品一覧</a>
+                <a class="btn btn-user-alt" th:href="@{/favorite}"><i class="fas fa-heart"></i> お気に入り</a>
+                <a class="btn btn-user" th:href="@{/cart_list}"><i class="fas fa-shopping-basket"></i> カートを見る</a>
+                <a class="btn btn-user-alt" th:href="@{/reviews/list}"><i class="fas fa-comments"></i> レビューを読む</a>
+            </div>
+        </div>
+
+        <div class="admin-area">
+            <span class="section-label" style="background:#4b5563;">ADMIN MENU</span>
+            <h2 class="menu-title" style="color:#4b5563;">管理・運営設定</h2>
+            <p style="margin-bottom:20px; font-size:0.9em;">※ここからは商品の追加やシステムのテストができます</p>
+            <div class="menu-buttons">
+                <a class="btn btn-admin" th:href="@{/products/new}"><i class="fas fa-plus-circle"></i> 新規商品登録</a>
+                <a class="btn btn-admin" th:href="@{/order/form}"><i class="fas fa-vial"></i> 注文フォームテスト</a>
+                <a class="btn btn-admin" th:href="@{/review/form}"><i class="fas fa-pen"></i> レビュー投稿テスト</a>
+            </div>
         </div>
     </div>
 
-    <!-- フッター -->
+    <!-- 指摘反映：著作権・AI利用の注釈 -->
     <footer>
         <p>&copy; 2026 OshiGiftBox Project. All rights reserved.</p>
-        <p style="font-size: 0.8em; opacity: 0.7; margin-top: 8px;">Created for Academic Assessment</p>
+        <div class="disclaimer">
+            <p>【教育目的の利用に関する表示】<br>
+            本サイトはシステム開発演習用のプロトタイプです。使用されている画像（生成AIによるものを含む）は、学術・教育目的の範囲内で著作権法を遵守し使用しています。商用目的での利用は意図しておりません。</p>
+        </div>
     </footer>
 
 </body>

@@ -2,6 +2,7 @@
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ユーザー登録 | OshiGiftBox</title>
 
 <style>
@@ -10,7 +11,7 @@
 ------------------------------------ */
     body {
         background-color: #ffd9ef; 
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-family: 'Segoe UI', 'Noto Sans JP', sans-serif;
         color: #333;
         margin: 0;
         padding: 0;
@@ -22,7 +23,6 @@
         margin: 0 auto;
     }
 
-    /* --- Header Style  --- */
     header {
         background-color: #159450;
         padding: 10px 20px;
@@ -72,12 +72,11 @@
 .form-card {
     background-color: #fff;
     width: 100%;
-    max-width: 400px;
+    max-width: 450px; /* 少し幅を広げました */
     margin: 0 auto;
     padding: 30px;
     border-radius: 12px;
     box-shadow: 0 4px 8px rgba(122, 111, 219, 0.2);
-    text-align: center;
 }
 
 .register-form {
@@ -100,6 +99,10 @@ label {
     font-weight: 600;
 }
 
+.input-container {
+    position: relative; /* 目玉アイコン用 */
+}
+
 input[type="text"],
 input[type="email"],
 input[type="password"] { 
@@ -112,14 +115,30 @@ input[type="password"] {
     transition: border-color 0.3s ease;
 }
 
-    input[type="text"]:focus,
-    input[type="email"]:focus,
-    input[type="password"]:focus {
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus {
     border-color: #7a6fdb;
     outline: none;
-    }
+}
 
-    button {
+/* パスワード表示切り替えボタン */
+.toggle-btn {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2rem;
+    padding: 0;
+    width: auto;
+    margin-top: 0;
+    color: #999;
+}
+
+button[type="submit"] {
     width: 100%;
     background-color: #7a6fdb;
     color: white;
@@ -131,40 +150,44 @@ input[type="password"] {
     transition: background-color 0.3s ease;
     font-weight: 700;
     margin-top: 15px;
-    }
+}
 
-    button:hover {
+button[type="submit"]:hover {
     background-color: #5d52b4;
-    }
+}
 
-    /* 💡 エラーメッセージのスタイル */
-    .error-message {
-        color: #e53e3e; /* 赤 */
-        background-color: #fee2e2; /* 薄い赤の背景 */
-        padding: 10px;
-        border-radius: 8px;
-        margin-bottom: 20px;
-        font-weight: 600;
-        text-align: center;
-        border: 1px solid #fc8181;
-    }
+/* 無効化状態のボタン */
+button[type="submit"]:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+/* エラーメッセージ */
+.error-message {
+    color: #e53e3e;
+    background-color: #fee2e2;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-weight: 600;
+    text-align: center;
+    border: 1px solid #fc8181;
+}
+
+.js-error {
+    color: #e53e3e;
+    font-size: 0.85em;
+    margin-top: 5px;
+    display: none; /* 初期状態は非表示 */
+}
 
 /* ------------------------------------
    3. レスポンシブ対応
 ------------------------------------ */
     @media screen and (max-width: 480px) {
-        header h1 {
-            font-size: 1.5em;
-        }
-        input[type="text"],
-        input[type="email"],
-        input[type="password"] {
-            font-size: 14px;
-        }
-        button {
-            font-size: 16px;
-            padding: 10px;
-        }
+        header h1 { font-size: 1.5em; }
+        input[type="text"], input[type="email"], input[type="password"] { font-size: 14px; }
+        button[type="submit"] { font-size: 16px; padding: 10px; }
     }
 </style>
 </head>
@@ -183,22 +206,22 @@ input[type="password"] {
         </a>
     </div>
     </header>
+
     <main>
         <h1>新規ユーザー登録</h1>
 
 <div class="form-card">
     <h2>✨ アカウント作成</h2>
     
-    <!-- 💡 エラーメッセージの表示エリアを追記 -->
+    <!-- サーバー側エラーメッセージ -->
     <div th:if="${errorMessage}" class="error-message">
         <span th:text="${errorMessage}">エラーメッセージが表示されます</span>
     </div>
 
-    <form th:action="@{/users/register}" method="post" th:object="${user}" class="register-form">
+    <form th:action="@{/users/register}" method="post" th:object="${user}" class="register-form" id="registerForm">
         
         <div>
             <label for="name">お名前:</label>
-            <!-- th:field を使うと、リダイレクトで戻ってきたときに前回入力した値が自動で入ります -->
             <input type="text" id="name" th:field="*{name}" required
                    placeholder="例: 白崎加恋" />
         </div>
@@ -209,18 +232,75 @@ input[type="password"] {
                    placeholder="例: oshi@giftbox.com" />
         </div>
 
+        <!-- パスワード入力 -->
         <div>
-            <label for="password">パスワード:</label>
-            <!-- パスワードフィールドはセキュリティのため、リダイレクトで戻っても値が入りません -->
-            <input type="password" id="password" th:field="*{password}" required 
-                   placeholder="8文字以上の半角英数字" />
+            <label for="password">パスワード (8文字以上):</label>
+            <div class="input-container">
+                <input type="password" id="password" th:field="*{password}" required 
+                       minlength="8" placeholder="8文字以上の半角英数字" />
+                <button type="button" class="toggle-btn" onclick="toggleVisibility('password')">👁️</button>
+            </div>
         </div>
 
-        <button type="submit">
+        <!-- パスワード再入力 (先生のアドバイス対応) -->
+        <div>
+            <label for="confirmPassword" style="color: #7a6fdb;">パスワード再入力 (確認用):</label>
+            <div class="input-container">
+                <input type="password" id="confirmPassword" required 
+                       placeholder="もう一度入力してください" />
+                <button type="button" class="toggle-btn" onclick="toggleVisibility('confirmPassword')">👁️</button>
+            </div>
+            <!-- JS用エラーメッセージ -->
+            <p id="matchError" class="js-error">⚠️ パスワードが一致しません</p>
+        </div>
+
+        <button type="submit" id="submitBtn">
             登録する
         </button>
     </form>
 </div>
 </main>
+
+<script>
+    const passInput = document.getElementById('password');
+    const confirmInput = document.getElementById('confirmPassword');
+    const matchError = document.getElementById('matchError');
+    const submitBtn = document.getElementById('submitBtn');
+
+    // パスワード表示切り替え
+    function toggleVisibility(id) {
+        const input = document.getElementById(id);
+        const btn = input.nextElementSibling;
+        if (input.type === "password") {
+            input.type = "text";
+            btn.textContent = "🔒";
+        } else {
+            input.type = "password";
+            btn.textContent = "👁️";
+        }
+    }
+
+    // リアルタイムバリデーション (一致チェック)
+    function validatePasswords() {
+        const val1 = passInput.value;
+        const val2 = confirmInput.value;
+
+        if (val2.length > 0 && val1 !== val2) {
+            matchError.style.display = 'block';
+            submitBtn.disabled = true;
+        } else {
+            matchError.style.display = 'none';
+            // 8文字以上の制約も満たしている場合のみ有効化
+            submitBtn.disabled = val1.length < 8 || val1 !== val2;
+        }
+    }
+
+    passInput.addEventListener('input', validatePasswords);
+    confirmInput.addEventListener('input', validatePasswords);
+
+    // ページ読み込み時に一度チェック (リダイレクト戻り対策)
+    window.onload = validatePasswords;
+</script>
+
 </body>
 </html>

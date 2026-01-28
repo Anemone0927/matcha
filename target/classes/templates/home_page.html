@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ホーム | OshiGiftBox</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #159450;
+            --primary-light: #f0fdf4;
+            --accent-pink: #ffd9ef;
+            --admin-color: #4b5563; /* 管理者用の落ち着いた色 */
+        }
+        body {
+            background-color: var(--accent-pink);
+            color: #2f4f2f;
+            font-family: "Arial", "Hiragino Kaku Gothic ProN", sans-serif;
+            margin: 0; padding: 0; overflow-x: hidden;
+        }
+
+        /* ヘッダー */
+        header {
+            background-color: var(--primary);
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            position: sticky; top: 0; z-index: 1000;
+        }
+        header h1 { color: white; font-size: 1.5em; margin: 0 0 0 15px; }
+        header img.icon { width: 40px; height: 40px; border-radius: 50%; border: 2px solid white; cursor: pointer; }
+
+        /* ヒーローセクション */
+        .hero {
+            background: linear-gradient(135deg, #a3b18a 0%, #588157 100%);
+            color: white; padding: 60px 20px; text-align: center;
+            border-bottom: 10px solid var(--primary);
+        }
+        .hero h2 { font-size: 2em; margin-bottom: 20px; }
+        .hero-btn {
+            display: inline-flex; align-items: center; gap: 10px;
+            background: white; color: var(--primary);
+            padding: 15px 30px; border-radius: 50px;
+            text-decoration: none; font-weight: bold;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        /* 先生の指摘反映：機能別のメニューセクション */
+        .section-container {
+            max-width: 1000px; margin: 40px auto; padding: 0 20px;
+        }
+        .section-title {
+            text-align: center; font-size: 1.5em; margin-bottom: 25px;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+
+        /* 一般ユーザー用：ショッピング・お楽しみ */
+        .user-menu {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;
+            margin-bottom: 50px;
+        }
+        /* 管理者用：データ管理 */
+        .admin-menu {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;
+            background: rgba(255,255,255,0.5); padding: 30px; border-radius: 30px;
+            border: 2px dashed var(--admin-color);
+        }
+
+        .card {
+            background: white; padding: 20px; border-radius: 20px;
+            text-decoration: none; color: inherit; display: flex; align-items: center; gap: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05); transition: 0.3s;
+        }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+        .card i { font-size: 1.8em; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; border-radius: 12px; }
+        
+        .user-card i { background: var(--primary-light); color: var(--primary); }
+        .admin-card i { background: #f3f4f6; color: var(--admin-color); }
+
+        /* 簡易マニュアルセクション */
+        .guide-section {
+            background: white; border-radius: 30px; padding: 40px 20px; margin: 60px 0; text-align: center;
+        }
+        .guide-steps {
+            display: flex; flex-wrap: wrap; justify-content: center; gap: 30px; margin-top: 30px;
+        }
+        .step { width: 200px; }
+        .step img { width: 100%; border-radius: 15px; border: 3px solid var(--primary-light); margin-bottom: 15px; }
+        .step-num { 
+            background: var(--primary); color: white; width: 30px; height: 30px; 
+            border-radius: 50%; display: flex; align-items: center; justify-content: center; 
+            margin: 0 auto 10px; font-weight: bold;
+        }
+
+        footer { background: var(--primary); color: white; padding: 30px; text-align: center; }
+
+        @media (max-width: 600px) {
+            .hero h2 { font-size: 1.5em; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div style="display:flex; align-items:center;">
+            <a th:href="@{/}"><img src="/images/homebotan.jpg" class="icon" alt="Home"></a>
+            <h1>OshiGiftBox</h1>
+        </div>
+        <a th:href="@{/users/auth_select}"><img src="/images/yuza.jpg" class="icon" alt="User"></a>
+    </header>
+
+    <section class="hero">
+        <h2>あなたの推し活を、もっと便利に。</h2>
+        <p>「買う」「贈る」「記録する」をこれ一つで。</p>
+        <a th:href="@{/products_list}" class="hero-btn">
+            <i class="fas fa-search"></i> 商品をチェックする
+        </a>
+    </section>
+
+    <div class="section-container">
+        
+        <!-- 先生の指摘1：機能を分ける（一般ユーザーメニュー） -->
+        <h3 class="section-title"><i class="fas fa-shopping-bag"></i> ショッピング・お楽しみ</h3>
+        <div class="user-menu">
+            <a th:href="@{/products_list}" class="card user-card">
+                <i class="fas fa-th-list"></i>
+                <div><strong>商品一覧</strong><p style="margin:0; font-size:0.8em; color:#666;">推しのギフトを探す</p></div>
+            </a>
+            <a th:href="@{/cart_list}" class="card user-card">
+                <i class="fas fa-shopping-cart"></i>
+                <div><strong>マイカート</strong><p style="margin:0; font-size:0.8em; color:#666;">選んだ商品を確認</p></div>
+            </a>
+            <a th:href="@{/reviews/list}" class="card user-card">
+                <i class="fas fa-star"></i>
+                <div><strong>みんなのレビュー</strong><p style="margin:0; font-size:0.8em; color:#666;">感想をチェック</p></div>
+            </a>
+        </div>
+
+        <!-- 先生の指摘2：マニュアル（使い方の流れ） -->
+        <div class="guide-section">
+            <h3 style="margin-top:0;">🌟 3分でわかる！使い方の流れ</h3>
+            <div class="guide-steps">
+                <div class="step">
+                    <div class="step-num">1</div>
+                    <!-- 実際はここにスクリーンショットを入れる -->
+                    <img src="/images/guide_search.png" alt="探す" onerror="this.src='https://via.placeholder.com/200x150?text=Step1+Search'">
+                    <p style="font-size:0.9em;">商品一覧から推しにぴったりのギフトを探します。</p>
+                </div>
+                <div class="step">
+                    <div class="step-num">2</div>
+                    <img src="/images/guide_cart.png" alt="カート" onerror="this.src='https://via.placeholder.com/200x150?text=Step2+Cart'">
+                    <p style="font-size:0.9em;">カートに入れて合計金額をシミュレーション！</p>
+                </div>
+                <div class="step">
+                    <div class="step-num">3</div>
+                    <img src="/images/guide_review.png" alt="レビュー" onerror="this.src='https://via.placeholder.com/200x150?text=Step3+Review'">
+                    <p style="font-size:0.9em;">届いたらレビューを書いて推しへの愛を記録。</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 先生の指摘3：管理者機能の分離 -->
+        <h3 class="section-title" style="color:var(--admin-color);"><i class="fas fa-user-shield"></i> 運営・管理メニュー</h3>
+        <div class="admin-menu">
+            <a th:href="@{/products/new}" class="card admin-card">
+                <i class="fas fa-plus-square"></i>
+                <div><strong>新規商品登録</strong><p style="margin:0; font-size:0.8em; color:#666;">カタログに商品を追加</p></div>
+            </a>
+            <a th:href="@{/order/form}" class="card admin-card">
+                <i class="fas fa-tasks"></i>
+                <div><strong>在庫・注文管理</strong><p style="margin:0; font-size:0.8em; color:#666;">ショップ運営の設定</p></div>
+            </a>
+        </div>
+
+    </div>
+
+    <footer>
+        <p>&copy; 2026 OshiGiftBox Project.</p>
+        <p style="font-size: 0.8em; opacity: 0.7;">本サイトは学術演習用であり、商用利用はしておりません。</p>
+    </footer>
+
+</body>
+</html>
