@@ -220,12 +220,14 @@
     </section>
 
     <div class="menu-container">
-        <!-- ユーザー向けメニュー -->
         <div class="user-area">
             <span class="section-label">USER MENU</span>
             <h2 class="menu-title">推し活を楽しむ</h2>
             <div class="menu-buttons">
-                <!-- 全ボタンを網羅 -->
+                <a class="btn btn-user" th:href="@{/cart/add}" style="background-color: #ff4785; color: white;">
+                    <i class="fas fa-cart-plus"></i> 商品をカートに追加
+                </a>
+
                 <a class="btn btn-user" th:href="@{/products_list}"><i class="fas fa-list"></i> 商品一覧</a>
                 <a class="btn btn-user-alt" th:href="@{/favorite}"><i class="fas fa-heart"></i> お気に入り</a>
                 <a class="btn btn-user" th:href="@{/cart_list}"><i class="fas fa-shopping-basket"></i> カートを見る</a>
