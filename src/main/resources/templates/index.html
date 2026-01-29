@@ -200,7 +200,10 @@
         <div class="steps">
             <div class="step-card">
                 <div class="step-num">1</div>
-                <img src="/images/step1.png" th:src="@{/images/step1.png}" alt="検索" onerror="this.src='https://via.placeholder.com/240x140?text=Search'">
+                <img src="/images/商品一覧説明.png" 
+     th:src="@{/images/商品一覧説明.png}" 
+     alt="検索" 
+     onerror="this.src='https://via.placeholder.com/240x140?text=Search'">
                 <p><strong>商品を探す</strong><br>一覧から推しにぴったりのギフトを検索！</p>
             </div>
             <div class="step-card">
@@ -217,12 +220,14 @@
     </section>
 
     <div class="menu-container">
-        <!-- ユーザー向けメニュー -->
         <div class="user-area">
             <span class="section-label">USER MENU</span>
             <h2 class="menu-title">推し活を楽しむ</h2>
             <div class="menu-buttons">
-                <!-- 全ボタンを網羅 -->
+                <a class="btn btn-user" th:href="@{/cart/add}" style="background-color: #ff4785; color: white;">
+                    <i class="fas fa-cart-plus"></i> 商品をカートに追加
+                </a>
+
                 <a class="btn btn-user" th:href="@{/products_list}"><i class="fas fa-list"></i> 商品一覧</a>
                 <a class="btn btn-user-alt" th:href="@{/favorite}"><i class="fas fa-heart"></i> お気に入り</a>
                 <a class="btn btn-user" th:href="@{/cart_list}"><i class="fas fa-shopping-basket"></i> カートを見る</a>
