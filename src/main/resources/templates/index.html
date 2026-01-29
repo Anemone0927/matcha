@@ -132,7 +132,14 @@
             box-shadow: 0 6px 0 rgba(0, 0, 0, 0.15); transition: all 0.2s;
             min-width: 200px;
         }
-        a.btn:hover { transform: translateY(-2px); color: #fff; }
+        /* ボタンにマウスが乗った時に文字を白くする */
+        a.btn:hover {
+            color: white !important;
+        }
+        /* アイコンの色も一緒に白くする場合 */
+        a.btn:hover i {
+            color: white !important;
+        }
         a.btn:active { transform: translateY(4px); box-shadow: 0 0 0 transparent; }
 
         .btn-user { background-color: #ff8ac6; box-shadow: 0 6px 0 #d96aa6; }
